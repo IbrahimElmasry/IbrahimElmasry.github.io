@@ -32,12 +32,24 @@
                 <a class="button button-quiet" href="@project.DemoUrl" target="_blank" rel="noreferrer">Live demo ↗</a>
             }
         </div>
-        @if (!string.IsNullOrWhiteSpace(project.Architecture) || project.Tags.Length > 0)
+        @if (!string.IsNullOrWhiteSpace(project.Architecture) || project.Highlights.Length > 0 || project.Tags.Length > 0)
         {
             <div class="detail-panel">
-                <span class="section-kicker">@(string.IsNullOrWhiteSpace(project.Architecture) ? "PROJECT DETAILS" : "SYSTEM OVERVIEW")</span>
+                @if (project.Highlights.Length > 0)
+                {
+                    <div class="detail-highlights">
+                        <span class="section-kicker">KEY FEATURES</span>
+                        <ul>
+                            @foreach (var highlight in project.Highlights)
+                            {
+                                <li>@highlight</li>
+                            }
+                        </ul>
+                    </div>
+                }
                 @if (!string.IsNullOrWhiteSpace(project.Architecture))
                 {
+                    <span class="section-kicker">SYSTEM OVERVIEW</span>
                     <p>@project.Architecture</p>
                 }
                 @if (project.TechStack.Length > 0)

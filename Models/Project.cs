@@ -9,6 +9,7 @@ public sealed class Project
     public string ImageUrl { get; set; } = "";
     public string ImageAlt { get; set; } = "";
     public string Architecture { get; set; } = "";
+    public string[] Highlights { get; set; } = [];
     public string[] Tags { get; set; } = [];
     public string[] TechStack { get; set; } = [];
     public string GithubUrl { get; set; } = "";
