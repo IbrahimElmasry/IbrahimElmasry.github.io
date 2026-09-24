@@ -1,0 +1,15 @@
+{
+  "name":"Ibrahim Tarek",
+  "title":"ASP.NET Developer",
+  "summary":"I build practical web applications with ASP.NET Core, C#, and SQL Server, with a focus on clean architecture, useful features, and reliable user experiences.",
+  "location":"Alexandria, Egypt",
+  "available":true,
+  "githubUrl":"https://github.com/ibrahimelmasry",
+  "linkedInUrl":"https://linkedin.com/in/ibrahim-tarek-62b0a62a4",
+  "whatsAppUrl":"https://wa.me/201019804919",
+  "email":"ibrahimtarek1965@outlook.com",
+  "phone":"+201019804919",
+  "secondaryPhone":"+201220251166",
+  "resumeUrl":"resume.pdf",
+  "formspreeEndpoint":"https://formspree.io/f/mjykrzpq"
+}

@@ -1,0 +1,23 @@
+@inherits LayoutComponentBase
+@inject NavigationManager Nav
+@inject ContentService Content
+<div class="site-shell">
+    <header class="topbar"><a href="@Nav.BaseUri" class="brand"><span class="brand-mark">IT</span><span>Ibrahim Tarek<span class="brand-dot">.</span></span></a><nav aria-label="Main navigation"><a href="@($"{Nav.BaseUri}#work")">Work</a><a href="@($"{Nav.BaseUri}#experience")">Journey</a><a href="@($"{Nav.BaseUri}#skills")">Skills</a><a href="@($"{Nav.BaseUri}#contact")">Contact</a></nav><a class="nav-cta" href="@($"{Nav.BaseUri}#contact")">Let's talk <span>↗</span></a></header>
+    <div class="scroll-progress" aria-hidden="true"><span id="scroll-progress-bar"></span></div>
+    <main>@Body</main>
+    <footer class="footer">
+        <span class="footer-rights">© @DateTime.Now.Year @profile.Name. All rights reserved.</span>
+        <nav class="footer-socials" aria-label="Social links">
+            @if (!string.IsNullOrWhiteSpace(profile.GithubUrl)) { <a href="@profile.GithubUrl" target="_blank" rel="noreferrer" aria-label="GitHub">GitHub <span>↗</span></a> }
+            @if (!string.IsNullOrWhiteSpace(profile.LinkedInUrl)) { <a href="@profile.LinkedInUrl" target="_blank" rel="noreferrer" aria-label="LinkedIn">LinkedIn <span>↗</span></a> }
+            @if (!string.IsNullOrWhiteSpace(profile.Email)) { <a href="mailto:@profile.Email" aria-label="Email">Email <span>↗</span></a> }
+            @if (!string.IsNullOrWhiteSpace(profile.WhatsAppUrl)) { <a href="@profile.WhatsAppUrl" target="_blank" rel="noreferrer" aria-label="WhatsApp">WhatsApp <span>↗</span></a> }
+        </nav>
+        <a class="footer-top" href="@($"{Nav.BaseUri}#top")">Back to top ↑</a>
+    </footer>
+</div>
+<script src="js/motion.js?v=20260924-6"></script>
+@code {
+    private Profile profile = new();
+    protected override async Task OnInitializedAsync() => profile = await Content.GetProfileAsync();
+}

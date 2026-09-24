@@ -1,0 +1,77 @@
+@page "/projects/{Slug}"
+@inject ContentService Content
+@inject NavigationManager Nav
+<PageTitle>@(project?.Title ?? "Project") — Ibrahim Tarek</PageTitle>
+<section class="section-wrap detail-page">
+    @if (project is null)
+    {
+        <a class="back-link" href="@($"{Nav.BaseUri}#work")">← Back to work</a>
+        <h1>Project not found.</h1>
+    }
+    else
+    {
+        <a class="back-link" href="@($"{Nav.BaseUri}#work")">← Back to selected work</a>
+        <span class="section-kicker">PROJECT / @project.Slug.ToUpperInvariant()</span>
+        <h1>@project.Title<span class="gradient-title">.</span></h1>
+        <p class="detail-lead">@project.Description</p>
+        @if (!string.IsNullOrWhiteSpace(project.ImageUrl))
+        {
+            <img class="detail-cover" src="@ImageSource(project.ImageUrl)" alt="@(string.IsNullOrWhiteSpace(project.ImageAlt) ? $"Preview of {project.Title}" : project.ImageAlt)" />
+        }
+        @if (!string.IsNullOrWhiteSpace(project.Period))
+        {
+            <span class="section-kicker">@project.Period</span>
+        }
+        <div class="detail-actions">
+            @if (!string.IsNullOrWhiteSpace(project.GithubUrl))
+            {
+                <a class="button button-primary" href="@project.GithubUrl" target="_blank" rel="noreferrer">View source ↗</a>
+            }
+            @if (!string.IsNullOrWhiteSpace(project.DemoUrl))
+            {
+                <a class="button button-quiet" href="@project.DemoUrl" target="_blank" rel="noreferrer">Live demo ↗</a>
+            }
+        </div>
+        @if (!string.IsNullOrWhiteSpace(project.Architecture) || project.Tags.Length > 0)
+        {
+            <div class="detail-panel">
+                <span class="section-kicker">@(string.IsNullOrWhiteSpace(project.Architecture) ? "PROJECT DETAILS" : "SYSTEM OVERVIEW")</span>
+                @if (!string.IsNullOrWhiteSpace(project.Architecture))
+                {
+                    <p>@project.Architecture</p>
+                }
+                @if (project.TechStack.Length > 0)
+                {
+                    <span class="section-kicker">TECH STACK</span>
+                    <div class="tag-row detail-tags">
+                        @foreach (var technology in project.TechStack)
+                        {
+                            <span class="tech-tag">@technology</span>
+                        }
+                    </div>
+                }
+                @if (project.Tags.Length > 0)
+                {
+                    <span class="section-kicker">PROJECT TOPICS</span>
+                    <div class="tag-row detail-tags">
+                        @foreach (var tag in project.Tags)
+                        {
+                            <span class="tech-tag">@tag</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    }
+</section>
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+    private Project? project;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        project = (await Content.GetProjectsAsync()).FirstOrDefault(p => p.Slug.Equals(Slug, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private string ImageSource(string imageUrl) => Uri.TryCreate(imageUrl, UriKind.Absolute, out _) ? imageUrl : new Uri(new Uri(Nav.BaseUri), imageUrl.TrimStart('/')).ToString();
+}

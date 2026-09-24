@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loading portfolio…</title>
+  <script>
+    // The workflow injects the repository base path into this file.
+    const base = window.portfolioBasePath || '/';
+    const route = location.pathname.startsWith(base) ? location.pathname.slice(base.length) : location.pathname.replace(/^\//, '');
+    const query = location.search ? '&' + location.search.slice(1) : '';
+    location.replace(base + '?p=' + encodeURIComponent(route + location.hash) + query);
+  </script>
+</head>
+<body></body>
+</html>

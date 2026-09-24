@@ -1,0 +1,22 @@
+[
+  {"category":"Backend & APIs","name":"C#","level":88},
+  {"category":"Backend & APIs","name":"ASP.NET Core MVC","level":88},
+  {"category":"Backend & APIs","name":"ASP.NET Core Web API","level":85},
+  {"category":"Backend & APIs","name":"Entity Framework Core","level":82},
+  {"category":"Backend & APIs","name":"ASP.NET Identity","level":78},
+  {"category":"Databases & Cloud","name":"Microsoft SQL Server","level":82},
+  {"category":"Databases & Cloud","name":"Transact-SQL","level":75},
+  {"category":"Databases & Cloud","name":"Azure","level":65},
+  {"category":"Architecture & Practices","name":"Object-Oriented Programming","level":85},
+  {"category":"Architecture & Practices","name":"SOLID Principles","level":78},
+  {"category":"Architecture & Practices","name":"Clean Architecture","level":76},
+  {"category":"Architecture & Practices","name":"MVC","level":85},
+  {"category":"Architecture & Practices","name":"Data Structures & Algorithms","level":72},
+  {"category":"Frontend","name":"HTML5 & CSS3","level":80},
+  {"category":"Frontend","name":"JavaScript","level":75},
+  {"category":"Frontend","name":"Bootstrap","level":78},
+  {"category":"Frontend","name":"jQuery","level":70},
+  {"category":"Tools","name":"Git & GitHub","level":80},
+  {"category":"Tools","name":"Visual Studio","level":80},
+  {"category":"Tools","name":"VS Code","level":80}
+]
