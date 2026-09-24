@@ -2,6 +2,7 @@
   document.querySelectorAll('.flow-trail[pathLength]').forEach(path => path.removeAttribute('pathLength'));
   const revealTargets = '.section-heading, .project-card, .timeline-item, .stack-intro, .skill-group, .contact-layout > div, .contact-section > .section-kicker';
   let observer;
+  let navObserver;
   const init = () => {
     const items = document.querySelectorAll(revealTargets);
     if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -21,6 +22,25 @@
       item.style.setProperty('--reveal-delay', `${Math.min(index % 4, 3) * 75}ms`);
       observer.observe(item);
     });
+  };
+  const initNavObserver = () => {
+    if (navObserver || !('IntersectionObserver' in window)) return;
+    const sections = document.querySelectorAll('main section[id]');
+    const links = document.querySelectorAll('.topbar nav a[href*="#"]');
+    if (!sections.length || !links.length) return;
+    navObserver = new IntersectionObserver(entries => {
+      const current = entries.filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!current) return;
+      const activeHash = `#${current.target.id}`;
+      links.forEach(link => {
+        const active = new URL(link.href, location.href).hash === activeHash;
+        link.classList.toggle('is-active', active);
+        if (active) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    }, { rootMargin: '-20% 0px -68% 0px', threshold: [0, .2, .5, .8] });
+    sections.forEach(section => navObserver.observe(section));
   };
   let ticking = false;
   const updateScrollState = () => {
@@ -43,8 +63,8 @@
       ticking = false;
     });
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
-  else init();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { init(); initNavObserver(); }, { once: true });
+  else { init(); initNavObserver(); }
   window.addEventListener('scroll', updateScrollState, { passive: true });
   updateScrollState();
   if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -101,6 +121,7 @@
   });
   if (app && 'MutationObserver' in window) new MutationObserver(() => requestAnimationFrame(() => {
     init();
+    initNavObserver();
     scrollToHashTarget();
     updateScrollState();
   })).observe(app, { childList: true, subtree: true });
