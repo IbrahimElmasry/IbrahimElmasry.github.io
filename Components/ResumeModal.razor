@@ -1,0 +1,192 @@
+@inject NavigationManager Nav
+
+<div class="resume-modal-wrapper @(isOpen ? "is-open" : "")">
+    @if (isOpen)
+    {
+        <div class="resume-backdrop" @onclick="Close"></div>
+        <div class="resume-modal" role="dialog" aria-modal="true" aria-labelledby="resume-title">
+            <div class="resume-modal-header">
+                <div class="resume-header-left">
+                    <span class="resume-brand-badge">IT</span>
+                    <div>
+                        <h3 id="resume-title" class="resume-name">Ibrahim Tarek</h3>
+                        <span class="resume-role">ASP.NET Core &amp; Full-Stack Developer</span>
+                    </div>
+                </div>
+                <div class="resume-header-actions">
+                    @if (!string.IsNullOrWhiteSpace(ResumeUrl))
+                    {
+                        <a href="@ResumeUrl" target="_blank" rel="noreferrer" class="button button-primary button-sm">
+                            Download PDF <span>↗</span>
+                        </a>
+                    }
+                    <button type="button" class="resume-close-btn" @onclick="Close" aria-label="Close resume">
+                        ✕
+                    </button>
+                </div>
+            </div>
+
+            <div class="resume-modal-body">
+                <!-- Navigation Subtabs -->
+                <div class="resume-tabs">
+                    <button type="button"
+                            class="resume-tab @(activeTab == "summary" ? "is-active" : "")"
+                            @onclick='() => activeTab = "summary"'>
+                        Executive Summary
+                    </button>
+                    <button type="button"
+                            class="resume-tab @(activeTab == "experience" ? "is-active" : "")"
+                            @onclick='() => activeTab = "experience"'>
+                        Experience &amp; Internships
+                    </button>
+                    <button type="button"
+                            class="resume-tab @(activeTab == "education" ? "is-active" : "")"
+                            @onclick='() => activeTab = "education"'>
+                        Education &amp; Credentials
+                    </button>
+                    <button type="button"
+                            class="resume-tab @(activeTab == "projects" ? "is-active" : "")"
+                            @onclick='() => activeTab = "projects"'>
+                        Key Projects
+                    </button>
+                </div>
+
+                <div class="resume-content-view">
+                    @if (activeTab == "summary")
+                    {
+                        <div class="resume-section">
+                            <span class="section-tag">PROFILE OBJECTIVE</span>
+                            <p class="resume-text">
+                                Methodical and detail-oriented ASP.NET Core developer with formal Information Systems training and extensive hands-on systems troubleshooting experience. Specialized in architecting multi-tier web applications, robust RESTful APIs, relational SQL Server schemas, and payment integrations.
+                            </p>
+
+                            <span class="section-tag">CORE COMPETENCIES</span>
+                            <div class="resume-skills-grid">
+                                <div class="skill-bucket">
+                                    <strong>Backend &amp; Languages</strong>
+                                    <span>C#, ASP.NET Core, ASP.NET MVC, Web API, LINQ, REST APIs</span>
+                                </div>
+                                <div class="skill-bucket">
+                                    <strong>Data &amp; Persistence</strong>
+                                    <span>Entity Framework Core, Microsoft SQL Server, Database Normalization</span>
+                                </div>
+                                <div class="skill-bucket">
+                                    <strong>Security &amp; Commerce</strong>
+                                    <span>ASP.NET Identity, Role-Based Access Control (RBAC), Stripe API</span>
+                                </div>
+                                <div class="skill-bucket">
+                                    <strong>Frontend &amp; Tools</strong>
+                                    <span>Blazor WebAssembly, HTML5, CSS3, JavaScript, Git &amp; GitHub, Postman</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (activeTab == "experience")
+                    {
+                        <div class="resume-timeline">
+                            <div class="timeline-entry">
+                                <div class="entry-header">
+                                    <strong>ASP.NET Development Track Trainee</strong>
+                                    <span class="entry-date">Digital Egypt Pioneers Initiative (DEPI) · 6 Months</span>
+                                </div>
+                                <p class="entry-desc">
+                                    Intensive professional scholarship track focusing on modern enterprise software delivery with C#, ASP.NET Core, Web APIs, and Clean Architecture patterns.
+                                </p>
+                            </div>
+
+                            <div class="timeline-entry">
+                                <div class="entry-header">
+                                    <strong>Technical Support Engineer</strong>
+                                    <span class="entry-date">Support For Multi-Computer Service · 2.5+ Years</span>
+                                </div>
+                                <p class="entry-desc">
+                                    Diagnosed and resolved complex hardware and software incidents, analyzed system bottlenecks, and delivered dependable end-user infrastructure reliability.
+                                </p>
+                            </div>
+
+                            <div class="timeline-entry">
+                                <div class="entry-header">
+                                    <strong>Problem Solving &amp; Algorithms Mentor</strong>
+                                    <span class="entry-date">ECPC Club Port Said University</span>
+                                </div>
+                                <p class="entry-desc">
+                                    Mentored junior computer science students in competitive programming, data structures, algorithm design, and Big-O efficiency.
+                                </p>
+                            </div>
+                        </div>
+                    }
+                    else if (activeTab == "education")
+                    {
+                        <div class="resume-section">
+                            <div class="education-card">
+                                <span class="edu-degree">Bachelor of Technology in Information Systems</span>
+                                <span class="edu-school">Faculty of Management Technology and Information Systems (MTIS) · 2020 – 2024</span>
+                                <div class="edu-highlight">
+                                    <span>Graduation Project:</span>
+                                    <strong>AI-Powered E-Learning Platform with ASP.NET Core &amp; SQL Server</strong>
+                                    <span class="grade-badge">Grade: Excellent</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (activeTab == "projects")
+                    {
+                        <div class="resume-projects-list">
+                            <div class="resume-proj-card">
+                                <div class="proj-card-top">
+                                    <strong>Tech Xpress E-Commerce</strong>
+                                    <span class="proj-badge">ASP.NET Core MVC · Stripe</span>
+                                </div>
+                                <p class="proj-summary">
+                                    Production e-commerce system featuring multi-role ASP.NET Identity, shopping cart session management, and Stripe Checkout Sessions with transactional order fulfillment.
+                                </p>
+                            </div>
+
+                            <div class="resume-proj-card">
+                                <div class="proj-card-top">
+                                    <strong>AI E-Learning Platform</strong>
+                                    <span class="proj-badge">ASP.NET Core · AI Integration</span>
+                                </div>
+                                <p class="proj-summary">
+                                    Graduation platform incorporating course enrollment, instructor publishing hubs, and conversational AI assistance for student queries.
+                                </p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="resume-modal-footer">
+                <div class="footer-contacts-strip">
+                    <span>Alexandria, Egypt</span>
+                    <span>·</span>
+                    <span>ibrahem.elmasry.2001@gmail.com</span>
+                    <span>·</span>
+                    <span>Open to Remote &amp; Relocation</span>
+                </div>
+                <button type="button" class="button button-quiet button-sm" @onclick="Close">
+                    Close Window
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string ResumeUrl { get; set; } = "";
+
+    private bool isOpen;
+    private string activeTab = "summary";
+
+    public void Open()
+    {
+        isOpen = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        isOpen = false;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,195 @@
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<div class="cmd-palette-wrapper @(isOpen ? "is-open" : "")" @onkeydown="HandleKeyDown">
+    @if (isOpen)
+    {
+        <div class="cmd-backdrop" @onclick="Close"></div>
+        <div class="cmd-modal" role="dialog" aria-modal="true" aria-label="Command Palette">
+            <div class="cmd-input-wrap">
+                <span class="cmd-search-icon">🔍</span>
+                <input type="text"
+                       class="cmd-input"
+                       placeholder="Type a command or search (projects, stack, actions)..."
+                       @bind="query"
+                       @bind:event="oninput"
+                       @ref="inputRef"
+                       autofocus />
+                <span class="cmd-esc-hint" @onclick="Close">ESC</span>
+            </div>
+
+            <div class="cmd-results-list">
+                @if (filteredItems.Count == 0)
+                {
+                    <div class="cmd-empty">
+                        <span>No matching commands or projects found for "<strong>@query</strong>"</span>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var group in filteredItems.GroupBy(i => i.Category))
+                    {
+                        <div class="cmd-group">
+                            <span class="cmd-group-title">@group.Key</span>
+                            @foreach (var item in group)
+                            {
+                                var isHighlighted = item.Id == activeId;
+                                <button type="button"
+                                        class="cmd-item @(isHighlighted ? "is-active" : "")"
+                                        @onclick="() => ExecuteItem(item)"
+                                        @onmouseenter="() => activeId = item.Id">
+                                    <span class="cmd-item-icon">@item.Icon</span>
+                                    <div class="cmd-item-content">
+                                        <span class="cmd-item-title">@item.Title</span>
+                                        @if (!string.IsNullOrEmpty(item.Subtitle))
+                                        {
+                                            <span class="cmd-item-sub">@item.Subtitle</span>
+                                        }
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(item.Badge))
+                                    {
+                                        <span class="cmd-item-badge">@item.Badge</span>
+                                    }
+                                    <span class="cmd-item-enter">↵</span>
+                                </button>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="cmd-footer">
+                <div class="cmd-keys-hint">
+                    <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+                    <span><kbd>↵</kbd> Select</span>
+                    <span><kbd>ESC</kbd> Close</span>
+                </div>
+                <span class="cmd-branding">Ibrahim Tarek · Portfolio</span>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public EventCallback OnOpenResume { get; set; }
+    [Parameter] public EventCallback OnOpenChat { get; set; }
+
+    private bool isOpen;
+    private string query = "";
+    private string activeId = "nav-work";
+    private ElementReference inputRef;
+
+    private record CommandItem(string Id, string Title, string? Subtitle, string Icon, string Category, string? Badge, Action Action);
+
+    private readonly List<CommandItem> allItems = [];
+
+    protected override void OnInitialized()
+    {
+        InitializeItems();
+    }
+
+    private void InitializeItems()
+    {
+        allItems.Clear();
+
+        // 1. Navigation
+        allItems.Add(new("nav-work", "Selected Work", "Proof in practice & featured projects", "📁", "Navigation", "Section 01", () => NavigateTo("#work")));
+        allItems.Add(new("nav-services", "Services & Capabilities", "ASP.NET Core & Full-Stack engineering", "⚙", "Navigation", "Section 02", () => NavigateTo("#services")));
+        allItems.Add(new("nav-process", "Engineering Process", "How I architect and deliver software", "✦", "Navigation", "Section 03", () => NavigateTo("#process")));
+        allItems.Add(new("nav-about", "About Ibrahim", "Education, background, and technical principles", "👤", "Navigation", "Section 04", () => NavigateTo("#about")));
+        allItems.Add(new("nav-experience", "Career & Education Journey", "Timeline from IT support to .NET development", "⏱", "Navigation", "Section 05", () => NavigateTo("#experience")));
+        allItems.Add(new("nav-skills", "The Toolkit (Stack)", "ASP.NET Core, C#, SQL Server, EF Core", "🛠", "Navigation", "Section 06", () => NavigateTo("#skills")));
+        allItems.Add(new("nav-faq", "Frequently Asked Questions", "Common questions on tech stack and contracts", "❓", "Navigation", "Section 07", () => NavigateTo("#faq")));
+        allItems.Add(new("nav-contact", "Start a Conversation", "Interactive Project Scoper & direct inquiry", "💬", "Navigation", "Section 08", () => NavigateTo("#contact")));
+        allItems.Add(new("nav-book", "Schedule a 1:1 Call", "Google Meet 60-min introductory discussion", "🗓", "Navigation", "Live Calendar", () => Nav.NavigateTo("book-a-call")));
+
+        // 2. Featured Projects
+        allItems.Add(new("proj-techxpress", "Tech Xpress E-Commerce", "Stripe Checkout, ASP.NET Core MVC, SQL Server", "↗", "Case Studies", ".NET MVC", () => Nav.NavigateTo("projects/tech-xpress-mvc")));
+        allItems.Add(new("proj-elearning", "AI E-Learning Platform", "Graduation Project (Excellent), LLM Chatbot", "✳", "Case Studies", "AI + MVC", () => Nav.NavigateTo("projects/ai-elearning-platform")));
+        allItems.Add(new("proj-wakeel", "El-Wakeel Website", "Corporate website with client showcase", "↗", "Case Studies", "Web", () => Nav.NavigateTo("projects/el-wakeel-website")));
+        allItems.Add(new("proj-rawafid", "Rawafid Technology Hub", "IT services showcase & clean layout", "↗", "Case Studies", "Web", () => Nav.NavigateTo("projects/rawafid-website")));
+
+        // 3. Quick Actions
+        allItems.Add(new("act-chat", "Ask Ibrahim AI Assistant", "Instant answers about stack, projects, and bio", "🤖", "Quick Actions", "Instant", async () => { Close(); await OnOpenChat.InvokeAsync(); }));
+        allItems.Add(new("act-resume", "Preview Resume", "In-browser executive technical credentials", "📄", "Quick Actions", "Modal", async () => { Close(); await OnOpenResume.InvokeAsync(); }));
+        allItems.Add(new("act-copy-email", "Copy Email Address", "ibrahem.elmasry.2001@gmail.com", "📋", "Quick Actions", "Clipboard", async () => { await CopyToClipboard("ibrahem.elmasry.2001@gmail.com"); Close(); }));
+        allItems.Add(new("act-top", "Scroll to Top", "Back to hero start", "↑", "Quick Actions", null, () => NavigateTo("#top")));
+    }
+
+    private List<CommandItem> filteredItems
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                return allItems;
+
+            var q = query.Trim().ToLowerInvariant();
+            return allItems.Where(i =>
+                i.Title.ToLowerInvariant().Contains(q) ||
+                (i.Subtitle?.ToLowerInvariant().Contains(q) == true) ||
+                (i.Badge?.ToLowerInvariant().Contains(q) == true) ||
+                i.Category.ToLowerInvariant().Contains(q)
+            ).ToList();
+        }
+    }
+
+    public void Open()
+    {
+        isOpen = true;
+        query = "";
+        activeId = filteredItems.FirstOrDefault()?.Id ?? "nav-work";
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        isOpen = false;
+        StateHasChanged();
+    }
+
+    private void NavigateTo(string fragment)
+    {
+        Close();
+        Nav.NavigateTo($"{Nav.BaseUri}{fragment}");
+    }
+
+    private async Task CopyToClipboard(string text)
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
+    }
+
+    private void ExecuteItem(CommandItem item)
+    {
+        item.Action();
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            Close();
+            return;
+        }
+
+        var items = filteredItems;
+        if (items.Count == 0) return;
+
+        var currentIndex = items.FindIndex(i => i.Id == activeId);
+
+        if (e.Key == "ArrowDown")
+        {
+            var nextIndex = (currentIndex + 1) % items.Count;
+            activeId = items[nextIndex].Id;
+        }
+        else if (e.Key == "ArrowUp")
+        {
+            var prevIndex = (currentIndex - 1 + items.Count) % items.Count;
+            activeId = items[prevIndex].Id;
+        }
+        else if (e.Key == "Enter")
+        {
+            var selected = items.FirstOrDefault(i => i.Id == activeId) ?? items[0];
+            ExecuteItem(selected);
+        }
+    }
+}

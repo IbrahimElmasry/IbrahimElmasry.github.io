@@ -153,6 +153,13 @@
         }
     }
 
+    public void Open()
+    {
+        isOpen = true;
+        StateHasChanged();
+        ScrollToBottom();
+    }
+
     private void ToggleChat()
     {
         isOpen = !isOpen;

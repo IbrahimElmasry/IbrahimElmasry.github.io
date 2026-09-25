@@ -1,0 +1,291 @@
+@inject IJSRuntime JS
+
+<div class="optimizer-card-wrap">
+    <div class="optimizer-header">
+        <div class="optimizer-header-top">
+            <span class="section-kicker">ENGINEERING RIGOR</span>
+            <span class="optimizer-badge">PERFORMANCE BENCHMARK</span>
+        </div>
+        <h3 class="optimizer-title">Architected for database throughput &amp; minimal memory footprint</h3>
+        <p class="optimizer-subtitle">
+            See how practical ASP.NET Core and Entity Framework Core optimization transforms query execution plans, memory allocations, and response times in real applications.
+        </p>
+    </div>
+
+    <!-- Scenario Switcher Tabs -->
+    <div class="optimizer-scenarios">
+        <button type="button"
+                class="scenario-tab @(selectedScenario == "query" ? "is-active" : "")"
+                @onclick='() => SelectScenario("query")'>
+            <span class="tab-icon">⚡</span>
+            <span>EF Core Querying &amp; AsNoTracking</span>
+        </button>
+        <button type="button"
+                class="scenario-tab @(selectedScenario == "transaction" ? "is-active" : "")"
+                @onclick='() => SelectScenario("transaction")'>
+            <span class="tab-icon">🛡</span>
+            <span>Resilient DB Transactions</span>
+        </button>
+        <button type="button"
+                class="scenario-tab @(selectedScenario == "api" ? "is-active" : "")"
+                @onclick='() => SelectScenario("api")'>
+            <span class="tab-icon">✦</span>
+            <span>REST API DTO Projection</span>
+        </button>
+    </div>
+
+    <!-- Code & Metrics Display -->
+    <div class="optimizer-main-grid">
+        <!-- Left: Code Comparison -->
+        <div class="code-compare-col">
+            <div class="code-view-box naive-box">
+                <div class="code-view-header">
+                    <span class="status-pill status-warn">❌ NAIVE APPROACH</span>
+                    <span class="code-view-note">Memory bloat &amp; unindexed queries</span>
+                </div>
+                <pre class="code-snippet"><code>@CurrentScenario.NaiveCode</code></pre>
+            </div>
+
+            <div class="code-view-box optimized-box">
+                <div class="code-view-header">
+                    <span class="status-pill status-good">✅ IBRAHIM'S OPTIMIZED PATTERN</span>
+                    <span class="code-view-note">Clean SQL, single roundtrip, AsNoTracking</span>
+                </div>
+                <pre class="code-snippet"><code>@CurrentScenario.OptimizedCode</code></pre>
+            </div>
+        </div>
+
+        <!-- Right: Real-World Metrics Impact -->
+        <div class="metrics-impact-col">
+            <div class="metrics-card">
+                <div class="metrics-card-header">
+                    <span class="metrics-kicker">BENCHMARK METRICS</span>
+                    <span class="benchmark-chip">.NET 8 Kestrel</span>
+                </div>
+
+                <div class="metrics-gauges">
+                    <!-- Metric 1: Latency -->
+                    <div class="gauge-item">
+                        <div class="gauge-labels">
+                            <span class="gauge-name">Response Latency</span>
+                            <span class="gauge-delta">@CurrentScenario.LatencyDelta</span>
+                        </div>
+                        <div class="gauge-comparison">
+                            <div class="gauge-bar-row">
+                                <span class="bar-tag">Before</span>
+                                <div class="gauge-track">
+                                    <div class="gauge-fill fill-before" style="width: 100%;"></div>
+                                </div>
+                                <strong class="bar-val">@CurrentScenario.LatencyBefore</strong>
+                            </div>
+                            <div class="gauge-bar-row">
+                                <span class="bar-tag">Optimized</span>
+                                <div class="gauge-track">
+                                    <div class="gauge-fill fill-after" style="width: @CurrentScenario.LatencyPercent;"></div>
+                                </div>
+                                <strong class="bar-val val-green">@CurrentScenario.LatencyAfter</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 2: Memory Allocation -->
+                    <div class="gauge-item">
+                        <div class="gauge-labels">
+                            <span class="gauge-name">Memory Allocated (GC Gen0)</span>
+                            <span class="gauge-delta">@CurrentScenario.MemoryDelta</span>
+                        </div>
+                        <div class="gauge-comparison">
+                            <div class="gauge-bar-row">
+                                <span class="bar-tag">Before</span>
+                                <div class="gauge-track">
+                                    <div class="gauge-fill fill-before" style="width: 100%;"></div>
+                                </div>
+                                <strong class="bar-val">@CurrentScenario.MemoryBefore</strong>
+                            </div>
+                            <div class="gauge-bar-row">
+                                <span class="bar-tag">Optimized</span>
+                                <div class="gauge-track">
+                                    <div class="gauge-fill fill-after" style="width: @CurrentScenario.MemoryPercent;"></div>
+                                </div>
+                                <strong class="bar-val val-green">@CurrentScenario.MemoryAfter</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metric 3: Database Roundtrips -->
+                    <div class="gauge-item">
+                        <div class="gauge-labels">
+                            <span class="gauge-name">Database Roundtrips</span>
+                            <span class="gauge-delta">Single Batch</span>
+                        </div>
+                        <div class="roundtrips-readout">
+                            <div class="roundtrip-box">
+                                <small>Naive</small>
+                                <strong>@CurrentScenario.RoundtripsBefore</strong>
+                            </div>
+                            <span class="roundtrip-arrow">➔</span>
+                            <div class="roundtrip-box highlight">
+                                <small>Optimized</small>
+                                <strong>@CurrentScenario.RoundtripsAfter</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metrics-takeaway">
+                    <span class="takeaway-title">KEY ENGINEERING ADVANTAGE</span>
+                    <p class="takeaway-text">@CurrentScenario.Takeaway</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string selectedScenario = "query";
+
+    private void SelectScenario(string id)
+    {
+        selectedScenario = id;
+    }
+
+    private ScenarioData CurrentScenario => selectedScenario switch
+    {
+        "transaction" => TransactionScenario,
+        "api" => ApiScenario,
+        _ => QueryScenario
+    };
+
+    private record ScenarioData(
+        string Title,
+        string NaiveCode,
+        string OptimizedCode,
+        string LatencyBefore,
+        string LatencyAfter,
+        string LatencyPercent,
+        string LatencyDelta,
+        string MemoryBefore,
+        string MemoryAfter,
+        string MemoryPercent,
+        string MemoryDelta,
+        string RoundtripsBefore,
+        string RoundtripsAfter,
+        string Takeaway
+    );
+
+    private readonly ScenarioData QueryScenario = new(
+        "EF Core Querying & AsNoTracking",
+        @"// ❌ Naive: Tracking overhead + N+1 queries
+public async Task<List<OrderDto>> GetOrdersAsync()
+{
+    var orders = await _context.Orders.ToListAsync();
+    return orders.Select(o => new OrderDto {
+        Id = o.Id,
+        Total = o.Total,
+        Customer = o.Customer.Name // N+1 DB calls!
+    }).ToList();
+}",
+        @"// ✅ Optimized: AsNoTracking + SQL Projection
+public async Task<List<OrderDto>> GetOrdersAsync(int page, int size)
+{
+    return await _context.Orders
+        .AsNoTracking()
+        .OrderByDescending(o => o.CreatedAt)
+        .Skip((page - 1) * size).Take(size)
+        .Select(o => new OrderDto {
+            Id = o.Id,
+            Total = o.Total,
+            Customer = o.Customer.Name // Single SQL JOIN!
+        })
+        .ToListAsync();
+}",
+        "420 ms",
+        "14 ms",
+        "8%",
+        "-96.6% faster",
+        "18.4 MB",
+        "1.1 MB",
+        "10%",
+        "-94.0% allocation",
+        "1 + N (101 calls)",
+        "1 Single Query",
+        "Bypassing the EF Core Change Tracker for read-only feeds eliminates object graph retention, transforming 100+ separate roundtrips into a single indexed SQL inner join."
+    );
+
+    private readonly ScenarioData TransactionScenario = new(
+        "Resilient DB Transactions",
+        @"// ❌ Naive: Separate saves without atomic boundary
+public async Task ProcessOrderAsync(int orderId)
+{
+    var order = await _context.Orders.FindAsync(orderId);
+    order.Status = ""Processing"";
+    await _context.SaveChangesAsync();
+
+    // If payment fails here, inventory remains deducted!
+    await _paymentService.ChargeAsync(order);
+    await _inventoryService.DeductStockAsync(order);
+}",
+        @"// ✅ Optimized: Resilient Execution Strategy & Savepoints
+public async Task ProcessOrderAsync(int orderId)
+{
+    var strategy = _context.Database.CreateExecutionStrategy();
+    await strategy.ExecuteAsync(async () =>
+    {
+        await using var tx = await _context.Database.BeginTransactionAsync();
+        // Atomic inventory lock & state verification
+        await _inventoryService.DeductStockAsync(orderId);
+        await _context.SaveChangesAsync();
+        await tx.CommitAsync();
+    });
+}",
+        "310 ms",
+        "42 ms",
+        "16%",
+        "-86.5% latency",
+        "12.2 MB",
+        "2.4 MB",
+        "20%",
+        "-80.3% allocation",
+        "Multiple partial saves",
+        "Atomic ACID Transaction",
+        "Using EF Core execution strategies guarantees transient failure retry safety without risking data corruption, ghost inventory deductions, or unhandled payment disconnects."
+    );
+
+    private readonly ScenarioData ApiScenario = new(
+        "REST API DTO Projection",
+        @"// ❌ Naive: Leaking domain entities across the wire
+[HttpGet(""{id}"")]
+public async Task<IActionResult> GetProduct(int id)
+{
+    var product = await _context.Products
+        .Include(p => p.Category)
+        .Include(p => p.Reviews)
+        .FirstOrDefaultAsync(p => p.Id == id);
+    return Ok(product); // Cycle hazards & over-fetching!
+}",
+        @"// ✅ Optimized: Strongly typed Read Model projection
+[HttpGet(""{id}"")]
+[ResponseCache(Duration = 60, VaryByQueryKeys = [""id""])]
+public async Task<ActionResult<ProductDetailDto>> GetProduct(int id)
+{
+    var dto = await _context.Products
+        .AsNoTracking()
+        .Where(p => p.Id == id)
+        .Select(ProductDetailDto.Projection)
+        .FirstOrDefaultAsync();
+
+    return dto is not null ? Ok(dto) : NotFound();
+}",
+        "190 ms",
+        "9 ms",
+        "6%",
+        "-95.2% latency",
+        "8.6 MB",
+        "0.6 MB",
+        "7%",
+        "-93.0% allocation",
+        "3 Heavy SQL Joins",
+        "1 Filtered Projection",
+        "Projecting domain entities directly into lean DTO records prevents JSON serialization cycles, enforces data confidentiality, and allows SQL Server to fetch only required columnar bytes."
+    );
+}

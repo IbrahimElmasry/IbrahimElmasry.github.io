@@ -3,8 +3,11 @@
 @inject ContentService Content
 <div class="site-shell">
     <header class="topbar">
-        <a href="@Nav.BaseUri" class="brand"><span class="brand-mark">IT</span><span>Ibrahim Tarek<span class="brand-dot">.</span></span></a>
-        <nav aria-label="Main navigation">
+        <a href="@Nav.BaseUri" class="brand" @onclick="CloseMobileMenu">
+            <span class="brand-mark">IT</span>
+            <span>Ibrahim Tarek<span class="brand-dot">.</span></span>
+        </a>
+        <nav class="desktop-nav" aria-label="Main navigation">
             <a href="@($"{Nav.BaseUri}#work")">Work</a>
             <a href="@($"{Nav.BaseUri}#services")">Services</a>
             <a href="@($"{Nav.BaseUri}#process")">Process</a>
@@ -13,8 +16,92 @@
             <a href="@($"{Nav.BaseUri}#faq")">FAQs</a>
             <a href="@($"{Nav.BaseUri}#contact")">Contact</a>
         </nav>
-        <a class="nav-cta nav-cta-booking" href="book-a-call">Book a call <span>↗</span></a>
+        <div class="topbar-right-actions">
+            <button type="button" class="topbar-cmd-btn" @onclick="() => commandPaletteRef?.Open()" title="Command Palette (Ctrl+K)">
+                <span class="cmd-icon">⌘</span>
+                <span class="cmd-label">Search</span>
+                <kbd>⌘K</kbd>
+            </button>
+            <a class="nav-cta nav-cta-booking" href="book-a-call">Book a call <span>↗</span></a>
+            <button type="button" 
+                    class="mobile-menu-toggle @(isMobileMenuOpen ? "is-active" : "")" 
+                    @onclick="ToggleMobileMenu" 
+                    aria-label="Toggle navigation menu"
+                    aria-expanded="@isMobileMenuOpen">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
+        </div>
     </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-drawer @(isMobileMenuOpen ? "is-open" : "")" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+        <div class="mobile-nav-backdrop" @onclick="CloseMobileMenu"></div>
+        <div class="mobile-nav-sheet">
+            <div class="mobile-nav-header">
+                <div class="mobile-nav-brand">
+                    <span class="brand-mark">IT</span>
+                    <span>Ibrahim Tarek<span class="brand-dot">.</span></span>
+                </div>
+                <button type="button" class="mobile-nav-close" @onclick="CloseMobileMenu" aria-label="Close menu">✕</button>
+            </div>
+            
+            <nav class="mobile-nav-links">
+                <a href="@($"{Nav.BaseUri}#work")" @onclick="CloseMobileMenu">
+                    <span class="nav-num">01</span>
+                    <span class="nav-text">Selected Work</span>
+                    <span class="nav-arrow">↗</span>
+                </a>
+                <a href="@($"{Nav.BaseUri}#services")" @onclick="CloseMobileMenu">
+                    <span class="nav-num">02</span>
+                    <span class="nav-text">Services &amp; Capabilities</span>
+                    <span class="nav-arrow">↗</span>
+                </a>
+                <a href="@($"{Nav.BaseUri}#process")" @onclick="CloseMobileMenu">
+                    <span class="nav-num">03</span>
+                    <span class="nav-text">Engineering Process</span>
+                    <span class="nav-arrow">↗</span>
+                </a>
+                <a href="@($"{Nav.BaseUri}#about")" @onclick="CloseMobileMenu">
+                    <span class="nav-num">04</span>
+                    <span class="nav-text">About Ibrahim</span>
+                    <span class="nav-arrow">↗</span>
+                </a>
+                <a href="@($"{Nav.BaseUri}#experience")" @onclick="CloseMobileMenu">
+                    <span class="nav-num">05</span>
+                    <span class="nav-text">Career Journey</span>
+                    <span class="nav-arrow">↗</span>
+                </a>
+                <a href="@($"{Nav.BaseUri}#skills")" @onclick="CloseMobileMenu">
+                    <span class="nav-num">06</span>
+                    <span class="nav-text">Technical Toolkit</span>
+                    <span class="nav-arrow">↗</span>
+                </a>
+                <a href="@($"{Nav.BaseUri}#faq")" @onclick="CloseMobileMenu">
+                    <span class="nav-num">07</span>
+                    <span class="nav-text">Frequently Asked Questions</span>
+                    <span class="nav-arrow">↗</span>
+                </a>
+                <a href="@($"{Nav.BaseUri}#contact")" @onclick="CloseMobileMenu">
+                    <span class="nav-num">08</span>
+                    <span class="nav-text">Start a Conversation</span>
+                    <span class="nav-arrow">↗</span>
+                </a>
+            </nav>
+
+            <div class="mobile-nav-cta">
+                <a class="button button-primary mobile-booking-btn" href="book-a-call" @onclick="CloseMobileMenu">
+                    Schedule 1:1 Call <span>↗</span>
+                </a>
+                <div class="mobile-socials-row">
+                    @if (!string.IsNullOrWhiteSpace(profile.GithubUrl)) { <a href="@profile.GithubUrl" target="_blank" rel="noreferrer">GitHub</a> }
+                    @if (!string.IsNullOrWhiteSpace(profile.LinkedInUrl)) { <a href="@profile.LinkedInUrl" target="_blank" rel="noreferrer">LinkedIn</a> }
+                    @if (!string.IsNullOrWhiteSpace(profile.Email)) { <a href="mailto:@profile.Email">Email</a> }
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="scroll-progress" aria-hidden="true"><span id="scroll-progress-bar"></span></div>
     <main>@Body</main>
     <footer class="footer" id="footer">
@@ -131,10 +218,34 @@
             </a>
         </div>
     </footer>
-    <ChatWidget />
+    <CommandPalette @ref="commandPaletteRef" OnOpenResume="() => resumeModalRef?.Open()" OnOpenChat="OpenChatWidget" />
+    <ResumeModal @ref="resumeModalRef" ResumeUrl="@profile.ResumeUrl" />
+    <ChatWidget @ref="chatWidgetRef" />
 </div>
 <script src="js/motion.js?v=20260924-7"></script>
 @code {
     private Profile profile = new();
+    private CommandPalette? commandPaletteRef;
+    private ResumeModal? resumeModalRef;
+    private ChatWidget? chatWidgetRef;
+    private bool isMobileMenuOpen;
+
     protected override async Task OnInitializedAsync() => profile = await Content.GetProfileAsync();
+
+    private void ToggleMobileMenu()
+    {
+        isMobileMenuOpen = !isMobileMenuOpen;
+    }
+
+    private void CloseMobileMenu()
+    {
+        isMobileMenuOpen = false;
+    }
+
+    private void OpenChatWidget()
+    {
+        chatWidgetRef?.Open();
+    }
 }
+
+

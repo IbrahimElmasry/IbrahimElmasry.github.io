@@ -69,6 +69,15 @@
   updateScrollState();
   if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.addEventListener('pointermove', event => {
+      const hero = event.target.closest?.('.hero');
+      if (hero) {
+        const heroCopy = hero.querySelector('.hero-copy');
+        if (heroCopy) {
+          const rect = heroCopy.getBoundingClientRect();
+          heroCopy.style.setProperty('--hero-mouse-x', `${(event.clientX - rect.left).toFixed(1)}px`);
+          heroCopy.style.setProperty('--hero-mouse-y', `${(event.clientY - rect.top).toFixed(1)}px`);
+        }
+      }
       const card = event.target.closest?.('.project-card');
       if (!card) return;
       const rect = card.getBoundingClientRect();
@@ -144,5 +153,13 @@
       }
     });
   };
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      const btn = document.querySelector('.topbar-cmd-btn');
+      if (btn) btn.click();
+    }
+  });
 })();
+
 
