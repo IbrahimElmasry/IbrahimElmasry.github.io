@@ -11,5 +11,8 @@
   "phone":"+201019804919",
   "secondaryPhone":"+201220251166",
   "resumeUrl":"resume.pdf",
-  "formspreeEndpoint":"https://formspree.io/f/mjykrzpq"
+  "formspreeEndpoint":"https://formspree.io/f/mjykrzpq",
+  "bookingUrl":"https://calendar.app.google/Rfi2iSDSt9Fq3xef6",
+  "bookingDuration":"60 minutes",
+  "bookingFormat":"Google Meet"
 }

@@ -1,6 +1,6 @@
 (() => {
   document.querySelectorAll('.flow-trail[pathLength]').forEach(path => path.removeAttribute('pathLength'));
-  const revealTargets = '.section-heading, .project-card, .timeline-item, .stack-intro, .skill-group, .contact-layout > div, .contact-section > .section-kicker';
+  const revealTargets = '.section-heading, .project-card, .timeline-item, .stack-intro, .skill-group, .contact-layout > div, .contact-section > .section-kicker, .service-card, .process-card, .about-grid > div, .pillar-card, .approach-banner, .faq-accordion-item, .proof-strip';
   let observer;
   let navObserver;
   const init = () => {

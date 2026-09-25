@@ -2,64 +2,570 @@
 @inject ContentService Content
 @inject NavigationManager Nav
 @inject Microsoft.JSInterop.IJSRuntime JS
+
 <PageTitle>@profile.Name — @profile.Title</PageTitle>
+
 <section class="hero section-wrap" id="top">
-    <div class="hero-copy"><div class="eyebrow"><span class="status-dot"></span> OPEN TO ASP.NET OPPORTUNITIES <span class="eyebrow-line"></span> ALEXANDRIA, EGYPT</div>
-        <h1><span class="hero-title-line">.NET</span><br /><span class="hero-title-line gradient-title">developer.</span><br /><span class="hero-title-line serif-title"><span class="hero-title-word">Building</span> <span class="hero-title-word">for</span> <span class="hero-title-word">people.</span></span></h1>
+    <div class="hero-copy">
+        <div class="eyebrow"><span class="status-dot"></span> OPEN TO ASP.NET OPPORTUNITIES <span class="eyebrow-line"></span> ALEXANDRIA, EGYPT</div>
+        <h1>
+            <span class="hero-title-line">.NET</span><br />
+            <span class="hero-title-line gradient-title">developer.</span><br />
+            <span class="hero-title-line serif-title">
+                <span class="hero-title-word">Building</span> <span class="hero-title-word">for</span> <span class="hero-title-word">people.</span>
+            </span>
+        </h1>
         <p class="hero-lead">@profile.Summary</p>
-        <div class="hero-actions"><a class="button button-primary" href="#work">Explore selected work <span>↘</span></a><a class="button button-quiet" href="#contact">Get in touch <span>↗</span></a>@if(!string.IsNullOrWhiteSpace(profile.ResumeUrl)){<a class="button button-quiet" href="@profile.ResumeUrl" target="_blank" rel="noreferrer">Resume <span>↗</span></a>}</div>
-        <div class="social-row"><a href="@profile.GithubUrl" target="_blank" rel="noreferrer">GitHub ↗</a><a href="@profile.LinkedInUrl" target="_blank" rel="noreferrer">LinkedIn ↗</a><a href="mailto:@profile.Email">Email ↗</a>@if(!string.IsNullOrWhiteSpace(profile.WhatsAppUrl)){<a href="@profile.WhatsAppUrl" target="_blank" rel="noreferrer">WhatsApp ↗</a>}</div>
+        
+        <div class="hero-actions">
+            <a class="button button-primary" href="book-a-call">Book a call <span>↗</span></a>
+            <a class="button button-quiet" href="#work">Explore work <span>↘</span></a>
+            <a class="button button-quiet" href="#contact">Get in touch <span>↗</span></a>
+            @if (!string.IsNullOrWhiteSpace(profile.ResumeUrl))
+            {
+                <a class="button button-quiet" href="@profile.ResumeUrl" target="_blank" rel="noreferrer">Resume <span>↗</span></a>
+            }
+        </div>
+
+        <div class="social-row">
+            <a href="@profile.GithubUrl" target="_blank" rel="noreferrer">GitHub ↗</a>
+            <a href="@profile.LinkedInUrl" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+            <a href="mailto:@profile.Email">Email ↗</a>
+            @if (!string.IsNullOrWhiteSpace(profile.WhatsAppUrl))
+            {
+                <a href="@profile.WhatsAppUrl" target="_blank" rel="noreferrer">WhatsApp ↗</a>
+            }
+        </div>
+
+        <div class="proof-strip">
+            <div class="proof-item">
+                <span class="proof-metric">ASP.NET</span>
+                <span class="proof-label">Core &amp; C# Focus</span>
+            </div>
+            <div class="proof-item">
+                <span class="proof-metric">04</span>
+                <span class="proof-label">Documented Projects</span>
+            </div>
+            <div class="proof-item">
+                <span class="proof-metric">DEPI</span>
+                <span class="proof-label">Track Graduate</span>
+            </div>
+            <div class="proof-item">
+                <span class="proof-metric">B.Tech</span>
+                <span class="proof-label">Information Systems</span>
+            </div>
+        </div>
     </div>
-    <div class="hero-visual"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><svg class="flow-lines" viewBox="0 0 560 420" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="flowGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#91f7ed"/><stop offset=".55" stop-color="#d1edbd"/><stop offset="1" stop-color="#f3cf9e"/></linearGradient><filter id="flowGlow" x="-40%" y="-100%" width="180%" height="300%"><feGaussianBlur stdDeviation="2.8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path class="flow-track" d="M10 100 C125 42 157 152 267 112 S426 72 548 128"/><path class="flow-track" d="M12 214 C102 166 190 261 282 213 S432 167 548 220"/><path class="flow-track" d="M15 332 C128 268 173 374 290 328 S431 287 545 344"/><path class="flow-trail flow-trail-one" pathLength="1" d="M10 100 C125 42 157 152 267 112 S426 72 548 128"/><path class="flow-trail flow-trail-two" pathLength="1" d="M12 214 C102 166 190 261 282 213 S432 167 548 220"/><path class="flow-trail flow-trail-three" pathLength="1" d="M15 332 C128 268 173 374 290 328 S431 287 545 344"/><circle class="flow-node node-start" cx="10" cy="100" r="3"/><circle class="flow-node node-end" cx="548" cy="128" r="3"/><circle class="flow-node node-start" cx="12" cy="214" r="3"/><circle class="flow-node node-end" cx="548" cy="220" r="3"/><circle class="flow-node node-start" cx="15" cy="332" r="3"/><circle class="flow-node node-end" cx="545" cy="344" r="3"/></svg><div class="core-card"><div class="core-top"><span class="live-pulse"></span> SYSTEMS ONLINE <span class="core-dots">···</span></div><div class="core-glyph">{<span> }</span></div><div class="core-caption"><span>FOCUS</span><strong>ASP.NET developer<br />building for the web.</strong></div><div class="core-footer"><span>ASP.NET CORE</span><span>●</span><span>SQL SERVER</span></div></div><span class="float-tag tag-api">API design <b>↗</b></span><span class="float-tag tag-cloud">problem solver <b>✳</b></span><span class="float-tag tag-dotnet">.NET <b>✦</b></span><span class="visual-index">01 / 04</span></div>
-    <div class="hero-bottom"><span>SCROLL TO EXPLORE <span class="scroll-arrow">↓</span></span><span>BUILDING THINGS THAT MATTER, ONE REQUEST AT A TIME.</span><span>01 — 04</span></div>
+
+    <div class="hero-visual">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <svg class="flow-lines" viewBox="0 0 560 420" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+                <linearGradient id="flowGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#91f7ed" />
+                    <stop offset=".55" stop-color="#d1edbd" />
+                    <stop offset="1" stop-color="#f3cf9e" />
+                </linearGradient>
+                <filter id="flowGlow" x="-40%" y="-100%" width="180%" height="300%">
+                    <feGaussianBlur stdDeviation="2.8" result="blur" />
+                    <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+            </defs>
+            <path class="flow-track" d="M10 100 C125 42 157 152 267 112 S426 72 548 128" />
+            <path class="flow-track" d="M12 214 C102 166 190 261 282 213 S432 167 548 220" />
+            <path class="flow-track" d="M15 332 C128 268 173 374 290 328 S431 287 545 344" />
+            <path class="flow-trail flow-trail-one" pathLength="1" d="M10 100 C125 42 157 152 267 112 S426 72 548 128" />
+            <path class="flow-trail flow-trail-two" pathLength="1" d="M12 214 C102 166 190 261 282 213 S432 167 548 220" />
+            <path class="flow-trail flow-trail-three" pathLength="1" d="M15 332 C128 268 173 374 290 328 S431 287 545 344" />
+            <circle class="flow-node node-start" cx="10" cy="100" r="3" />
+            <circle class="flow-node node-end" cx="548" cy="128" r="3" />
+            <circle class="flow-node node-start" cx="12" cy="214" r="3" />
+            <circle class="flow-node node-end" cx="548" cy="220" r="3" />
+            <circle class="flow-node node-start" cx="15" cy="332" r="3" />
+            <circle class="flow-node node-end" cx="545" cy="344" r="3" />
+        </svg>
+        <div class="core-card">
+            <div class="core-top"><span class="live-pulse"></span> SYSTEMS ONLINE <span class="core-dots">···</span></div>
+            <div class="core-glyph">{<span> }</span></div>
+            <div class="core-caption"><span>FOCUS</span><strong>ASP.NET developer<br />building for the web.</strong></div>
+            <div class="core-footer"><span>ASP.NET CORE</span><span>●</span><span>SQL SERVER</span></div>
+        </div>
+        <span class="float-tag tag-api">API design <b>↗</b></span>
+        <span class="float-tag tag-cloud">problem solver <b>✳</b></span>
+        <span class="float-tag tag-dotnet">.NET <b>✦</b></span>
+        <span class="visual-index">01 / 04</span>
+    </div>
+    <div class="hero-bottom">
+        <span>SCROLL TO EXPLORE <span class="scroll-arrow">↓</span></span>
+        <span>BUILDING THINGS THAT MATTER, ONE REQUEST AT A TIME.</span>
+        <span>01 — 08</span>
+    </div>
 </section>
-<section class="section-wrap work-section" id="work"><div class="section-heading"><div><span class="section-kicker">01 / SELECTED WORK</span><h2>Proof in <em>practice.</em></h2></div><p>A selection of systems and products<br />designed to solve real problems.</p></div>
-    <div class="filters"><button class="filter-pill @(activeTag is null ? "active" : "")" @onclick="() => Filter(null)">All projects <span>@projects.Count</span></button>@foreach (var tag in projects.SelectMany(p => p.Tags).Distinct().Take(5)){<button class="filter-pill @(activeTag == tag ? "active" : "")" @onclick="() => Filter(tag)">@tag</button>}</div>
-    <div class="project-grid">@foreach (var project in VisibleProjects){<article class="project-card"><div class="project-art art-@Math.Abs(project.Slug.GetHashCode() % 4)">@if(!string.IsNullOrWhiteSpace(project.ImageUrl)){<div class="project-preview-frame"><div class="preview-chrome" aria-hidden="true"><span></span><span></span><span></span><i>@project.Title</i><b>LIVE PREVIEW</b></div><img class="project-cover" src="@ImageSource(project.ImageUrl)" alt="@(string.IsNullOrWhiteSpace(project.ImageAlt)?$"Preview of {project.Title}":project.ImageAlt)" loading="lazy" /></div>}else{<div class="art-window"><div class="window-top"><span></span><span></span><span></span><i>@project.Slug / overview</i></div><div class="window-content"><div class="code-line short"></div><div class="code-line"></div><div class="code-line medium"></div><div class="code-line accent"></div><div class="chart-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>}<span class="project-number">0@(projects.IndexOf(project)+1)</span></div><div class="project-info"><div><span class="project-label">@(project.Period.Length > 0 ? project.Period : project.Featured ? "FEATURED PROJECT" : "ENGINEERING PROJECT")</span><h3>@project.Title</h3></div><a class="round-link" href="projects/@project.Slug" aria-label="View @project.Title">↗</a></div><p class="project-description">@project.Description</p>@if(project.TechStack.Length>0){<div class="project-meta-group"><span class="meta-caption">TECH STACK</span><div class="tag-row">@foreach(var tech in project.TechStack){<span class="tech-tag">@tech</span>}</div></div>}<div class="project-meta-group"><span class="meta-caption">@(project.TechStack.Length>0?"PROJECT TOPICS":"TECH STACK")</span><div class="tag-row">@foreach(var tag in project.Tags){<button class="tech-tag" @onclick="() => Filter(tag)">@tag</button>}</div></div><div class="project-links"><a href="projects/@project.Slug">Project details <span>↗</span></a>@if (!string.IsNullOrWhiteSpace(project.GithubUrl)){<a href="@project.GithubUrl" target="_blank" rel="noreferrer">Source <span>↗</span></a>}</div></article>}</div>
+
+<section class="section-wrap work-section" id="work">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">01 / SELECTED WORK</span>
+            <h2>Proof in <em>practice.</em></h2>
+        </div>
+        <p>A selection of systems and products<br />designed to solve real problems.</p>
+    </div>
+    <div class="filters">
+        <button class="filter-pill @(activeTag is null ? "active" : "")" @onclick="() => Filter(null)">
+            All projects <span>@projects.Count</span>
+        </button>
+        @foreach (var tag in projects.SelectMany(p => p.Tags).Distinct().Take(5))
+        {
+            <button class="filter-pill @(activeTag == tag ? "active" : "")" @onclick="() => Filter(tag)">@tag</button>
+        }
+    </div>
+    <div class="project-grid">
+        @foreach (var project in VisibleProjects)
+        {
+            <article class="project-card">
+                <div class="project-art art-@Math.Abs(project.Slug.GetHashCode() % 4)">
+                    @if (!string.IsNullOrWhiteSpace(project.ImageUrl))
+                    {
+                        <div class="project-preview-frame">
+                            <div class="preview-chrome" aria-hidden="true">
+                                <span></span><span></span><span></span>
+                                <i>@project.Title</i>
+                                <b>LIVE PREVIEW</b>
+                            </div>
+                            <img class="project-cover" src="@ImageSource(project.ImageUrl)" alt="@(string.IsNullOrWhiteSpace(project.ImageAlt) ? $"Preview of {project.Title}" : project.ImageAlt)" loading="lazy" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="art-window">
+                            <div class="window-top"><span></span><span></span><span></span><i>@project.Slug / overview</i></div>
+                            <div class="window-content">
+                                <div class="code-line short"></div>
+                                <div class="code-line"></div>
+                                <div class="code-line medium"></div>
+                                <div class="code-line accent"></div>
+                                <div class="chart-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                            </div>
+                        </div>
+                    }
+                    <span class="project-number">0@(projects.IndexOf(project) + 1)</span>
+                </div>
+                <div class="project-info">
+                    <div>
+                        <span class="project-label">@(project.Period.Length > 0 ? project.Period : project.Featured ? "FEATURED PROJECT" : "ENGINEERING PROJECT")</span>
+                        <h3>@project.Title</h3>
+                    </div>
+                    <a class="round-link" href="projects/@project.Slug" aria-label="View @project.Title">↗</a>
+                </div>
+                <p class="project-description">@project.Description</p>
+                @if (project.TechStack.Length > 0)
+                {
+                    <div class="project-meta-group">
+                        <span class="meta-caption">TECH STACK</span>
+                        <div class="tag-row">
+                            @foreach (var tech in project.TechStack)
+                            {
+                                <span class="tech-tag">@tech</span>
+                            }
+                        </div>
+                    </div>
+                }
+                <div class="project-meta-group">
+                    <span class="meta-caption">@(project.TechStack.Length > 0 ? "PROJECT TOPICS" : "TECH STACK")</span>
+                    <div class="tag-row">
+                        @foreach (var tag in project.Tags)
+                        {
+                            <button class="tech-tag" @onclick="() => Filter(tag)">@tag</button>
+                        }
+                    </div>
+                </div>
+                <div class="project-links">
+                    <a href="projects/@project.Slug">Project details <span>↗</span></a>
+                    @if (!string.IsNullOrWhiteSpace(project.GithubUrl))
+                    {
+                        <a href="@project.GithubUrl" target="_blank" rel="noreferrer">Source <span>↗</span></a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(project.DemoUrl))
+                    {
+                        <a href="@project.DemoUrl" target="_blank" rel="noreferrer">Live demo <span>↗</span></a>
+                    }
+                </div>
+            </article>
+        }
+    </div>
 </section>
-<section class="section-wrap experience-section" id="experience"><div class="section-heading"><div><span class="section-kicker">02 / EXPERIENCE & EDUCATION</span><h2>A path of <em>steady growth.</em></h2></div><span class="section-side-note">From hands-on IT support to building ASP.NET projects.</span></div><div class="timeline">@foreach(var item in experience){<article class="timeline-item"><div class="timeline-date">@item.Period</div><div class="timeline-marker"><i></i></div><div class="timeline-content"><div class="timeline-title"><div><span class="timeline-type">@item.Type</span><h3>@item.Role</h3><p>@item.Company <span>·</span> @item.Location</p></div><span class="timeline-arrow">↗</span></div><ul>@foreach(var point in item.Highlights){<li>@point</li>}</ul><div class="tag-row">@foreach(var tech in item.Technologies){<span class="tech-tag">@tech</span>}</div></div></article>}</div></section>
-<section class="stack-band" id="skills"><div class="section-wrap stack-inner"><div class="stack-intro"><div><span class="section-kicker">03 / THE TOOLKIT</span><h2>Thoughtful tools.<br /><em>Solid foundations.</em></h2></div><p>Picking the right abstraction, and knowing when to leave it out.</p><span class="stack-index">A PRACTICAL STACK <i>·</i> @skills.Count SKILLS</span></div><div class="skill-categories">@foreach(var group in skills.GroupBy(s => s.Category)){<div class="skill-group"><div class="skill-group-heading"><h3><span>✳</span> @group.Key</h3><span class="skill-count">@group.Count().ToString("00")</span></div><div class="skill-list">@foreach(var skill in group){<span class="skill-chip">@skill.Name</span>}</div></div>}</div></div></section>
+
+<section class="section-wrap services-section" id="services">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">02 / SERVICES &amp; FOCUS</span>
+            <h2>What I can <em>help with.</em></h2>
+        </div>
+        <p>Full-stack ASP.NET Core engineering and database systems<br />grounded in verified project implementations.</p>
+    </div>
+    <div class="services-grid">
+        @foreach (var service in services)
+        {
+            <article class="service-card">
+                <div class="service-card-top">
+                    <span class="service-icon">@service.Icon</span>
+                    <span class="service-index">0@(services.IndexOf(service) + 1)</span>
+                </div>
+                <h3>@service.Title</h3>
+                <p class="service-description">@service.Description</p>
+                <div class="service-capabilities">
+                    <span class="meta-caption">CORE CAPABILITIES</span>
+                    <ul>
+                        @foreach (var cap in service.Capabilities)
+                        {
+                            <li>@cap</li>
+                        }
+                    </ul>
+                </div>
+                <div class="service-footer">
+                    @if (!string.IsNullOrWhiteSpace(service.ProjectSlug))
+                    {
+                        <a class="service-project-link" href="projects/@service.ProjectSlug">
+                            See in @service.ProjectTitle <span>↗</span>
+                        </a>
+                    }
+                    <a class="service-action-link" href="book-a-call">
+                        Discuss <span>↗</span>
+                    </a>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+<section class="section-wrap process-section" id="process">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">03 / HOW I WORK</span>
+            <h2>Engineering with <em>clarity.</em></h2>
+        </div>
+        <p>A transparent, disciplined approach to developing<br />dependable software from requirements to delivery.</p>
+    </div>
+    <div class="process-grid">
+        @foreach (var step in processSteps)
+        {
+            <div class="process-card">
+                <div class="process-step-num">@step.StepNumber</div>
+                <div class="process-step-body">
+                    <h3>@step.Title</h3>
+                    <p class="process-step-summary">@step.Summary</p>
+                    <p class="process-step-detail">@step.Detail</p>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="approach-banner">
+        <div class="approach-header">
+            <span class="section-kicker">TECHNICAL PRINCIPLES</span>
+            <h3>How I approach software engineering</h3>
+        </div>
+        <div class="approach-principles">
+            <div class="principle-item">
+                <div class="principle-tag">PRACTICAL ARCHITECTURE</div>
+                <strong>Separation of Concerns</strong>
+                <p>Clean division between presentation, business rules, and data access using MVC, repositories, and dependency injection.</p>
+            </div>
+            <div class="principle-item">
+                <div class="principle-tag">DATA INTEGRITY</div>
+                <strong>Structured Persistence</strong>
+                <p>Well-normalized SQL Server relational tables, clear foreign keys, and optimized Entity Framework Core queries.</p>
+            </div>
+            <div class="principle-item">
+                <div class="principle-tag">RESPONSIBLE DELIVERY</div>
+                <strong>Dependable Operation</strong>
+                <p>Error handling, secure authentication boundaries with ASP.NET Identity, responsive layouts, and readable documentation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-wrap about-section" id="about">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">04 / ABOUT IBRAHIM</span>
+            <h2>Problem solver. <em>Software builder.</em></h2>
+        </div>
+        <span class="section-side-note">Alexandria, Egypt · Open to remote &amp; on-site opportunities</span>
+    </div>
+    <div class="about-grid">
+        <div class="about-narrative">
+            <p class="about-lead">
+                I am a .NET and ASP.NET Core developer dedicated to building practical, reliable web applications. My foundation unites formal academic study with hands-on systems troubleshooting.
+            </p>
+            <p>
+                I graduated with a Bachelor of Technology in Information Systems from the Faculty of Management Technology and Information Systems (2020–2024). For our graduation project, my team built an AI-powered E-Learning platform with ASP.NET Core MVC, SQL Server, and conversational learning assistance, which earned an <strong>Excellent</strong> evaluation.
+            </p>
+            <p>
+                Before focusing fully on software engineering, I spent nearly three years as a Technical Engineer at Support For Multi-Computer Service diagnosing complex computer hardware and software issues. That experience forged a methodical approach to troubleshooting, system stability, and user support that directly informs how I write code today.
+            </p>
+            <p>
+                I completed an intensive 6-month ASP.NET Development Track internship through the Digital Egypt Pioneers Initiative (DEPI), sharpening my skills in C#, Web APIs, and modern architecture. In the community, I have mentored students in competitive programming problem solving with the ECPC club at Port Said University.
+            </p>
+            <div class="about-actions">
+                <a class="button button-primary" href="#contact">Start a conversation <span>↗</span></a>
+                @if (!string.IsNullOrWhiteSpace(profile.ResumeUrl))
+                {
+                    <a class="button button-quiet" href="@profile.ResumeUrl" target="_blank" rel="noreferrer">View full resume <span>↗</span></a>
+                }
+            </div>
+        </div>
+        <div class="about-pillars">
+            <div class="pillar-card">
+                <span class="pillar-icon">✳</span>
+                <h4>Strong CS Foundations</h4>
+                <p>Disciplined in object-oriented programming, SOLID principles, algorithms, and data structures through academic training and competitive programming mentoring.</p>
+            </div>
+            <div class="pillar-card">
+                <span class="pillar-icon">✦</span>
+                <h4>End-to-End Execution</h4>
+                <p>Demonstrated capability delivering complete features: SQL Server database schemas, business logic, Stripe checkout, ASP.NET Identity, and responsive views.</p>
+            </div>
+            <div class="pillar-card">
+                <span class="pillar-icon">⌁</span>
+                <h4>Diagnostic Mindset</h4>
+                <p>Years of hands-on technical support mean I approach bugs and system failures methodically, writing resilient code that handles real-world edge cases.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-wrap experience-section" id="experience">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">05 / EXPERIENCE &amp; EDUCATION</span>
+            <h2>A path of <em>steady growth.</em></h2>
+        </div>
+        <span class="section-side-note">From hands-on IT support to building ASP.NET projects.</span>
+    </div>
+    <div class="timeline">
+        @foreach (var item in experience)
+        {
+            <article class="timeline-item">
+                <div class="timeline-date">@item.Period</div>
+                <div class="timeline-marker"><i></i></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">
+                        <div>
+                            <span class="timeline-type">@item.Type</span>
+                            <h3>@item.Role</h3>
+                            <p>@item.Company <span>·</span> @item.Location</p>
+                        </div>
+                        <span class="timeline-arrow">↗</span>
+                    </div>
+                    <ul>
+                        @foreach (var point in item.Highlights)
+                        {
+                            <li>@point</li>
+                        }
+                    </ul>
+                    <div class="tag-row">
+                        @foreach (var tech in item.Technologies)
+                        {
+                            <span class="tech-tag">@tech</span>
+                        }
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+<section class="stack-band" id="skills">
+    <div class="section-wrap stack-inner">
+        <div class="stack-intro">
+            <div>
+                <span class="section-kicker">06 / THE TOOLKIT</span>
+                <h2>Thoughtful tools.<br /><em>Solid foundations.</em></h2>
+            </div>
+            <p>Picking the right abstraction, and knowing when to leave it out.</p>
+            <span class="stack-index">A PRACTICAL STACK <i>·</i> @skills.Count SKILLS</span>
+        </div>
+        <div class="skill-categories">
+            @foreach (var group in skills.GroupBy(s => s.Category))
+            {
+                <div class="skill-group">
+                    <div class="skill-group-heading">
+                        <h3><span>✳</span> @group.Key</h3>
+                        <span class="skill-count">@group.Count().ToString("00")</span>
+                    </div>
+                    <div class="skill-list">
+                        @foreach (var skill in group)
+                        {
+                            <span class="skill-chip">@skill.Name</span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@if (testimonials.Count > 0)
+{
+    <section class="section-wrap testimonials-section" id="testimonials">
+        <div class="section-heading">
+            <div>
+                <span class="section-kicker">FEEDBACK</span>
+                <h2>What collaborators <em>say.</em></h2>
+            </div>
+        </div>
+        <div class="testimonials-grid">
+            @foreach (var testimonial in testimonials)
+            {
+                <article class="testimonial-card">
+                    <p class="testimonial-quote">“@testimonial.Quote”</p>
+                    <div class="testimonial-meta">
+                        <strong>@testimonial.Author</strong>
+                        <span>@testimonial.Role · @testimonial.Company</span>
+                    </div>
+                </article>
+            }
+        </div>
+    </section>
+}
+
+<section class="section-wrap faq-section" id="faq">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">07 / FREQUENTLY ASKED QUESTIONS</span>
+            <h2>Common questions, <em>clear answers.</em></h2>
+        </div>
+        <p>Quick answers regarding technology stack, project types,<br />and engagement availability.</p>
+    </div>
+    <div class="faq-grid">
+        @foreach (var faq in faqs)
+        {
+            <details class="faq-accordion-item">
+                <summary>
+                    <span class="faq-category">@faq.Category</span>
+                    <span class="faq-question-text">@faq.Question</span>
+                    <span class="faq-toggle" aria-hidden="true">+</span>
+                </summary>
+                <div class="faq-answer">
+                    <p>@faq.Answer</p>
+                </div>
+            </details>
+        }
+    </div>
+</section>
+
 <section class="section-wrap contact-section" id="contact">
     <div class="contact-heading">
-        <span class="section-kicker">04 / START A CONVERSATION</span>
+        <span class="section-kicker">08 / START A CONVERSATION</span>
         <span class="contact-availability"><i></i> OPEN TO GOOD WORK</span>
     </div>
     <div class="contact-layout">
         <svg class="contact-flow" viewBox="0 0 1000 360" preserveAspectRatio="none" aria-hidden="true">
-            <defs><linearGradient id="contactFlowGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8ef1e8"/><stop offset=".55" stop-color="#c7f36b"/><stop offset="1" stop-color="#ecc998"/></linearGradient><filter id="contactFlowGlow" x="-20%" y="-100%" width="140%" height="300%"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+            <defs>
+                <linearGradient id="contactFlowGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#8ef1e8" />
+                    <stop offset=".55" stop-color="#c7f36b" />
+                    <stop offset="1" stop-color="#ecc998" />
+                </linearGradient>
+                <filter id="contactFlowGlow" x="-20%" y="-100%" width="140%" height="300%">
+                    <feGaussianBlur stdDeviation="2.5" result="blur" />
+                    <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+            </defs>
             <path class="contact-flow-track" d="M0 183 C180 183 204 183 330 183 S480 183 550 183 S780 183 1000 183" />
             <path class="contact-flow-trail" d="M0 183 C180 183 204 183 330 183 S480 183 550 183 S780 183 1000 183" />
-            <circle class="contact-flow-node" cx="4" cy="183" r="3"/><circle class="contact-flow-node contact-flow-node-end" cx="996" cy="183" r="3"/>
+            <circle class="contact-flow-node" cx="4" cy="183" r="3" />
+            <circle class="contact-flow-node contact-flow-node-end" cx="996" cy="183" r="3" />
         </svg>
         <div class="contact-copy">
             <h2>Have a good<br />problem? <em>Let's talk.</em></h2>
-            <p>Have a role, a product challenge, or an interesting idea? My inbox is open.</p>
+            <p>Have a role, a product challenge, or an interesting engineering problem? My inbox is open.</p>
+            
+            <div class="contact-prep-hint">
+                <span class="prep-hint-title">💡 TO HELP ME RESPOND EFFECTIVELY</span>
+                <p>Include your role or project scope, target timeline, and any relevant links or documentation.</p>
+            </div>
+
+            <div class="contact-booking-callout">
+                <span>LOOKING TO SCHEDULE A DISCUSSION?</span>
+                <a class="button button-primary" href="book-a-call">Book a call <span>↗</span></a>
+            </div>
+
             <div class="contact-methods">
                 <a class="contact-method" href="mailto:@profile.Email"><span class="contact-method-icon">↗</span><span><small>EMAIL ME</small><strong>@profile.Email</strong></span><span class="contact-method-arrow">↗</span></a>
-                @if(!string.IsNullOrWhiteSpace(profile.Phone)){
+                @if (!string.IsNullOrWhiteSpace(profile.Phone))
+                {
                     <a class="contact-method" href="tel:@profile.Phone"><span class="contact-method-icon">⌁</span><span><small>GIVE ME A CALL</small><strong>@profile.Phone</strong></span><span class="contact-method-arrow">↗</span></a>
                 }
-                @if(!string.IsNullOrWhiteSpace(profile.WhatsAppUrl)){
+                @if (!string.IsNullOrWhiteSpace(profile.WhatsAppUrl))
+                {
                     <a class="contact-method" href="@profile.WhatsAppUrl" target="_blank" rel="noreferrer"><span class="contact-method-icon">◉</span><span><small>WHATSAPP</small><strong>Message me directly</strong></span><span class="contact-method-arrow">↗</span></a>
                 }
             </div>
         </div>
         <div class="contact-card">
             <div class="contact-card-top"><span><i></i> QUICK MESSAGE</span><span>✳</span></div>
-            @if(!string.IsNullOrWhiteSpace(profile.FormspreeEndpoint)){
-                <form action="@profile.FormspreeEndpoint" method="POST"><label>Your name<input name="name" required placeholder="Jane Smith" /></label><label>Email address<input name="email" type="email" required placeholder="jane@company.com" /></label><label>What’s on your mind?<textarea name="message" required rows="3" placeholder="Tell me a little about it..."></textarea></label><button class="button button-primary" type="submit">Send message <span>↗</span></button></form>
-            }else{
-                <p class="form-note">A direct email works just as well. Configure a Formspree endpoint in <code>wwwroot/data/profile.json</code> to enable this form.</p><a class="button button-primary" href="mailto:@profile.Email">Send an email <span>↗</span></a>
+            @if (!string.IsNullOrWhiteSpace(profile.FormspreeEndpoint))
+            {
+                <form action="@profile.FormspreeEndpoint" method="POST">
+                    <label>Your name<input name="name" required placeholder="Jane Smith" /></label>
+                    <label>Email address<input name="email" type="email" required placeholder="jane@company.com" /></label>
+                    <label>What’s on your mind?<textarea name="message" required rows="3" placeholder="Tell me a little about it..."></textarea></label>
+                    <button class="button button-primary" type="submit">Send message <span>↗</span></button>
+                </form>
+            }
+            else
+            {
+                <p class="form-note">A direct email works just as well. Configure a Formspree endpoint in <code>wwwroot/data/profile.json</code> to enable this form.</p>
+                <a class="button button-primary" href="mailto:@profile.Email">Send an email <span>↗</span></a>
             }
             <div class="contact-card-footer"><span>USUALLY REPLIES WITHIN 1–2 DAYS</span><span>01 <i>—</i> 02</span></div>
         </div>
     </div>
 </section>
+
 @code {
-    private Profile profile = new(); private List<Project> projects = []; private List<Experience> experience = []; private List<Skill> skills = []; private string? activeTag; private bool contentReady; private bool initialHashHandled;
+    private Profile profile = new();
+    private List<Project> projects = [];
+    private List<ServiceItem> services = [];
+    private List<ProcessStep> processSteps = [];
+    private List<Experience> experience = [];
+    private List<Skill> skills = [];
+    private List<FaqItem> faqs = [];
+    private List<Testimonial> testimonials = [];
+    private string? activeTag;
+    private bool contentReady;
+    private bool initialHashHandled;
+
     private IEnumerable<Project> VisibleProjects => activeTag is null ? projects : projects.Where(p => p.Tags.Contains(activeTag));
-    protected override async Task OnInitializedAsync(){profile=await Content.GetProfileAsync();projects=await Content.GetProjectsAsync();experience=await Content.GetExperienceAsync();skills=await Content.GetSkillsAsync();contentReady=true;}
-    protected override async Task OnAfterRenderAsync(bool firstRender){if(!contentReady||initialHashHandled)return;initialHashHandled=true;await JS.InvokeVoidAsync("portfolioScrollToHash");}
-    private void Filter(string? tag)=>activeTag=activeTag==tag?null:tag;
+
+    protected override async Task OnInitializedAsync()
+    {
+        profile = await Content.GetProfileAsync();
+        projects = await Content.GetProjectsAsync();
+        services = await Content.GetServicesAsync();
+        processSteps = await Content.GetProcessStepsAsync();
+        experience = await Content.GetExperienceAsync();
+        skills = await Content.GetSkillsAsync();
+        faqs = await Content.GetFaqsAsync();
+        testimonials = await Content.GetTestimonialsAsync();
+        contentReady = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!contentReady || initialHashHandled) return;
+        initialHashHandled = true;
+        await JS.InvokeVoidAsync("portfolioScrollToHash");
+    }
+
+    private void Filter(string? tag) => activeTag = activeTag == tag ? null : tag;
     private string ImageSource(string imageUrl) => Uri.TryCreate(imageUrl, UriKind.Absolute, out _) ? imageUrl : new Uri(new Uri(Nav.BaseUri), imageUrl.TrimStart('/')).ToString();
 }

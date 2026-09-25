@@ -1,0 +1,54 @@
+[
+  {
+    "title": "ASP.NET Core Web Applications",
+    "description": "Full-stack web applications built with ASP.NET Core MVC, Razor views, and Microsoft SQL Server, structured with clean architecture principles and maintainable code.",
+    "capabilities": [
+      "Layered MVC architecture and separation of concerns",
+      "User authentication and role management via ASP.NET Identity",
+      "Relational data modeling with Entity Framework Core",
+      "Responsive, accessible UI with Bootstrap and modern CSS"
+    ],
+    "projectSlug": "tech-xpress",
+    "projectTitle": "Tech Xpress",
+    "icon": "✦"
+  },
+  {
+    "title": "RESTful APIs & Backend Architecture",
+    "description": "Secure, efficient backend web APIs built with C# and ASP.NET Core, engineered for reliable data flow and clear integration with client applications.",
+    "capabilities": [
+      "Repository and Unit of Work design patterns",
+      "Structured JSON endpoints with model validation",
+      "SQL Server database queries and Transact-SQL procedures",
+      "Error handling, logging, and environment configuration"
+    ],
+    "projectSlug": "ai-elearning-platform",
+    "projectTitle": "AI E-Learning Platform",
+    "icon": "⌁"
+  },
+  {
+    "title": "E-Commerce & Business Workflows",
+    "description": "Practical e-commerce platforms and business management features designed to support smooth user journeys, product discovery, and transactions.",
+    "capabilities": [
+      "Product catalog navigation, filtering, and search",
+      "Shopping cart management and checkout workflows",
+      "Stripe payment gateway integration",
+      "Administrative tools for product and category management"
+    ],
+    "projectSlug": "tech-xpress",
+    "projectTitle": "Tech Xpress",
+    "icon": "↗"
+  },
+  {
+    "title": "Responsive Web Platforms & CMS Solutions",
+    "description": "Cross-device web platforms, multilingual content systems, and professional client websites with solid front-end foundations and clear communication paths.",
+    "capabilities": [
+      "Multilingual website architecture and dynamic category filtering",
+      "Administrative content publishing and community hubs",
+      "Contact integrations with Formspree and direct communication channels",
+      "Mobile-first responsive design and cross-browser consistency"
+    ],
+    "projectSlug": "rawafid",
+    "projectTitle": "Rawafid",
+    "icon": "✳"
+  }
+]

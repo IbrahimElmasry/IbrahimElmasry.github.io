@@ -15,4 +15,7 @@ public sealed class Profile
     public string SecondaryPhone { get; set; } = "";
     public string ResumeUrl { get; set; } = "";
     public string FormspreeEndpoint { get; set; } = "";
+    public string BookingUrl { get; set; } = "";
+    public string BookingDuration { get; set; } = "";
+    public string BookingFormat { get; set; } = "";
 }

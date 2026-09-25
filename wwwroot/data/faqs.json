@@ -1,0 +1,27 @@
+[
+  {
+    "question": "What types of applications and systems do you build?",
+    "answer": "I specialize in ASP.NET Core web applications, RESTful APIs, relational database backends with SQL Server, e-commerce storefronts with payment checkout, and responsive web platforms. My work ranges from complete web systems like Tech Xpress and the AI E-Learning platform to client CMS solutions like Rawafid.",
+    "category": "Expertise"
+  },
+  {
+    "question": "What is your primary technology stack?",
+    "answer": "My primary stack centers on C#, .NET 8, ASP.NET Core (MVC & Web API), Entity Framework Core, and Microsoft SQL Server. On the frontend, I build responsive user interfaces with HTML5, CSS3, JavaScript, Bootstrap, jQuery, and Blazor WebAssembly.",
+    "category": "Tech Stack"
+  },
+  {
+    "question": "What kinds of roles or collaborations are you open to?",
+    "answer": "I am open to full-time junior to mid-level ASP.NET Core developer roles, contract engagements, and selective freelance projects. I am based in Alexandria, Egypt and available for remote positions, local opportunities, or relocation.",
+    "category": "Availability"
+  },
+  {
+    "question": "Can you work with existing databases or legacy systems?",
+    "answer": "Yes. My technical background includes hands-on hardware/software troubleshooting at Multi-Computer Service, writing Transact-SQL queries, and structuring Entity Framework Core models over existing schemas. I can analyze existing codebases and build new features or modernizations safely.",
+    "category": "Engineering"
+  },
+  {
+    "question": "How do we get started or discuss an opportunity?",
+    "answer": "You can reach out directly via email at ibrahimtarek1965@outlook.com, call or WhatsApp at +201019804919, or send a message through the contact form on this site. If calendar booking is enabled, you can also schedule a discussion through the Book a Call page.",
+    "category": "Communication"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "stepNumber": "01",
+    "title": "Understand & Scope",
+    "summary": "Clarifying the core problem, user expectations, and functional requirements before writing any code.",
+    "detail": "Review requirements, identify edge cases, define data models, and align on deliverables and tech stack constraints."
+  },
+  {
+    "stepNumber": "02",
+    "title": "Architecture & Schema Design",
+    "summary": "Structuring database relationships and application layers for reliability and future maintainability.",
+    "detail": "Design relational tables in SQL Server, establish Entity Framework Core mappings, and organize projects into clear domain, data, and presentation layers."
+  },
+  {
+    "stepNumber": "03",
+    "title": "Build & Implement",
+    "summary": "Developing type-safe C# backend logic, secure endpoints, and responsive user interfaces.",
+    "detail": "Implement controllers, business services, authentication flows with ASP.NET Identity, and accessible front-end views using Bootstrap and JavaScript."
+  },
+  {
+    "stepNumber": "04",
+    "title": "Test & Refine",
+    "summary": "Validating behavior across typical and edge cases to ensure dependable operation.",
+    "detail": "Test business logic, verify database migrations and transactional operations, check mobile responsiveness, and polish input validation."
+  },
+  {
+    "stepNumber": "05",
+    "title": "Deliver & Document",
+    "summary": "Handing over working software with clear configuration instructions and readable code structure.",
+    "detail": "Provide clean Git history, document setup and environment settings, and ensure straightforward deployment."
+  }
+]

@@ -1,0 +1,217 @@
+@page "/book-a-call"
+@inject ContentService Content
+@inject NavigationManager Nav
+
+<PageTitle>Book a Call — @(profile.Name.Length > 0 ? profile.Name : "Ibrahim Tarek")</PageTitle>
+
+<section class="section-wrap book-call-page">
+    <a class="back-link" href="@Nav.BaseUri">← Back to portfolio</a>
+    
+    <div class="booking-header">
+        <span class="section-kicker">SCHEDULE A DISCUSSION / APPOINTMENT BOOKING</span>
+        <h1>Book a call<span class="gradient-title">.</span></h1>
+        <p class="detail-lead">
+            An introductory technical discussion to review ASP.NET Core project requirements, software architecture, technical collaboration, or engineering role opportunities.
+        </p>
+    </div>
+
+    <div class="booking-grid">
+        <aside class="booking-overview-col">
+            <div class="booking-card">
+                <span class="card-kicker">WHAT TO EXPECT</span>
+                <h3>What we will cover</h3>
+                <ul class="booking-checklist">
+                    <li>
+                        <strong>Requirements &amp; Scope Review</strong>
+                        <span>Review your product goals, technical specifications, or engineering role requirements.</span>
+                    </li>
+                    <li>
+                        <strong>Architecture &amp; Tech Stack Fit</strong>
+                        <span>Examine how ASP.NET Core, C#, Entity Framework Core, and SQL Server fit your needs.</span>
+                    </li>
+                    <li>
+                        <strong>Actionable Next Steps</strong>
+                        <span>Establish concrete paths forward for development, collaboration, or recruitment.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="booking-card">
+                <span class="card-kicker">PREPARATION GUIDANCE</span>
+                <h3>To make the most of our time</h3>
+                <ol class="booking-prep-list">
+                    <li><strong>Project or Role Summary:</strong> A concise outline of what you are building or hiring for.</li>
+                    <li><strong>Links or Documentation:</strong> Any existing repository, architecture diagram, or specifications doc.</li>
+                    <li><strong>Core Questions:</strong> Specific technical questions, deliverables, or target timeline expectations.</li>
+                </ol>
+            </div>
+
+            <div class="booking-card format-card">
+                <span class="card-kicker">FORMAT &amp; DETAILS</span>
+                <div class="format-items">
+                    <div class="format-item">
+                        <span class="format-label">LOCATION &amp; TIME ZONE</span>
+                        <strong>Alexandria, Egypt (EET / UTC+2)</strong>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(profile.BookingDuration))
+                    {
+                        <div class="format-item">
+                            <span class="format-label">CALL DURATION</span>
+                            <strong>@profile.BookingDuration</strong>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(profile.BookingFormat))
+                    {
+                        <div class="format-item">
+                            <span class="format-label">MEETING FORMAT</span>
+                            <strong>@profile.BookingFormat</strong>
+                        </div>
+                    }
+                    <div class="format-item">
+                        <span class="format-label">CALENDAR CONFIRMATION</span>
+                        <strong>Automatic calendar invite with Google Meet link upon slot selection</strong>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="booking-scheduler-col">
+            @if (!string.IsNullOrWhiteSpace(profile.BookingUrl))
+            {
+                <div class="scheduler-card">
+                    <div class="scheduler-header">
+                        <span class="scheduler-status"><i></i> SELECT AN AVAILABLE TIME SLOT</span>
+                        <a class="button button-quiet button-sm" href="@profile.BookingUrl" target="_blank" rel="noopener noreferrer">
+                            Open full page ↗
+                        </a>
+                    </div>
+                    
+                    <p class="scheduler-instruction">
+                        Select an available date on the calendar below, choose your preferred time slot, and enter your details to receive an instant calendar invitation and Google Meet link.
+                    </p>
+
+                    <div class="scheduler-frame-wrap">
+                        <iframe src="@EmbedUrl"
+                                title="Select an appointment date and time slot"
+                                class="scheduler-frame"
+                                loading="lazy"
+                                scrolling="no"
+                                allow="camera; microphone; fullscreen; payment"></iframe>
+                    </div>
+
+                    <div class="scheduler-fallback">
+                        <div class="fallback-text">
+                            <strong>Prefer full screen or having display issues?</strong>
+                            <p>You can also open the appointment schedule directly on Google Calendar:</p>
+                        </div>
+                        <a class="button button-primary" href="@profile.BookingUrl" target="_blank" rel="noopener noreferrer">
+                            Choose time on Google Calendar <span>↗</span>
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="scheduler-card scheduler-pending">
+                    <div class="scheduler-header">
+                        <span class="scheduler-status status-pending"><i></i> AWAITING SCHEDULER EVENT URL</span>
+                        <span class="scheduler-badge">SETUP REQUIRED</span>
+                    </div>
+                    <div class="pending-body">
+                        <h3>Appointment Scheduler Connection</h3>
+                        <p>
+                            This booking system is built to embed a live scheduling provider (such as <strong>Google Calendar</strong>, <strong>Cal.com</strong>, or <strong>Calendly</strong>) so visitors can view real-time availability, select a time slot, and automatically receive calendar invitations and confirmations.
+                        </p>
+                        
+                        <div class="setup-notice-box">
+                            <strong>To activate live appointment booking:</strong>
+                            <p>
+                                Supply your public scheduling event URL in <code>wwwroot/data/profile.json</code> under the <code>"bookingUrl"</code> property.
+                            </p>
+                        </div>
+
+                        <div class="pending-fallback-contact">
+                            <span>In the meantime, you can reach Ibrahim directly to arrange a meeting:</span>
+                            <div class="direct-booking-actions">
+                                <a class="button button-quiet" href="mailto:@profile.Email?subject=Schedule%20a%20Technical%20Discussion">
+                                    Email Ibrahim <span>↗</span>
+                                </a>
+                                @if (!string.IsNullOrWhiteSpace(profile.WhatsAppUrl))
+                                {
+                                    <a class="button button-quiet" href="@profile.WhatsAppUrl" target="_blank" rel="noreferrer">
+                                        Message on WhatsApp <span>↗</span>
+                                    </a>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(profile.Phone))
+                                {
+                                    <a class="button button-quiet" href="tel:@profile.Phone">
+                                        Call @profile.Phone <span>⌁</span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </main>
+    </div>
+
+    <div class="booking-bottom-section">
+        <div class="booking-faq-card">
+            <span class="card-kicker">COMMUNICATION FAQS</span>
+            <h3>Frequently asked questions</h3>
+            <div class="booking-faq-list">
+                <details class="booking-faq-item">
+                    <summary>Can we discuss the project over email first?</summary>
+                    <p>Yes. If you prefer to share specifications, architecture questions, or role details asynchronously before scheduling a call, write directly to <a href="mailto:@profile.Email">@profile.Email</a>.</p>
+                </details>
+                <details class="booking-faq-item">
+                    <summary>What time zone are you in?</summary>
+                    <p>I am based in Alexandria, Egypt (Eastern European Time, UTC+2 / UTC+3 in daylight saving). Meetings can be arranged across European, Middle Eastern, and US-compatible hours.</p>
+                </details>
+                <details class="booking-faq-item">
+                    <summary>Who is this call intended for?</summary>
+                    <p>Recruiters, engineering managers, tech leads, founders, and business owners looking for ASP.NET Core development, API engineering, or technical consultation.</p>
+                </details>
+            </div>
+        </div>
+
+        <div class="booking-closing-card">
+            <div>
+                <span class="card-kicker">PREFER A DIRECT MESSAGE?</span>
+                <strong>Have a quick question or prefer writing first?</strong>
+                <p>You can also use the contact form on the home page or send an email directly to @profile.Email.</p>
+            </div>
+            <div class="closing-cta-actions">
+                <a class="button button-primary" href="@($"{Nav.BaseUri}#contact")">Go to contact form <span>↗</span></a>
+                <a class="button button-quiet" href="mailto:@profile.Email">Email directly <span>↗</span></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+    private Profile profile = new();
+
+    private string EmbedUrl
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(profile.BookingUrl)) return "";
+            if (profile.BookingUrl.Contains("calendar.app.google/Rfi2iSDSt9Fq3xef6"))
+            {
+                return "https://calendar.google.com/calendar/appointments/schedules/AcZssZ1zN1VL08TP9FNoAPDxht2HH7_qxVRbGKaUoX59JF0jYYPl7wlUh8kAGkSQsadcOTQAZFmlczRs";
+            }
+            if (profile.BookingUrl.Contains("calendar.google.com/appointments/schedules/"))
+            {
+                return profile.BookingUrl.Replace("calendar.google.com/appointments/schedules/", "calendar.google.com/calendar/appointments/schedules/");
+            }
+            return profile.BookingUrl;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        profile = await Content.GetProfileAsync();
+    }
+}
