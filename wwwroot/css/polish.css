@@ -2965,6 +2965,11 @@
 }
 
 /* Mobile & Tablet Layout Protection */
+html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+}
+
 @media (max-width: 900px) {
     .site-shell {
         max-width: 100% !important;
@@ -2985,9 +2990,10 @@
     .hero-visual {
         position: relative !important;
         width: 100% !important;
-        max-width: 360px !important;
-        margin: 10px auto 40px !important;
-        height: 330px !important;
+        max-width: 340px !important;
+        margin: 10px auto 35px !important;
+        height: 310px !important;
+        overflow: visible !important;
     }
     .hero .eyebrow {
         flex-wrap: wrap !important;
@@ -3003,6 +3009,64 @@
     .contact-layout {
         grid-template-columns: 1fr !important;
         gap: 28px !important;
+    }
+    .telemetry-wrap {
+        margin: 10px auto 35px !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-visual {
+        max-width: 300px !important;
+        height: 280px !important;
+        margin: 10px auto 25px !important;
+    }
+    .orbit-one {
+        width: 260px !important;
+        height: 180px !important;
+    }
+    .orbit-two {
+        width: 280px !important;
+        height: 210px !important;
+    }
+    .core-card {
+        width: 200px !important;
+        height: 235px !important;
+        transform: scale(0.85) rotate(2deg) !important;
+    }
+    .tag-api { top: 15px !important; left: -10px !important; }
+    .tag-cloud { right: -10px !important; top: 65px !important; }
+    .tag-dotnet { bottom: 25px !important; left: -5px !important; }
+}
+
+@media (max-width: 480px) {
+    .roi-stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .roi-field-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+    .probe-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+    .probe-action-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    .arch-layer-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+    }
+    .arch-rule-badge {
+        width: 100% !important;
+    }
+    .github-repos-grid {
+        grid-template-columns: 1fr !important;
     }
 }
 
