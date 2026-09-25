@@ -109,7 +109,13 @@
         allItems.Add(new("proj-wakeel", "El-Wakeel Website", "Corporate website with client showcase", "↗", "Case Studies", "Web", () => Nav.NavigateTo("projects/el-wakeel-website")));
         allItems.Add(new("proj-rawafid", "Rawafid Technology Hub", "IT services showcase & clean layout", "↗", "Case Studies", "Web", () => Nav.NavigateTo("projects/rawafid-website")));
 
-        // 3. Quick Actions
+        // 3. Interactive Architecture & Tools
+        allItems.Add(new("tool-arch", "Clean Architecture & CQRS Explorer", "Interactive 4-layer DDD & CQRS system blueprint", "🏗", "Architecture & Tools", "Interactive", () => NavigateTo("#process")));
+        allItems.Add(new("tool-recipes", "C# Production Recipe Vault", "Battle-tested code snippets (IExceptionHandler, EF Core, CQRS)", "📦", "Architecture & Tools", "C# Code", () => NavigateTo("#skills")));
+        allItems.Add(new("tool-roi", "Cloud & Migration ROI Calculator", "Calculate latency speedup and annual cloud savings", "💰", "Architecture & Tools", "Calculator", () => NavigateTo("#contact")));
+        allItems.Add(new("tool-telemetry", "Live Backend Telemetry Dashboard", "Simulated Kestrel, EF Core cache hit, and subsystem health", "⚡", "Architecture & Tools", "Live Metrics", () => NavigateTo("#work")));
+
+        // 4. Quick Actions
         allItems.Add(new("act-chat", "Ask Ibrahim AI Assistant", "Instant answers about stack, projects, and bio", "🤖", "Quick Actions", "Instant", async () => { Close(); await OnOpenChat.InvokeAsync(); }));
         allItems.Add(new("act-resume", "Preview Resume", "In-browser executive technical credentials", "📄", "Quick Actions", "Modal", async () => { Close(); await OnOpenResume.InvokeAsync(); }));
         allItems.Add(new("act-copy-email", "Copy Email Address", "ibrahem.elmasry.2001@gmail.com", "📋", "Quick Actions", "Clipboard", async () => { await CopyToClipboard("ibrahem.elmasry.2001@gmail.com"); Close(); }));

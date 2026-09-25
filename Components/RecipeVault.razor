@@ -1,0 +1,269 @@
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<div class="recipe-vault-card">
+    <div class="recipe-header">
+        <div class="recipe-badge">
+            <span class="recipe-dot"></span>
+            <span>PRODUCTION RECIPES</span>
+        </div>
+        <div class="recipe-title-group">
+            <h3>Battle-Tested <em>C# &amp; .NET Recipes</em></h3>
+            <p>Real-world patterns I write for production ASP.NET Core microservices, APIs, and high-load backends.</p>
+        </div>
+    </div>
+
+    <!-- Recipe Select Tabs -->
+    <div class="recipe-tabs" role="tablist">
+        @foreach (var recipe in Recipes)
+        {
+            <button type="button"
+                    class="recipe-tab-btn @(selectedRecipeId == recipe.Id ? "is-active" : "")"
+                    @onclick="() => SelectRecipe(recipe.Id)">
+                <span class="tab-category">@recipe.Category</span>
+                <span class="tab-title">@recipe.Title</span>
+            </button>
+        }
+    </div>
+
+    <!-- Active Recipe Content -->
+    <div class="recipe-content-wrap">
+        <div class="recipe-meta-row">
+            <div>
+                <span class="recipe-target">TARGET: <b>@CurrentRecipe.TargetFramework</b></span>
+                <span class="recipe-pattern">PATTERN: <b>@CurrentRecipe.PatternName</b></span>
+            </div>
+            <button type="button" class="button button-quiet recipe-copy-btn @(justCopied ? "is-copied" : "")" @onclick="CopyCodeToClipboard">
+                @if (justCopied)
+                {
+                    <span>✓ Copied to Clipboard</span>
+                }
+                else
+                {
+                    <span>📋 Copy C# Code</span>
+                }
+            </button>
+        </div>
+
+        <div class="recipe-code-frame">
+            <div class="recipe-code-chrome">
+                <span class="c-dot red"></span>
+                <span class="c-dot yellow"></span>
+                <span class="c-dot green"></span>
+                <i class="c-file">@CurrentRecipe.FileName</i>
+                <span class="c-lang">C#</span>
+            </div>
+            <pre class="recipe-code-pre"><code>@CurrentRecipe.CodeSnippet</code></pre>
+        </div>
+
+        <div class="recipe-explainer">
+            <div class="explainer-icon">💡</div>
+            <div class="explainer-text">
+                <strong>Why I use this in production:</strong>
+                <p>@CurrentRecipe.Rationale</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string selectedRecipeId = "exception-handler";
+    private bool justCopied = false;
+
+    private RecipeItem CurrentRecipe => Recipes.First(r => r.Id == selectedRecipeId);
+
+    private void SelectRecipe(string id)
+    {
+        selectedRecipeId = id;
+        justCopied = false;
+    }
+
+    private async Task CopyCodeToClipboard()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", CurrentRecipe.CodeSnippet);
+        justCopied = true;
+        StateHasChanged();
+        await Task.Delay(2200);
+        justCopied = false;
+        StateHasChanged();
+    }
+
+    public class RecipeItem
+    {
+        public string Id { get; set; } = "";
+        public string Category { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string TargetFramework { get; set; } = ".NET 8 / 9";
+        public string PatternName { get; set; } = "";
+        public string FileName { get; set; } = "";
+        public string CodeSnippet { get; set; } = "";
+        public string Rationale { get; set; } = "";
+    }
+
+    private List<RecipeItem> Recipes = new()
+    {
+        new RecipeItem
+        {
+            Id = "exception-handler",
+            Category = "RESILIENCE & HTTP",
+            Title = ".NET 8 IExceptionHandler",
+            TargetFramework = ".NET 8.0+",
+            PatternName = "Unified RFC 7807 ProblemDetails",
+            FileName = "GlobalExceptionHandler.cs",
+            Rationale = "Replaces custom error middleware boilerplate with the native .NET 8 IExceptionHandler interface. Standardizes errors according to RFC 7807, keeps internal stack traces secret in production, and integrates natively with ASP.NET Core telemetry.",
+            CodeSnippet = @"using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Portfolio.WebApi.Middleware;
+
+public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+{
+    public async ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext, 
+        Exception exception, 
+        CancellationToken cancellationToken)
+    {
+        logger.LogError(exception, ""Unhandled exception caught: {Message}"", exception.Message);
+
+        var (statusCode, title) = exception switch
+        {
+            ValidationException => (StatusCodes.Status400BadRequest, ""Validation Error""),
+            NotFoundException => (StatusCodes.Status404NotFound, ""Resource Not Found""),
+            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, ""Unauthorized""),
+            _ => (StatusCodes.Status500InternalServerError, ""An internal server error occurred."")
+        };
+
+        var problemDetails = new ProblemDetails
+        {
+            Status = statusCode,
+            Title = title,
+            Detail = exception.Message,
+            Instance = httpContext.Request.Path
+        };
+
+        httpContext.Response.StatusCode = statusCode;
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+        return true;
+    }
+}"
+        },
+        new RecipeItem
+        {
+            Id = "mediatr-validation",
+            Category = "CQRS PIPELINE",
+            Title = "MediatR Validation Pipeline",
+            TargetFramework = ".NET 8.0+",
+            PatternName = "Pipeline Behavior Decorator",
+            FileName = "ValidationBehavior.cs",
+            Rationale = "Intercepts every CQRS command before execution. Runs all registered FluentValidation rules concurrently. If any rule fails, execution halts before hitting domain logic, returning structured field errors automatically.",
+            CodeSnippet = @"using FluentValidation;
+using MediatR;
+
+namespace Portfolio.Application.Behaviors;
+
+public sealed class ValidationBehavior<TRequest, TResponse>(
+    IEnumerable<IValidator<TRequest>> validators) 
+    : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest<TResponse>
+{
+    public async Task<TResponse> Handle(
+        TRequest request, 
+        RequestHandlerDelegate<TResponse> next, 
+        CancellationToken cancellationToken)
+    {
+        if (!validators.Any()) return await next();
+
+        var context = new ValidationContext<TRequest>(request);
+        var validationResults = await Task.WhenAll(
+            validators.Select(v => v.ValidateAsync(context, cancellationToken)));
+
+        var failures = validationResults
+            .SelectMany(r => r.Errors)
+            .Where(f => f is not null)
+            .ToList();
+
+        if (failures.Count != 0)
+        {
+            throw new ValidationException(failures);
+        }
+
+        return await next();
+    }
+}"
+        },
+        new RecipeItem
+        {
+            Id = "efcore-split-query",
+            Category = "DATA ACCESS & EF CORE",
+            Title = "High-Throughput EF Core Query",
+            TargetFramework = ".NET 8.0+",
+            PatternName = "AsNoTracking + AsSplitQuery + Projection",
+            FileName = "OrderQueries.cs",
+            Rationale = "Eliminates Cartesian explosion on multi-collection 1-to-many joins using AsSplitQuery(). Using AsNoTracking() bypasses change-tracking overhead, slashing RAM allocations by up to 60% on high-traffic read operations.",
+            CodeSnippet = @"using Microsoft.EntityFrameworkCore;
+
+namespace Portfolio.Infrastructure.Persistence.Queries;
+
+public async Task<OrderDetailsDto?> GetOrderDetailsOptimizedAsync(
+    Guid orderId, 
+    AppDbContext db, 
+    CancellationToken ct)
+{
+    return await db.Orders
+        .AsNoTracking()
+        .AsSplitQuery() // Prevents Cartesian explosion on child items
+        .Where(o => o.Id == orderId)
+        .Select(o => new OrderDetailsDto
+        {
+            OrderId = o.Id,
+            CustomerName = o.Customer.FullName,
+            OrderDate = o.CreatedAtUtc,
+            TotalAmount = o.TotalAmount,
+            Items = o.Items.Select(i => new OrderItemDto
+            {
+                ProductId = i.ProductId,
+                ProductName = i.Product.Name,
+                UnitPrice = i.UnitPrice,
+                Quantity = i.Quantity
+            }).ToList()
+        })
+        .FirstOrDefaultAsync(ct);
+}"
+        },
+        new RecipeItem
+        {
+            Id = "rate-limiter",
+            Category = "SECURITY & TRAFFIC",
+            Title = "Sliding Window Rate Limiter",
+            TargetFramework = ".NET 8.0+",
+            PatternName = "Built-in Token Rate Limiting",
+            FileName = "RateLimitingExtensions.cs",
+            Rationale = "Hardens authentication and checkout endpoints against credential stuffing and DDoS attacks without external middleware dependencies, utilizing native ASP.NET Core rate limiting with partition key support.",
+            CodeSnippet = @"using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
+
+namespace Portfolio.WebApi.Extensions;
+
+public static class RateLimitingExtensions
+{
+    public static IServiceCollection AddAppRateLimiting(this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            
+            options.AddSlidingWindowLimiter(""api-strict"", limiterOptions =>
+            {
+                limiterOptions.PermitLimit = 60;
+                limiterOptions.Window = TimeSpan.FromMinutes(1);
+                limiterOptions.SegmentsPerWindow = 6;
+                limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                limiterOptions.QueueLimit = 5;
+            });
+        });
+
+        return services;
+    }
+}"
+        }
+    };
+}

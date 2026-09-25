@@ -1,0 +1,334 @@
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<div class="arch-explorer-card">
+    <div class="arch-header">
+        <div class="arch-badge">
+            <span class="arch-badge-dot"></span>
+            <span>CLEAN ARCHITECTURE &amp; CQRS</span>
+        </div>
+        <h3 class="arch-title">Enterprise System <em>Blueprint</em></h3>
+        <p class="arch-subtitle">
+            How I structure scalable, maintainable ASP.NET Core solutions using Clean Architecture, CQRS, and Domain-Driven Design principles.
+        </p>
+    </div>
+
+    <!-- Interactive Layer Selection Tabs -->
+    <div class="arch-layer-nav" role="tablist">
+        @foreach (var layer in Layers)
+        {
+            <button type="button"
+                    class="arch-layer-tab @(selectedLayerId == layer.Id ? "is-active" : "") @(simulatingLayerId == layer.Id ? "is-simulating" : "")"
+                    @onclick="() => SelectLayer(layer.Id)">
+                <span class="layer-pill" style="border-color: @layer.AccentColor; color: @layer.AccentColor">@layer.StepNumber</span>
+                <span class="layer-name">@layer.Name</span>
+                <span class="layer-indicator" style="background: @layer.AccentColor"></span>
+            </button>
+        }
+    </div>
+
+    <!-- Active Layer Deep Dive View -->
+    <div class="arch-body">
+        <div class="arch-main-col">
+            <div class="arch-layer-header">
+                <div class="arch-layer-title-wrap">
+                    <span class="arch-tier-pill" style="color: @CurrentLayer.AccentColor; border-color: @(CurrentLayer.AccentColor)44; background: @(CurrentLayer.AccentColor)14;">
+                        @CurrentLayer.Tier
+                    </span>
+                    <h4>@CurrentLayer.Name Layer</h4>
+                </div>
+                <div class="arch-rule-badge">
+                    <span>RULE:</span> @CurrentLayer.GoldenRule
+                </div>
+            </div>
+
+            <p class="arch-layer-desc">@CurrentLayer.Description</p>
+
+            <div class="arch-patterns-grid">
+                <div class="arch-block">
+                    <span class="arch-block-label">CORE RESPONSIBILITIES</span>
+                    <ul class="arch-list">
+                        @foreach (var resp in CurrentLayer.Responsibilities)
+                        {
+                            <li><span>▹</span> @resp</li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="arch-block">
+                    <span class="arch-block-label">DESIGN PATTERNS &amp; PRINCIPLES</span>
+                    <div class="arch-chips">
+                        @foreach (var pattern in CurrentLayer.DesignPatterns)
+                        {
+                            <span class="arch-chip">@pattern</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="arch-block arch-packages">
+                <span class="arch-block-label">ESSENTIAL PACKAGES &amp; TOOLS</span>
+                <div class="arch-packages-row">
+                    @foreach (var pkg in CurrentLayer.Packages)
+                    {
+                        <span class="arch-pkg-tag">
+                            <i class="pkg-icon">📦</i>
+                            <b>@pkg</b>
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="arch-side-col">
+            <div class="arch-tree-card">
+                <div class="tree-chrome">
+                    <span></span><span></span><span></span>
+                    <i>Solution Explorer: @CurrentLayer.ProjectName</i>
+                </div>
+                <div class="tree-content">
+                    <div class="tree-root">📁 @CurrentLayer.ProjectName</div>
+                    @foreach (var folder in CurrentLayer.FolderTree)
+                    {
+                        <div class="tree-item" style="padding-left: @(folder.Depth * 16)px">
+                            <span class="tree-icon">@(folder.IsFolder ? "📁" : "📄")</span>
+                            <span class="tree-name @(folder.IsHighlight ? "tree-highlight" : "")">@folder.Name</span>
+                            @if (!string.IsNullOrEmpty(folder.Comment))
+                            {
+                                <span class="tree-comment">// @folder.Comment</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="sim-runner">
+                <button type="button" class="button button-quiet sim-btn @(isSimulating ? "is-running" : "")" @onclick="SimulateRequestFlow" disabled="@isSimulating">
+                    @if (isSimulating)
+                    {
+                        <span class="sim-pulse"></span>
+                        <span>Tracing @simulationCurrentStepName...</span>
+                    }
+                    else
+                    {
+                        <span>⚡ Trace Request Lifecycle</span>
+                    }
+                </button>
+                <div class="sim-status-text">
+                    @if (isSimulating)
+                    {
+                        <span>Flow: <b>@simulationCurrentStepName</b></span>
+                    }
+                    else
+                    {
+                        <span>Click to animate request flow across the 4 layers</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string selectedLayerId = "domain";
+    private bool isSimulating = false;
+    private string? simulatingLayerId = null;
+    private string simulationCurrentStepName = "";
+
+    private LayerDefinition CurrentLayer => Layers.First(l => l.Id == selectedLayerId);
+
+    private void SelectLayer(string id)
+    {
+        if (!isSimulating)
+        {
+            selectedLayerId = id;
+        }
+    }
+
+    private async Task SimulateRequestFlow()
+    {
+        if (isSimulating) return;
+        isSimulating = true;
+
+        var flowOrder = new[]
+        {
+            ("api", "1/4 HTTP Request $\to$ Minimal API Endpoint"),
+            ("application", "2/4 MediatR Send $\to$ Validation Pipeline"),
+            ("domain", "3/4 Domain Entity Logic $\to$ Business Invariants"),
+            ("infra", "4/4 EF Core UnitOfWork $\to$ SQL Server Commit")
+        };
+
+        foreach (var step in flowOrder)
+        {
+            selectedLayerId = step.Item1;
+            simulatingLayerId = step.Item1;
+            simulationCurrentStepName = step.Item2;
+            StateHasChanged();
+            await Task.Delay(1300);
+        }
+
+        simulatingLayerId = null;
+        isSimulating = false;
+        simulationCurrentStepName = "Flow Completed: HTTP 201 Created (14ms)";
+        StateHasChanged();
+    }
+
+    public class TreeEntry
+    {
+        public int Depth { get; set; } = 1;
+        public bool IsFolder { get; set; } = true;
+        public string Name { get; set; } = "";
+        public string? Comment { get; set; }
+        public bool IsHighlight { get; set; }
+    }
+
+    public class LayerDefinition
+    {
+        public string Id { get; set; } = "";
+        public string StepNumber { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Tier { get; set; } = "";
+        public string AccentColor { get; set; } = "#c7f36b";
+        public string GoldenRule { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string ProjectName { get; set; } = "";
+        public List<string> Responsibilities { get; set; } = new();
+        public List<string> DesignPatterns { get; set; } = new();
+        public List<string> Packages { get; set; } = new();
+        public List<TreeEntry> FolderTree { get; set; } = new();
+    }
+
+    private List<LayerDefinition> Layers = new()
+    {
+        new LayerDefinition
+        {
+            Id = "domain",
+            StepNumber = "01",
+            Name = "Domain",
+            Tier = "CORE ENTERPRISE RULES",
+            AccentColor = "#c7f36b",
+            GoldenRule = "Zero external dependencies. Pure C# POCOs.",
+            Description = "The innermost core of the architecture. Encapsulates all fundamental business entities, value objects, and domain events. Completely isolated from databases, UI, and external frameworks.",
+            ProjectName = "Portfolio.Domain",
+            Responsibilities = new()
+            {
+                "Define business entities with private setters for strict encapsulation",
+                "Value Objects enforcing self-validation (e.g., Email, Money, PostalCode)",
+                "Domain Events notifying when critical state changes occur",
+                "Base Entity primitives (AggregateRoot, Entity<TId>, IAuditableEntity)"
+            },
+            DesignPatterns = new() { "Domain-Driven Design (DDD)", "Value Object Pattern", "Domain Events", "Entity Encapsulation", "Specification Pattern" },
+            Packages = new() { "System.Text.Json (POCO)", "No 3rd-party libs" },
+            FolderTree = new()
+            {
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Common" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "BaseEntity.cs" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "IAggregateRoot.cs" },
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Entities" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "Order.cs", Comment = "Rich domain model", IsHighlight = true },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "Customer.cs" },
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "ValueObjects" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "EmailAddress.cs", Comment = "Immutable" },
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Events" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "OrderCreatedDomainEvent.cs" }
+            }
+        },
+        new LayerDefinition
+        {
+            Id = "application",
+            StepNumber = "02",
+            Name = "Application",
+            Tier = "BUSINESS USE CASES",
+            AccentColor = "#8cefe3",
+            GoldenRule = "Depends only on Domain. Orchestrates CQRS use cases.",
+            Description = "Contains all application business logic and workflows. Commands mutate state, Queries retrieve read models. Validates incoming requests and coordinates domain entity interactions via MediatR.",
+            ProjectName = "Portfolio.Application",
+            Responsibilities = new()
+            {
+                "CQRS Command & Query separation with MediatR request handlers",
+                "Automated validation pipeline using FluentValidation before execution",
+                "Cross-cutting MediatR behaviors (Logging, Performance, UnhandledExceptions)",
+                "DTO projections mapping domain models to client-ready payloads"
+            },
+            DesignPatterns = new() { "CQRS Pattern", "Mediator Pattern", "Pipeline Behavior Decorator", "Result<T> Pattern", "Specification Pattern" },
+            Packages = new() { "MediatR", "FluentValidation.DependencyInjectionExtensions", "Mapster / AutoMapper", "Microsoft.Extensions.Logging" },
+            FolderTree = new()
+            {
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Behaviors" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "ValidationBehavior.cs", Comment = "Pipeline decorator", IsHighlight = true },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "LoggingBehavior.cs" },
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Features" },
+                new TreeEntry { Depth = 2, IsFolder = true, Name = "Orders" },
+                new TreeEntry { Depth = 3, IsFolder = true, Name = "Commands" },
+                new TreeEntry { Depth = 4, IsFolder = false, Name = "CreateOrderCommand.cs" },
+                new TreeEntry { Depth = 4, IsFolder = false, Name = "CreateOrderValidator.cs" },
+                new TreeEntry { Depth = 3, IsFolder = true, Name = "Queries" },
+                new TreeEntry { Depth = 4, IsFolder = false, Name = "GetOrderByIdQuery.cs" },
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Common" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "Result.cs", Comment = "Functional error pattern" }
+            }
+        },
+        new LayerDefinition
+        {
+            Id = "infra",
+            StepNumber = "03",
+            Name = "Infrastructure",
+            Tier = "EXTERNAL ADAPTERS & DATA",
+            AccentColor = "#a89cf9",
+            GoldenRule = "Implements interfaces declared in Application & Domain.",
+            Description = "Handles all external technologies and IO mechanisms. Communicates with SQL Server via EF Core, interacts with Redis caching, triggers emails via SendGrid, and executes background jobs.",
+            ProjectName = "Portfolio.Infrastructure",
+            Responsibilities = new()
+            {
+                "EF Core DbContext configuration with Fluent API schema mappings",
+                "Unit of Work and Repository concrete persistence implementations",
+                "Distributed Redis cache invalidation and distributed locking",
+                "Third-party integrations (Stripe payments, Email notifications, Identity)"
+            },
+            DesignPatterns = new() { "Repository Pattern", "Unit of Work", "Adapter Pattern", "Cache-Aside Pattern", "Outbox Pattern" },
+            Packages = new() { "Microsoft.EntityFrameworkCore.SqlServer", "Microsoft.Extensions.Caching.StackExchangeRedis", "Dapper", "AspNetCore.Identity" },
+            FolderTree = new()
+            {
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Persistence" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "AppDbContext.cs", Comment = "EF Core mappings", IsHighlight = true },
+                new TreeEntry { Depth = 2, IsFolder = true, Name = "Configurations" },
+                new TreeEntry { Depth = 3, IsFolder = false, Name = "OrderConfiguration.cs" },
+                new TreeEntry { Depth = 2, IsFolder = true, Name = "Repositories" },
+                new TreeEntry { Depth = 3, IsFolder = false, Name = "OrderRepository.cs" },
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Caching" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "RedisCacheService.cs" },
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Services" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "DateTimeProvider.cs" }
+            }
+        },
+        new LayerDefinition
+        {
+            Id = "api",
+            StepNumber = "04",
+            Name = "Web API / UI",
+            Tier = "ENTRY POINT & PRESENTATION",
+            AccentColor = "#f6c589",
+            GoldenRule = "Exposes HTTP endpoints. Configures DI, middleware, and auth.",
+            Description = "The application entry point. Configures ASP.NET Core Dependency Injection, middleware pipelines, JWT Bearer authentication, global exception handlers, and Minimal API routes or Controllers.",
+            ProjectName = "Portfolio.WebApi",
+            Responsibilities = new()
+            {
+                "Fast, typed Minimal API route endpoints with endpoint filters",
+                "Modern .NET 8 IExceptionHandler returning standard RFC 7807 ProblemDetails",
+                "JWT Token validation, authorization policies, and CORS headers",
+                "Swagger / OpenAPI documentation with XML summary doc generation"
+            },
+            DesignPatterns = new() { "Middleware Pipeline", "Dependency Injection", "Endpoint Filters", "API Versioning", "Rate Limiter" },
+            Packages = new() { "Swashbuckle.AspNetCore", "Microsoft.AspNetCore.Authentication.JwtBearer", "Serilog.AspNetCore", "AspNetCore.HealthChecks" },
+            FolderTree = new()
+            {
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Endpoints" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "OrderEndpoints.cs", Comment = "Typed Minimal API", IsHighlight = true },
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Middleware" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "GlobalExceptionHandler.cs", Comment = "IExceptionHandler" },
+                new TreeEntry { Depth = 1, IsFolder = true, Name = "Extensions" },
+                new TreeEntry { Depth = 2, IsFolder = false, Name = "MigrationExtensions.cs" },
+                new TreeEntry { Depth = 1, IsFolder = false, Name = "Program.cs", Comment = "Service registration" }
+            }
+        }
+    };
+}

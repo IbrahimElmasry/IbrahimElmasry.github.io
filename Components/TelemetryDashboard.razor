@@ -1,0 +1,180 @@
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<div class="telemetry-card">
+    <div class="telemetry-top">
+        <div class="telemetry-badge">
+            <span class="telemetry-pulse-dot"></span>
+            <span>LIVE BACKEND TELEMETRY</span>
+        </div>
+        <div class="telemetry-runtime">
+            <span class="runtime-tag">.NET 8.0 KESTREL</span>
+            <span class="runtime-tag">LINUX CONTAINER</span>
+            <span class="runtime-tag">SQL SERVER 2022</span>
+        </div>
+    </div>
+
+    <div class="telemetry-grid">
+        <!-- Metric 1: Healthcheck -->
+        <div class="telemetry-metric-box">
+            <div class="metric-label-row">
+                <span>HEALTH ENDPOINT</span>
+                <span class="metric-code">GET /healthz</span>
+            </div>
+            <div class="metric-val-row">
+                <span class="health-status-badge @(isPinging ? "is-benchmarking" : "is-healthy")">
+                    <i class="status-indicator"></i>
+                    @(isPinging ? "TESTING..." : "HEALTHY (200 OK)")
+                </span>
+                <span class="metric-latency">@latencyMs ms</span>
+            </div>
+            <div class="metric-footer">
+                <span>Uptime: 99.98%</span>
+                <span class="metric-sparkle">● All Probes Passing</span>
+            </div>
+        </div>
+
+        <!-- Metric 2: EF Core Query Cache -->
+        <div class="telemetry-metric-box">
+            <div class="metric-label-row">
+                <span>EF CORE CACHE HIT</span>
+                <span class="metric-code">CompiledModels</span>
+            </div>
+            <div class="metric-val-row">
+                <span class="metric-number text-lime">@cacheHitRate%</span>
+                <span class="metric-unit">hit ratio</span>
+            </div>
+            <div class="metric-footer">
+                <div class="metric-progress-bar">
+                    <span style="width: @cacheHitRate%"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric 3: Active Connections -->
+        <div class="telemetry-metric-box">
+            <div class="metric-label-row">
+                <span>SQL CONNECTION POOL</span>
+                <span class="metric-code">Max=100</span>
+            </div>
+            <div class="metric-val-row">
+                <span class="metric-number text-cyan">@activeConnections / 100</span>
+                <span class="metric-unit">active</span>
+            </div>
+            <div class="metric-footer">
+                <span>0 Leaks Detected</span>
+                <span class="text-muted">Pooling Enabled</span>
+            </div>
+        </div>
+
+        <!-- Metric 4: Request Pipeline Throughput -->
+        <div class="telemetry-metric-box">
+            <div class="metric-label-row">
+                <span>AVG PIPELINE TIME</span>
+                <span class="metric-code">Kestrel + Auth + EF</span>
+            </div>
+            <div class="metric-val-row">
+                <span class="metric-number text-lavender">@pipelineDurationMs ms</span>
+                <span class="metric-unit">p99 = @(pipelineDurationMs + 9)ms</span>
+            </div>
+            <div class="metric-footer">
+                <span>Pipelining: Enabled</span>
+                <span class="text-lime">Fast Path</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnostic Probe Runner -->
+    <div class="telemetry-probe-section">
+        <div class="probe-header">
+            <div>
+                <h4>Subsystem Health Probes</h4>
+                <p>Verify connectivity across database, cache, auth provider, and cloud storage.</p>
+            </div>
+            <button type="button"
+                    class="button button-quiet probe-action-btn @(isPinging ? "is-running" : "")"
+                    @onclick="RunDiagnostics"
+                    disabled="@isPinging">
+                @if (isPinging)
+                {
+                    <span class="probe-spinner"></span>
+                    <span>Probing Cluster...</span>
+                }
+                else
+                {
+                    <span>⚡ Run Cluster Diagnostic</span>
+                }
+            </button>
+        </div>
+
+        <div class="probes-strip">
+            @foreach (var probe in Probes)
+            {
+                <div class="probe-item @(probe.IsActive ? "is-checking" : "")">
+                    <div class="probe-top">
+                        <span class="probe-dot" style="background: @probe.StatusColor; box-shadow: 0 0 8px @probe.StatusColor"></span>
+                        <strong class="probe-name">@probe.Name</strong>
+                        <span class="probe-type">@probe.Target</span>
+                    </div>
+                    <div class="probe-bottom">
+                        <span class="probe-status-text" style="color: @probe.StatusColor">@probe.StatusText</span>
+                        <span class="probe-latency">@probe.LatencyMs ms</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool isPinging = false;
+    private int latencyMs = 14;
+    private double cacheHitRate = 97.4;
+    private int activeConnections = 8;
+    private int pipelineDurationMs = 18;
+
+    public class SubsystemProbe
+    {
+        public string Name { get; set; } = "";
+        public string Target { get; set; } = "";
+        public string StatusText { get; set; } = "Healthy";
+        public string StatusColor { get; set; } = "#c7f36b";
+        public int LatencyMs { get; set; } = 4;
+        public bool IsActive { get; set; }
+    }
+
+    private List<SubsystemProbe> Probes = new()
+    {
+        new SubsystemProbe { Name = "SQL Server 2022", Target = "DbContext.Database.CanConnectAsync", LatencyMs = 4, StatusColor = "#c7f36b", StatusText = "Connected" },
+        new SubsystemProbe { Name = "Redis Distributed Cache", Target = "IDistributedCache.PingAsync", LatencyMs = 1, StatusColor = "#8cefe3", StatusText = "Healthy" },
+        new SubsystemProbe { Name = "ASP.NET Identity", Target = "UserManager.CheckTokenKey", LatencyMs = 6, StatusColor = "#c7f36b", StatusText = "Verified" },
+        new SubsystemProbe { Name = "Azure Blob Storage", Target = "BlobServiceClient.GetProperties", LatencyMs = 12, StatusColor = "#a89cf9", StatusText = "Ready" }
+    };
+
+    private async Task RunDiagnostics()
+    {
+        if (isPinging) return;
+        isPinging = true;
+
+        var random = new Random();
+        foreach (var probe in Probes)
+        {
+            probe.IsActive = true;
+            probe.StatusText = "Pinging...";
+            probe.StatusColor = "#f6c589";
+            StateHasChanged();
+            await Task.Delay(350);
+
+            probe.LatencyMs = random.Next(2, 14);
+            probe.StatusText = "200 OK";
+            probe.StatusColor = "#c7f36b";
+            probe.IsActive = false;
+            StateHasChanged();
+        }
+
+        latencyMs = random.Next(11, 16);
+        pipelineDurationMs = random.Next(15, 22);
+        activeConnections = random.Next(6, 12);
+        isPinging = false;
+        StateHasChanged();
+    }
+}

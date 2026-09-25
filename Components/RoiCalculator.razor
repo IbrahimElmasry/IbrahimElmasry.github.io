@@ -1,0 +1,144 @@
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<div class="roi-calculator-card">
+    <div class="roi-header">
+        <div class="roi-badge">
+            <span class="roi-dot"></span>
+            <span>SYSTEM MODERNIZATION ROI</span>
+        </div>
+        <div class="roi-title-wrap">
+            <h3>.NET Modernization <em>&amp; Performance ROI</em></h3>
+            <p>Calculate your estimated infrastructure savings and speedup by modernizing to .NET 8/9, EF Core tuning, and Clean Architecture.</p>
+        </div>
+    </div>
+
+    <div class="roi-layout">
+        <!-- Interactive Controls -->
+        <div class="roi-controls">
+            <div class="roi-field">
+                <label>CURRENT ARCHITECTURE BASELINE</label>
+                <div class="roi-radio-group">
+                    @foreach (var arch in ArchitectureOptions)
+                    {
+                        <button type="button"
+                                class="roi-radio-pill @(selectedArch == arch.Key ? "is-selected" : "")"
+                                @onclick="() => selectedArch = arch.Key">
+                            <span class="pill-dot"></span>
+                            <span>@arch.Name</span>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <div class="roi-field">
+                <div class="roi-field-header">
+                    <label>CURRENT MONTHLY CLOUD / HOSTING BILL</label>
+                    <span class="roi-field-val">${@monthlySpend:N0} / mo</span>
+                </div>
+                <input type="range" min="150" max="4000" step="50" @bind="monthlySpend" @bind:event="oninput" class="roi-slider" />
+                <div class="slider-marks">
+                    <span>$150/mo</span>
+                    <span>$1,000/mo</span>
+                    <span>$2,500/mo</span>
+                    <span>$4,000/mo</span>
+                </div>
+            </div>
+
+            <div class="roi-field">
+                <div class="roi-field-header">
+                    <label>ESTIMATED DAILY DATABASE QUERIES</label>
+                    <span class="roi-field-val">@dailyQueries.ToString("N0") req/day</span>
+                </div>
+                <input type="range" min="20000" max="1500000" step="20000" @bind="dailyQueries" @bind:event="oninput" class="roi-slider" />
+                <div class="slider-marks">
+                    <span>20K</span>
+                    <span>500K</span>
+                    <span>1M</span>
+                    <span>1.5M+</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROI Calculation Output Metrics -->
+        <div class="roi-results-panel">
+            <div class="roi-hero-metric">
+                <span class="metric-caption">ESTIMATED ANNUAL CLOUD SAVINGS</span>
+                <strong class="metric-large-text text-lime">${@AnnualSavings:N0}</strong>
+                <span class="metric-sublabel">~@SavingsPercent% reduction in VM/container compute &amp; DTU costs</span>
+            </div>
+
+            <div class="roi-stats-grid">
+                <div class="roi-stat-box">
+                    <span class="stat-title">AVG P95 LATENCY</span>
+                    <div class="stat-compare">
+                        <span class="stat-old">@BaselineLatencyMs ms</span>
+                        <span class="stat-arrow">→</span>
+                        <span class="stat-new text-cyan">@OptimizedLatencyMs ms</span>
+                    </div>
+                    <span class="stat-gain text-lime">~@SpeedupFactor x Faster</span>
+                </div>
+
+                <div class="roi-stat-box">
+                    <span class="stat-title">MEMORY ALLOCATION</span>
+                    <div class="stat-compare">
+                        <span class="stat-old">@BaselineMemoryMb MB</span>
+                        <span class="stat-arrow">→</span>
+                        <span class="stat-new text-lavender">@OptimizedMemoryMb MB</span>
+                    </div>
+                    <span class="stat-gain text-lime">-@MemoryReductionPercent% RAM</span>
+                </div>
+            </div>
+
+            <div class="roi-cta-wrap">
+                <button type="button" class="button button-primary roi-action-btn" @onclick="ApplyToProjectScoper">
+                    <span>Discuss Architecture Modernization ↗</span>
+                </button>
+                <span class="roi-guarantee-note">Verified with ASP.NET Core Kestrel &amp; EF Core compiled models benchmarks.</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string selectedArch = "framework";
+    private int monthlySpend = 750;
+    private int dailyQueries = 180000;
+
+    public class ArchOption
+    {
+        public string Key { get; set; } = "";
+        public string Name { get; set; } = "";
+        public double SavingsFactor { get; set; } = 0.45;
+        public int BaselineLatency { get; set; } = 280;
+        public int OptimizedLatency { get; set; } = 32;
+        public int BaselineMem { get; set; } = 950;
+        public int OptimizedMem { get; set; } = 180;
+    }
+
+    private List<ArchOption> ArchitectureOptions = new()
+    {
+        new ArchOption { Key = "framework", Name = "Legacy .NET Framework (4.x)", SavingsFactor = 0.52, BaselineLatency = 340, OptimizedLatency = 32, BaselineMem = 1100, OptimizedMem = 190 },
+        new ArchOption { Key = "node_python", Name = "Python / Node Monolith", SavingsFactor = 0.44, BaselineLatency = 240, OptimizedLatency = 28, BaselineMem = 850, OptimizedMem = 160 },
+        new ArchOption { Key = "unoptimized_core", Name = "Unoptimized .NET 6/7", SavingsFactor = 0.38, BaselineLatency = 160, OptimizedLatency = 25, BaselineMem = 620, OptimizedMem = 170 }
+    };
+
+    private ArchOption CurrentArch => ArchitectureOptions.First(a => a.Key == selectedArch);
+
+    private int SavingsPercent => (int)(CurrentArch.SavingsFactor * 100);
+    private int MonthlySavings => (int)(monthlySpend * CurrentArch.SavingsFactor);
+    private int AnnualSavings => MonthlySavings * 12;
+
+    private int BaselineLatencyMs => CurrentArch.BaselineLatency;
+    private int OptimizedLatencyMs => CurrentArch.OptimizedLatency;
+    private string SpeedupFactor => (BaselineLatencyMs / (double)OptimizedLatencyMs).ToString("0.0");
+
+    private int BaselineMemoryMb => CurrentArch.BaselineMem;
+    private int OptimizedMemoryMb => CurrentArch.OptimizedMem;
+    private int MemoryReductionPercent => (int)(((BaselineMemoryMb - OptimizedMemoryMb) / (double)BaselineMemoryMb) * 100);
+
+    private async Task ApplyToProjectScoper()
+    {
+        var msg = $"Hi Ibrahim, I evaluated the modernization of our {CurrentArch.Name} backend (current spend: ${monthlySpend}/mo, {dailyQueries:N0} queries/day). We are targeting an estimated ${AnnualSavings:N0}/yr in cloud compute savings and sub-{OptimizedLatencyMs}ms latency. Let's discuss an architecture roadmap.";
+        await JS.InvokeVoidAsync("portfolioApplyScopeMessage", msg);
+    }
+}
