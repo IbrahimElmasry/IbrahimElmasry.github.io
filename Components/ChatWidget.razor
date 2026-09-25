@@ -1,0 +1,296 @@
+@inject ContentService Content
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<div class="chat-widget-container">
+    @if (!isOpen)
+    {
+        <!-- Floating Chat Launcher Button -->
+        <button type="button"
+                class="chat-launcher-btn"
+                @onclick="ToggleChat"
+                aria-label="Open Ibrahim AI Assistant">
+            <span class="launcher-pulse"></span>
+            <span class="launcher-icon">✦</span>
+            <span class="launcher-text">Ask Ibrahim AI</span>
+            <span class="launcher-badge">Online</span>
+        </button>
+    }
+    else
+    {
+        <!-- Chat Popup Window -->
+        <div class="chat-window" role="dialog" aria-labelledby="chat-title">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="chat-avatar">
+                        <span>IT</span>
+                        <i class="online-indicator"></i>
+                    </div>
+                    <div>
+                        <h4 id="chat-title" class="chat-header-name">Ibrahim AI</h4>
+                        <span class="chat-header-status">Portfolio Assistant · Online</span>
+                    </div>
+                </div>
+                <div class="chat-header-actions">
+                    <button type="button" class="chat-action-btn" @onclick="ClearChat" title="Reset Conversation">
+                        ↺
+                    </button>
+                    <button type="button" class="chat-action-btn chat-close-btn" @onclick="ToggleChat" title="Close Chat">
+                        ✕
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="chat-messages" id="chat-messages-container">
+                @foreach (var msg in messages)
+                {
+                    <div class="chat-message-row @(msg.IsUser ? "msg-user" : "msg-ai")">
+                        @if (!msg.IsUser)
+                        {
+                            <span class="msg-avatar">✦</span>
+                        }
+                        <div class="chat-bubble">
+                            <div class="chat-bubble-text">
+                                @((MarkupString)FormatMessageText(msg.Text))
+                            </div>
+                            @if (!string.IsNullOrEmpty(msg.ActionUrl))
+                            {
+                                <div class="msg-action-wrap">
+                                    @if (msg.ActionUrl.StartsWith("#"))
+                                    {
+                                        <a href="@($"{Nav.BaseUri}{msg.ActionUrl}")" class="msg-action-link" @onclick="ToggleChat">
+                                            @msg.ActionText
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@msg.ActionUrl" class="msg-action-link">
+                                            @msg.ActionText
+                                        </a>
+                                    }
+                                </div>
+                            }
+                            <span class="msg-time">@msg.Timestamp.ToString("h:mm tt")</span>
+                        </div>
+                    </div>
+                }
+
+                @if (isTyping)
+                {
+                    <div class="chat-message-row msg-ai">
+                        <span class="msg-avatar">✦</span>
+                        <div class="chat-bubble typing-bubble">
+                            <div class="typing-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Suggestion Quick Prompts -->
+            @if (messages.Count <= 2 && !isTyping)
+            {
+                <div class="chat-suggestions">
+                    <span class="suggestions-label">SUGGESTED TOPICS</span>
+                    <div class="suggestions-scroll">
+                        @foreach (var suggestion in suggestions)
+                        {
+                            <button type="button" class="suggestion-chip" @onclick="() => SendPrompt(suggestion)">
+                                @suggestion
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Input Bar -->
+            <form class="chat-input-bar" @onsubmit="SendMessage" @onsubmit:preventDefault>
+                <input type="text"
+                       class="chat-input-field"
+                       placeholder="Ask about skills, projects, booking..."
+                       @bind="userInput"
+                       @bind:event="oninput"
+                       disabled="@isTyping" />
+                <button type="submit"
+                        class="chat-send-btn"
+                        disabled="@(string.IsNullOrWhiteSpace(userInput) || isTyping)"
+                        aria-label="Send message">
+                    ➤
+                </button>
+            </form>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isOpen;
+    private bool isTyping;
+    private string userInput = "";
+    private readonly List<ChatMessage> messages = [];
+
+    private readonly string[] suggestions =
+    [
+        "What are Ibrahim's core skills?",
+        "Tell me about Tech Xpress",
+        "How can I book a call?",
+        "Are you available for new roles?",
+        "What was your graduation project?"
+    ];
+
+    private record ChatMessage(string Text, bool IsUser, DateTime Timestamp, string? ActionUrl = null, string? ActionText = null);
+
+    protected override void OnInitialized()
+    {
+        if (messages.Count == 0)
+        {
+            messages.Add(new ChatMessage(
+                "Hello! I am **Ibrahim's AI Assistant**. I can answer questions about his technical stack, backend projects like Tech Xpress, or help you schedule a 1:1 call with him. How can I help you today?",
+                false,
+                DateTime.Now
+            ));
+        }
+    }
+
+    private void ToggleChat()
+    {
+        isOpen = !isOpen;
+        if (isOpen)
+        {
+            ScrollToBottom();
+        }
+    }
+
+    private void ClearChat()
+    {
+        messages.Clear();
+        messages.Add(new ChatMessage(
+            "Chat refreshed! Ask me anything about Ibrahim's ASP.NET experience, project architectures, or how to get in touch.",
+            false,
+            DateTime.Now
+        ));
+    }
+
+    private async Task SendPrompt(string prompt)
+    {
+        userInput = prompt;
+        await SendMessage();
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(userInput) || isTyping) return;
+
+        var text = userInput.Trim();
+        userInput = "";
+        messages.Add(new ChatMessage(text, true, DateTime.Now));
+        ScrollToBottom();
+
+        isTyping = true;
+        StateHasChanged();
+
+        // Realistic typing latency
+        await Task.Delay(550);
+
+        var (reply, actionUrl, actionText) = GenerateResponse(text);
+        messages.Add(new ChatMessage(reply, false, DateTime.Now, actionUrl, actionText));
+        isTyping = false;
+        StateHasChanged();
+        ScrollToBottom();
+    }
+
+    private void ScrollToBottom()
+    {
+        _ = JS.InvokeVoidAsync("portfolioScrollChatBottom");
+    }
+
+    private string FormatMessageText(string raw)
+    {
+        // Simple safe inline bold formatting
+        return raw.Replace("**", "<strong>").Replace("</strong>", "</strong>", StringComparison.Ordinal);
+    }
+
+    private (string Reply, string? ActionUrl, string? ActionText) GenerateResponse(string query)
+    {
+        var q = query.ToLowerInvariant();
+
+        if (q.Contains("book") || q.Contains("call") || q.Contains("schedule") || q.Contains("meeting") || q.Contains("calendar"))
+        {
+            return (
+                "Ibrahim offers **60-minute technical discussion calls** via Google Meet. You can select an open time slot directly on his live booking schedule.",
+                "book-a-call",
+                "Open Booking Calendar ↗"
+            );
+        }
+
+        if (q.Contains("tech xpress") || q.Contains("ecommerce") || q.Contains("e-commerce") || q.Contains("stripe"))
+        {
+            return (
+                "**Tech Xpress** is an ASP.NET Core MVC e-commerce platform built by Ibrahim. Key capabilities include **Stripe Checkout Sessions** with webhooks, multi-role ASP.NET Identity, and Entity Framework Core with SQL Server.",
+                "projects/tech-xpress-mvc",
+                "View Tech Xpress Case Study ↗"
+            );
+        }
+
+        if (q.Contains("graduation") || q.Contains("elearning") || q.Contains("e-learning") || q.Contains("university"))
+        {
+            return (
+                "For his graduation project at MTIS (2024), Ibrahim and his team built an **AI-powered E-Learning Platform** featuring course management, resource querying, and conversational learning assistance. The project earned an **Excellent** evaluation.",
+                "projects/ai-elearning-platform",
+                "View AI E-Learning Project ↗"
+            );
+        }
+
+        if (q.Contains("skill") || q.Contains("stack") || q.Contains("c#") || q.Contains("dotnet") || q.Contains(".net") || q.Contains("technolog"))
+        {
+            return (
+                "Ibrahim's primary focus is the **.NET ecosystem**: **C#**, **ASP.NET Core (MVC & Web API)**, **Entity Framework Core**, **SQL Server**, and **Blazor WebAssembly**. He is also proficient in LINQ, ASP.NET Identity, and REST API design.",
+                "#skills",
+                "View Technical Toolkit ↗"
+            );
+        }
+
+        if (q.Contains("experience") || q.Contains("career") || q.Contains("education") || q.Contains("depi") || q.Contains("background"))
+        {
+            return (
+                "Ibrahim graduated with a Bachelor of Technology in Information Systems (MTIS, 2020–2024), completed an intensive **6-month ASP.NET Development Track** with DEPI, and has nearly 3 years of hands-on experience as a Technical IT Support Engineer.",
+                "#experience",
+                "View Career Timeline ↗"
+            );
+        }
+
+        if (q.Contains("contact") || q.Contains("email") || q.Contains("phone") || q.Contains("whatsapp") || q.Contains("reach"))
+        {
+            return (
+                "You can email Ibrahim directly at **ibrahem.elmasry.2001@gmail.com**, message him on WhatsApp, or send a direct inquiry through the contact form.",
+                "#contact",
+                "Go to Contact Form ↘"
+            );
+        }
+
+        if (q.Contains("availab") || q.Contains("hire") || q.Contains("rate") || q.Contains("freelance") || q.Contains("job") || q.Contains("remote"))
+        {
+            return (
+                "Ibrahim is currently **open to new opportunities**, including full-time remote or relocation engineering roles and select contract projects. Feel free to book a call or send a message!",
+                "book-a-call",
+                "Schedule a Discussion ↗"
+            );
+        }
+
+        if (q.Contains("hi") || q.Contains("hello") || q.Contains("hey") || q.Contains("salam") || q.Contains("welcome"))
+        {
+            return (
+                "Hello! Welcome to Ibrahim's portfolio. I can answer questions about his software projects, technology stack, or help connect you with him. What would you like to know?",
+                null,
+                null
+            );
+        }
+
+        return (
+            "I'm here to help with information about Ibrahim's ASP.NET Core experience, project architectures (like Tech Xpress), and availability. You can also reach him directly via the contact form or schedule a call.",
+            "#contact",
+            "Send Ibrahim a Message ↘"
+        );
+    }
+}

@@ -1,0 +1,257 @@
+@inject IJSRuntime JS
+@inject NavigationManager Nav
+
+<div class="scoper-container">
+    <div class="scoper-header">
+        <div class="scoper-badge-row">
+            <span class="scoper-kicker"><i class="scoper-kicker-dot"></i> PROJECT SCOPE ESTIMATOR</span>
+            <span class="scoper-badge">INTERACTIVE ARCHITECTURE PLANNER</span>
+        </div>
+        <h3 class="scoper-title">Configure your technical requirements</h3>
+        <p class="scoper-subtitle">
+            Select your architectural goals, required integrations, and target timeline to calculate the recommended ASP.NET Core stack and pre-fill your project inquiry.
+        </p>
+    </div>
+
+    <div class="scoper-layout">
+        <!-- LEFT COLUMN: Selection Controls -->
+        <div class="scoper-form-col">
+            <!-- 1. Architecture / Project Type -->
+            <div class="scoper-field-group">
+                <div class="field-label-row">
+                    <span class="field-step">STEP 01</span>
+                    <h4 class="field-title">Select Project Archetype</h4>
+                </div>
+                <div class="archetype-grid">
+                    @foreach (var type in projectTypes)
+                    {
+                        var isSelected = selectedType == type.Id;
+                        <button type="button"
+                                class="archetype-card @(isSelected ? "is-selected" : "")"
+                                @onclick="() => selectedType = type.Id">
+                            <div class="archetype-card-top">
+                                <span class="archetype-icon">@type.Icon</span>
+                                <span class="archetype-radio @(isSelected ? "checked" : "")"></span>
+                            </div>
+                            <strong class="archetype-title">@type.Title</strong>
+                            <span class="archetype-desc">@type.Description</span>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <!-- 2. Capabilities & Integrations -->
+            <div class="scoper-field-group">
+                <div class="field-label-row">
+                    <span class="field-step">STEP 02</span>
+                    <h4 class="field-title">Core Capabilities &amp; Integrations</h4>
+                    <span class="field-count">@selectedCapabilities.Count selected</span>
+                </div>
+                <div class="capabilities-grid">
+                    @foreach (var cap in capabilitiesList)
+                    {
+                        var isChecked = selectedCapabilities.Contains(cap.Id);
+                        <div class="capability-card @(isChecked ? "is-checked" : "")"
+                             @onclick="() => ToggleCapability(cap.Id)"
+                             role="checkbox"
+                             aria-checked="@isChecked"
+                             tabindex="0"
+                             @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") ToggleCapability(cap.Id); })">
+                            <div class="capability-checkbox @(isChecked ? "checked" : "")">
+                                @if (isChecked)
+                                {
+                                    <span>✓</span>
+                                }
+                            </div>
+                            <div class="capability-text">
+                                <strong class="capability-title">@cap.Title</strong>
+                                <span class="capability-desc">@cap.Detail</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- 3. Timeline -->
+            <div class="scoper-field-group">
+                <div class="field-label-row">
+                    <span class="field-step">STEP 03</span>
+                    <h4 class="field-title">Target Delivery Timeline</h4>
+                </div>
+                <div class="timeline-segmented">
+                    @foreach (var time in timelineOptions)
+                    {
+                        var isTimeSelected = selectedTimeline == time.Id;
+                        <button type="button"
+                                class="timeline-segment @(isTimeSelected ? "is-selected" : "")"
+                                @onclick="() => selectedTimeline = time.Id">
+                            <span class="segment-radio @(isTimeSelected ? "checked" : "")"></span>
+                            <span class="segment-label">@time.Label</span>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Blueprint / Estimate Summary Card -->
+        <div class="scoper-blueprint-col">
+            <div class="blueprint-card">
+                <div class="blueprint-header">
+                    <div class="blueprint-header-title">
+                        <span class="blueprint-glyph">⌁</span>
+                        <span>ARCHITECTURAL BLUEPRINT</span>
+                    </div>
+                    <span class="blueprint-badge @ScopeComplexityClass">@ScopeComplexity</span>
+                </div>
+
+                <div class="blueprint-body">
+                    <div class="blueprint-item">
+                        <span class="blueprint-caption">RECOMMENDED ARCHITECTURE</span>
+                        <h5 class="architecture-name">@RecommendedArchitecture</h5>
+                    </div>
+
+                    <div class="blueprint-item">
+                        <span class="blueprint-caption">TARGET TECH STACK</span>
+                        <div class="blueprint-tags">
+                            @foreach (var tech in RecommendedTech)
+                            {
+                                <span class="blueprint-tag">@tech</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="blueprint-item blueprint-preview-item">
+                        <div class="preview-header">
+                            <span class="blueprint-caption">GENERATED INQUIRY DRAFT</span>
+                            <span class="preview-copy-hint">Auto-fills form below</span>
+                        </div>
+                        <div class="blueprint-message-preview">
+                            <div class="preview-code-chrome">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">inquiry-payload.txt</span>
+                            </div>
+                            <pre class="preview-text">@GeneratedMessage</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blueprint-footer">
+                    <button type="button"
+                            class="button button-primary blueprint-apply-btn"
+                            @onclick="ApplyToContactForm">
+                        @if (applied)
+                        {
+                            <span>✓ Applied to Message Below!</span>
+                        }
+                        else
+                        {
+                            <span>Apply to Contact Form ↘</span>
+                        }
+                    </button>
+                    <a class="button button-quiet blueprint-book-btn" href="book-a-call">
+                        Discuss on a Call <span>↗</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string selectedType = "webapp";
+    private HashSet<string> selectedCapabilities = ["auth", "db", "admin"];
+    private string selectedTimeline = "medium";
+    private bool applied;
+
+    private readonly record struct ProjectTypeOption(string Id, string Title, string Description, string Icon);
+    private readonly record struct CapabilityOption(string Id, string Title, string Detail);
+    private readonly record struct TimelineOption(string Id, string Label);
+
+    private readonly ProjectTypeOption[] projectTypes =
+    [
+        new("webapp", "Full-Stack Web App", "ASP.NET Core MVC, Razor, SQL Server & EF Core", "✦"),
+        new("api", "RESTful Web API", "Headless Backend, JWT Auth, Unit of Work & Repositories", "⌁"),
+        new("ecommerce", "E-Commerce & Stripe", "Storefront, Shopping Cart, Stripe Checkout & Orders", "↗"),
+        new("enterprise", "Enterprise Portal / CMS", "Role-based Admin Dashboards, Data Management & CMS", "✳")
+    ];
+
+    private readonly CapabilityOption[] capabilitiesList =
+    [
+        new("auth", "User Auth & Roles", "ASP.NET Identity, Secure Claims & RBAC"),
+        new("db", "SQL Server & EF Core", "Relational Schemas, Migrations & Queries"),
+        new("stripe", "Stripe Checkout & Orders", "Secure Checkout Sessions & Webhooks"),
+        new("admin", "Admin Management Dashboard", "Data Tables, Metrics & Entity Management"),
+        new("responsive", "Mobile-First Responsive UI", "Modern Responsive Layouts & Accessibility"),
+        new("chat", "AI Chatbot Integration", "Contextual LLM Assistance & Query Retrieval")
+    ];
+
+    private readonly TimelineOption[] timelineOptions =
+    [
+        new("fast", "Rapid (< 1 Month)"),
+        new("medium", "Standard (1–3 Months)"),
+        new("flexible", "Exploratory / Flexible")
+    ];
+
+    private void ToggleCapability(string id)
+    {
+        if (!selectedCapabilities.Add(id))
+            selectedCapabilities.Remove(id);
+    }
+
+    private string ScopeComplexity => selectedCapabilities.Count switch
+    {
+        >= 5 => "Comprehensive Multi-Tier System",
+        >= 3 => "Standard Production Application",
+        _ => "Focused Core MVP"
+    };
+
+    private string ScopeComplexityClass => selectedCapabilities.Count switch
+    {
+        >= 5 => "badge-complex",
+        >= 3 => "badge-standard",
+        _ => "badge-mvp"
+    };
+
+    private string RecommendedArchitecture => selectedType switch
+    {
+        "api" => "Clean Architecture Web API with Repository & Unit of Work patterns",
+        "ecommerce" => "Layered MVC Architecture with Stripe Webhooks & Transactional EF Core",
+        "enterprise" => "Modular Enterprise Architecture with RBAC & Data Administration",
+        _ => "ASP.NET Core MVC Layered Architecture with Dependency Injection"
+    };
+
+    private string[] RecommendedTech => selectedType switch
+    {
+        "api" => ["C#", "ASP.NET Core Web API", "Entity Framework Core", "SQL Server", "JWT Auth", "Swagger"],
+        "ecommerce" => ["ASP.NET Core MVC", "SQL Server", "EF Core", "Stripe API", "ASP.NET Identity", "Bootstrap 5"],
+        "enterprise" => ["ASP.NET Core", "SQL Server", "EF Core", "Identity RBAC", "LINQ", "Admin Views"],
+        _ => ["ASP.NET Core", "C#", "SQL Server", "Entity Framework Core", "ASP.NET Identity"]
+    };
+
+    private string GeneratedMessage
+    {
+        get
+        {
+            var typeOption = projectTypes.FirstOrDefault(p => p.Id == selectedType);
+            var typeName = !string.IsNullOrEmpty(typeOption.Title) ? typeOption.Title : "Full-Stack Web App";
+            var timeOption = timelineOptions.FirstOrDefault(t => t.Id == selectedTimeline);
+            var timelineName = !string.IsNullOrEmpty(timeOption.Label) ? timeOption.Label : "Standard (1–3 Months)";
+            var caps = string.Join(", ", capabilitiesList.Where(c => selectedCapabilities.Contains(c.Id)).Select(c => c.Title));
+
+            return $"Hi Ibrahim, I am interested in discussing a {typeName}.\n\n" +
+                   $"Key Requirements: {caps}.\n" +
+                   $"Target Timeline: {timelineName}.\n\n" +
+                   $"I would like to explore technical feasibility, architecture recommendations, and next steps with you.";
+        }
+    }
+
+    private async Task ApplyToContactForm()
+    {
+        applied = true;
+        await JS.InvokeVoidAsync("portfolioApplyScopeMessage", GeneratedMessage);
+        await Task.Delay(2500);
+        applied = false;
+    }
+}

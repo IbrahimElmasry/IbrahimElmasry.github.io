@@ -126,4 +126,23 @@
     updateScrollState();
   })).observe(app, { childList: true, subtree: true });
   requestAnimationFrame(scrollToHashTarget);
+  window.portfolioApplyScopeMessage = (message) => {
+    const textarea = document.querySelector('form textarea[name="message"]');
+    if (textarea) {
+      textarea.value = message;
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      textarea.dispatchEvent(new Event('change', { bubbles: true }));
+      textarea.focus();
+      textarea.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+    }
+  };
+  window.portfolioScrollChatBottom = () => {
+    requestAnimationFrame(() => {
+      const container = document.getElementById('chat-messages-container');
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+    });
+  };
 })();
+

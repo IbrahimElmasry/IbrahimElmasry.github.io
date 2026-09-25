@@ -71,6 +71,7 @@ The workflow in `.github/workflows/deploy.yml` publishes the Blazor app and conf
 
 ```text
 PortfolioApp/
+├── Components/             # Interactive widgets (AI Chatbot Assistant, Project Scoper, GitHub Activity, Architecture Diagrams)
 ├── Models/                 # Profile, Project, Experience, Skill, Service, Process, FAQ models
 ├── Pages/                  # Home, ProjectDetails, and BookCall pages
 ├── Services/               # Static JSON content reader
@@ -81,6 +82,7 @@ PortfolioApp/
 ├── wwwroot/404.html         # GitHub Pages SPA route fallback
 └── .github/workflows/      # GitHub Pages deployment workflow
 ```
+
 
 ## Colophon and rights
 

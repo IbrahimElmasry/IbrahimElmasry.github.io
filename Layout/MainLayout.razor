@@ -17,31 +17,121 @@
     </header>
     <div class="scroll-progress" aria-hidden="true"><span id="scroll-progress-bar"></span></div>
     <main>@Body</main>
-    <footer class="footer">
-        <div class="footer-primary">
-            <span class="footer-rights">© @DateTime.Now.Year @(profile.Name.Length > 0 ? profile.Name : "Ibrahim Tarek"). All rights reserved.</span>
-            <nav class="footer-sections" aria-label="Section links">
-                <a href="@($"{Nav.BaseUri}#work")">Work</a>
-                <a href="@($"{Nav.BaseUri}#services")">Services</a>
-                <a href="@($"{Nav.BaseUri}#process")">Process</a>
-                <a href="@($"{Nav.BaseUri}#about")">About</a>
-                <a href="@($"{Nav.BaseUri}#experience")">Journey</a>
-                <a href="@($"{Nav.BaseUri}#skills")">Skills</a>
-                <a href="@($"{Nav.BaseUri}#faq")">FAQs</a>
-                <a href="book-a-call">Book a Call</a>
-                <a href="@($"{Nav.BaseUri}#contact")">Contact</a>
-            </nav>
+    <footer class="footer" id="footer">
+        <div class="footer-grid">
+            <!-- Col 1: Identity & Bio -->
+            <div class="footer-col footer-identity">
+                <a href="@Nav.BaseUri" class="footer-brand">
+                    <span class="brand-mark">IT</span>
+                    <span class="brand-text">Ibrahim Tarek<span class="brand-dot">.</span></span>
+                </a>
+                <p class="footer-bio">
+                    ASP.NET Core &amp; Full-Stack C# Developer specialized in practical architecture, robust Web APIs, and clean relational database design.
+                </p>
+                <div class="footer-availability-chip">
+                    <span class="pulse-beacon"></span>
+                    <span>Available for software roles &amp; contracts</span>
+                </div>
+                <div class="footer-location-tag">
+                    <span>Alexandria, Egypt (UTC+2) · Open to Remote &amp; Relocation</span>
+                </div>
+            </div>
+
+            <!-- Col 2: Site Navigation -->
+            <div class="footer-col">
+                <span class="footer-col-title">NAVIGATION</span>
+                <nav class="footer-nav-list" aria-label="Footer Navigation">
+                    <a href="@($"{Nav.BaseUri}#work")"><span>01</span> Selected Work</a>
+                    <a href="@($"{Nav.BaseUri}#services")"><span>02</span> Services &amp; Capabilities</a>
+                    <a href="@($"{Nav.BaseUri}#process")"><span>03</span> Engineering Process</a>
+                    <a href="@($"{Nav.BaseUri}#about")"><span>04</span> About Ibrahim</a>
+                    <a href="@($"{Nav.BaseUri}#experience")"><span>05</span> Career &amp; Education</a>
+                    <a href="@($"{Nav.BaseUri}#skills")"><span>06</span> Technology Stack</a>
+                    <a href="@($"{Nav.BaseUri}#faq")"><span>07</span> Frequently Asked Questions</a>
+                    <a href="@($"{Nav.BaseUri}#contact")"><span>08</span> Start a Conversation</a>
+                </nav>
+            </div>
+
+            <!-- Col 3: Direct Connect & Scheduling -->
+            <div class="footer-col">
+                <span class="footer-col-title">CONNECT &amp; BOOK</span>
+                <div class="footer-links-group">
+                    @if (!string.IsNullOrWhiteSpace(profile.Email))
+                    {
+                        <a href="mailto:@profile.Email" class="footer-channel-link">
+                            <span class="channel-icon">✉</span>
+                            <span class="channel-label">Email</span>
+                            <span class="channel-arrow">↗</span>
+                        </a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(profile.LinkedInUrl))
+                    {
+                        <a href="@profile.LinkedInUrl" target="_blank" rel="noreferrer" class="footer-channel-link">
+                            <span class="channel-icon">in</span>
+                            <span class="channel-label">LinkedIn</span>
+                            <span class="channel-arrow">↗</span>
+                        </a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(profile.GithubUrl))
+                    {
+                        <a href="@profile.GithubUrl" target="_blank" rel="noreferrer" class="footer-channel-link">
+                            <span class="channel-icon">⌘</span>
+                            <span class="channel-label">GitHub</span>
+                            <span class="channel-arrow">↗</span>
+                        </a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(profile.WhatsAppUrl))
+                    {
+                        <a href="@profile.WhatsAppUrl" target="_blank" rel="noreferrer" class="footer-channel-link">
+                            <span class="channel-icon">💬</span>
+                            <span class="channel-label">WhatsApp</span>
+                            <span class="channel-arrow">↗</span>
+                        </a>
+                    }
+                    <a href="book-a-call" class="footer-channel-link highlight-booking">
+                        <span class="channel-icon">🗓</span>
+                        <span class="channel-label">Schedule 1:1 Call</span>
+                        <span class="channel-badge">Google Meet</span>
+                        <span class="channel-arrow">↗</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Col 4: System Architecture & Meta -->
+            <div class="footer-col footer-system-spec">
+                <span class="footer-col-title">SYSTEM ARCHITECTURE</span>
+                <div class="spec-list">
+                    <div class="spec-row">
+                        <span class="spec-key">FRAMEWORK</span>
+                        <strong class="spec-val">Blazor WebAssembly .NET 8</strong>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-key">HOSTING</span>
+                        <strong class="spec-val">GitHub Pages (Static WASM)</strong>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-key">STYLE SYSTEM</span>
+                        <strong class="spec-val">Dark Terminal / Custom CSS</strong>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-key">DEPLOYMENT</span>
+                        <strong class="spec-val">GitHub Actions CI/CD Pipeline</strong>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="footer-secondary">
-            <nav class="footer-socials" aria-label="Social links">
-                @if (!string.IsNullOrWhiteSpace(profile.GithubUrl)) { <a href="@profile.GithubUrl" target="_blank" rel="noreferrer" aria-label="GitHub">GitHub <span>↗</span></a> }
-                @if (!string.IsNullOrWhiteSpace(profile.LinkedInUrl)) { <a href="@profile.LinkedInUrl" target="_blank" rel="noreferrer" aria-label="LinkedIn">LinkedIn <span>↗</span></a> }
-                @if (!string.IsNullOrWhiteSpace(profile.Email)) { <a href="mailto:@profile.Email" aria-label="Email">Email <span>↗</span></a> }
-                @if (!string.IsNullOrWhiteSpace(profile.WhatsAppUrl)) { <a href="@profile.WhatsAppUrl" target="_blank" rel="noreferrer" aria-label="WhatsApp">WhatsApp <span>↗</span></a> }
-            </nav>
-            <a class="footer-top" href="@($"{Nav.BaseUri}#top")">Back to top ↑</a>
+
+        <div class="footer-bottom-bar">
+            <div class="footer-copy">
+                <span>© @DateTime.Now.Year @(profile.Name.Length > 0 ? profile.Name : "Ibrahim Tarek"). Engineered with C# &amp; Blazor WebAssembly.</span>
+            </div>
+            <a class="footer-top-btn" href="@($"{Nav.BaseUri}#top")" aria-label="Back to top">
+                <span>Back to top</span>
+                <span class="top-arrow">↑</span>
+            </a>
         </div>
     </footer>
+    <ChatWidget />
 </div>
 <script src="js/motion.js?v=20260924-7"></script>
 @code {

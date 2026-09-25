@@ -1,0 +1,323 @@
+@inject IJSRuntime JS
+
+@if (Project is not null)
+{
+    <div class="arch-deepdive-card">
+        <div class="arch-tab-header">
+            <div class="arch-tabs">
+                <button type="button"
+                        class="arch-tab-btn @(activeTab == "diagram" ? "active" : "")"
+                        @onclick='() => activeTab = "diagram"'>
+                    <span>✦</span> Architecture Diagram
+                </button>
+                @if (HasDatabaseSchema)
+                {
+                    <button type="button"
+                            class="arch-tab-btn @(activeTab == "database" ? "active" : "")"
+                            @onclick='() => activeTab = "database"'>
+                        <span>⌁</span> Database Schema (ERD)
+                    </button>
+                }
+                @if (HasCodeSnippet)
+                {
+                    <button type="button"
+                            class="arch-tab-btn @(activeTab == "code" ? "active" : "")"
+                            @onclick='() => activeTab = "code"'>
+                        <span>{ }</span> C# Implementation Snippet
+                    </button>
+                }
+            </div>
+            <span class="arch-tag">SYSTEM BLUEPRINT</span>
+        </div>
+
+        <div class="arch-tab-body">
+            @if (activeTab == "diagram")
+            {
+                <div class="diagram-canvas">
+                    <div class="diagram-layers">
+                        <div class="diag-layer layer-presentation">
+                            <span class="layer-pill">1. PRESENTATION TIER</span>
+                            <div class="layer-boxes">
+                                <div class="diag-box">
+                                    <strong>ASP.NET Core MVC / Razor</strong>
+                                    <span>Controllers, ViewModels, TagHelpers</span>
+                                </div>
+                                <div class="diag-box">
+                                    <strong>Client UI Layer</strong>
+                                    <span>HTML5, CSS3, JavaScript, Bootstrap</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="diagram-arrow">↓ HTTP Requests / Model Binding ↓</div>
+
+                        <div class="diag-layer layer-services">
+                            <span class="layer-pill">2. APPLICATION &amp; BUSINESS LOGIC</span>
+                            <div class="layer-boxes">
+                                @if (Project.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <div class="diag-box">
+                                        <strong>Cart &amp; Order Manager</strong>
+                                        <span>Order placement, status workflow</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Stripe Payment Service</strong>
+                                        <span>Checkout sessions, payment confirmation</span>
+                                    </div>
+                                }
+                                else if (Project.Slug.Contains("elearning", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <div class="diag-box">
+                                        <strong>Course Service</strong>
+                                        <span>Tracks, materials, book library</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Conversational AI Engine</strong>
+                                        <span>Chatbot queries, study guidance</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="diag-box">
+                                        <strong>Content &amp; Event Engine</strong>
+                                        <span>Article publishing, user permissions</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Multilingual Router</strong>
+                                        <span>Localization, category filters</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="diagram-arrow">↓ Repository &amp; Unit of Work Abstraction ↓</div>
+
+                        <div class="diag-layer layer-data">
+                            <span class="layer-pill">3. DATA ACCESS &amp; PERSISTENCE</span>
+                            <div class="layer-boxes">
+                                <div class="diag-box">
+                                    <strong>Entity Framework Core</strong>
+                                    <span>DbContext, Fluent API mappings, LINQ</span>
+                                </div>
+                                <div class="diag-box">
+                                    <strong>Microsoft SQL Server</strong>
+                                    <span>Normalized relational tables &amp; indexes</span>
+                                </div>
+                                @if (Project.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase) || Project.Slug.Contains("elearning", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <div class="diag-box">
+                                        <strong>ASP.NET Identity</strong>
+                                        <span>User store, password hashing, roles</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (activeTab == "database")
+            {
+                <div class="database-erd-view">
+                    <div class="erd-grid">
+                        @if (Project.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">Products</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> Id (int)</li>
+                                    <li>Title (nvarchar)</li>
+                                    <li>Price (decimal)</li>
+                                    <li>Description (nvarchar)</li>
+                                    <li class="col-fk"><b>FK</b> CategoryId (int)</li>
+                                    <li>ImageUrl (nvarchar)</li>
+                                </ul>
+                            </div>
+
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">Orders</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> Id (int)</li>
+                                    <li class="col-fk"><b>FK</b> ApplicationUserId (nvarchar)</li>
+                                    <li>OrderDate (datetime2)</li>
+                                    <li>OrderTotal (decimal)</li>
+                                    <li>OrderStatus (nvarchar)</li>
+                                    <li>PaymentIntentId (nvarchar)</li>
+                                </ul>
+                            </div>
+
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">OrderDetails</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> Id (int)</li>
+                                    <li class="col-fk"><b>FK</b> OrderId (int)</li>
+                                    <li class="col-fk"><b>FK</b> ProductId (int)</li>
+                                    <li>Count (int)</li>
+                                    <li>Price (decimal)</li>
+                                </ul>
+                            </div>
+
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">Categories</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> Id (int)</li>
+                                    <li>Name (nvarchar)</li>
+                                    <li>DisplayOrder (int)</li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">Courses</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> Id (int)</li>
+                                    <li>Title (nvarchar)</li>
+                                    <li>Track (nvarchar)</li>
+                                    <li class="col-fk"><b>FK</b> InstructorId (nvarchar)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">ChatbotInteractions</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> Id (int)</li>
+                                    <li class="col-fk"><b>FK</b> StudentId (nvarchar)</li>
+                                    <li>UserPrompt (nvarchar)</li>
+                                    <li>BotResponse (nvarchar)</li>
+                                    <li>Timestamp (datetime2)</li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else if (activeTab == "code")
+            {
+                <div class="code-snippet-view">
+                    <div class="code-snippet-header">
+                        <span class="code-file-name">@CodeSnippetFileName</span>
+                        <button type="button" class="button button-quiet button-xs" @onclick="CopySnippet">
+                            @(codeCopied ? "✓ Copied!" : "Copy Code")
+                        </button>
+                    </div>
+                    <pre class="code-block"><code>@CodeSnippetContent</code></pre>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public PortfolioApp.Models.Project? Project { get; set; }
+    private string activeTab = "diagram";
+    private bool codeCopied;
+
+    private bool HasDatabaseSchema =>
+        this.Project?.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase) == true ||
+        this.Project?.Slug.Contains("elearning", StringComparison.OrdinalIgnoreCase) == true;
+
+    private bool HasCodeSnippet =>
+        this.Project?.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase) == true ||
+        this.Project?.Slug.Contains("elearning", StringComparison.OrdinalIgnoreCase) == true;
+
+    private string CodeSnippetFileName =>
+        this.Project?.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase) == true
+            ? "CartController.cs (Stripe Checkout Session)"
+            : "ChatbotService.cs (Conversation Flow)";
+
+    private string CodeSnippetContent =>
+        this.Project?.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase) == true
+            ? @"// Stripe Checkout Session Creation in ASP.NET Core MVC
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Checkout(ShoppingCartVM cartVM)
+{
+    var orderHeader = await _unitOfWork.OrderHeader.GetAsync(u => u.Id == cartVM.OrderHeader.Id);
+    var domain = $""{Request.Scheme}://{Request.Host}/"";
+
+    var options = new SessionCreateOptions
+    {
+        SuccessUrl = domain + $""customer/cart/OrderConfirmation?id={orderHeader.Id}"",
+        CancelUrl = domain + ""customer/cart/index"",
+        LineItems = new List<SessionLineItemOptions>(),
+        Mode = ""payment""
+    };
+
+    foreach (var item in cartVM.ShoppingCartList)
+    {
+        options.LineItems.Add(new SessionLineItemOptions
+        {
+            PriceData = new SessionLineItemPriceDataOptions
+            {
+                UnitAmount = (long)(item.Price * 100),
+                Currency = ""usd"",
+                ProductData = new SessionLineItemPriceDataProductDataOptions
+                {
+                    Name = item.Product.Title
+                }
+            },
+            Quantity = item.Count
+        });
+    }
+
+    var service = new SessionService();
+    Session session = await service.CreateAsync(options);
+    _unitOfWork.OrderHeader.UpdateStripePaymentId(orderHeader.Id, session.Id, session.PaymentIntentId);
+    await _unitOfWork.SaveAsync();
+
+    Response.Headers.Add(""Location"", session.Url);
+    return new StatusCodeResult(303);
+}"
+            : @"// AI Chatbot Context & Knowledge Retrieval Service
+public async Task<ChatbotResponseDto> ProcessStudentQueryAsync(string studentId, string prompt)
+{
+    var relevantMaterials = await _unitOfWork.CourseMaterial
+        .GetAllAsync(m => m.Tags.Contains(prompt) || m.Title.Contains(prompt));
+
+    var contextBuilder = new StringBuilder();
+    foreach (var material in relevantMaterials.Take(3))
+    {
+        contextBuilder.AppendLine($""Course: {material.Course.Title} - Resource: {material.Title}"");
+    }
+
+    var response = await _aiService.GenerateAnswerAsync(prompt, contextBuilder.ToString());
+    
+    await _unitOfWork.ChatbotLog.AddAsync(new ChatbotLog
+    {
+        StudentId = studentId,
+        Prompt = prompt,
+        Answer = response.Text,
+        Timestamp = DateTime.UtcNow
+    });
+    await _unitOfWork.SaveAsync();
+
+    return new ChatbotResponseDto { Answer = response.Text, Sources = relevantMaterials.Select(m => m.Title).ToList() };
+}";
+
+    private async Task CopySnippet()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", CodeSnippetContent);
+        codeCopied = true;
+        StateHasChanged();
+        await Task.Delay(2000);
+        codeCopied = false;
+    }
+}
+
