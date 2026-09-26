@@ -1,6 +1,8 @@
 @inject ContentService Content
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@inject HttpClient Http
+@implements IDisposable
 
 <div class="chat-widget-container">
     @if (!isOpen)
@@ -19,7 +21,7 @@
     else
     {
         <!-- Chat Popup Window -->
-        <div class="chat-window" role="dialog" aria-labelledby="chat-title">
+        <div class="chat-window @(isWidescreen ? "is-widescreen" : "")" role="dialog" aria-labelledby="chat-title">
             <div class="chat-header">
                 <div class="chat-header-info">
                     <div class="chat-avatar">
@@ -27,18 +29,103 @@
                         <i class="online-indicator"></i>
                     </div>
                     <div>
-                        <h4 id="chat-title" class="chat-header-name">Ibrahim AI</h4>
-                        <span class="chat-header-status">Portfolio Assistant · Online</span>
+                        <div class="chat-header-title-row">
+                            <h4 id="chat-title" class="chat-header-name">Ibrahim AI</h4>
+                            <span class="chat-model-badge">@(useGemini && !string.IsNullOrEmpty(geminiApiKey) ? "GEMINI HYBRID" : "KNOWLEDGE ENGINE")</span>
+                        </div>
+                        <span class="chat-header-status">
+                            @(selectedPersona switch {
+                                "recruiter" => "💼 Recruiter Mode · Executive Summary",
+                                "architect" => "🛠️ Tech Lead Mode · Deep Architecture",
+                                "client" => "🤝 Client Mode · Delivery & ROI",
+                                _ => "ASP.NET Core Specialist · Live Assistant"
+                            })
+                        </span>
                     </div>
                 </div>
                 <div class="chat-header-actions">
-                    <button type="button" class="chat-action-btn" @onclick="ClearChat" title="Reset Conversation">
+                    <button type="button" 
+                            class="chat-action-btn" 
+                            @onclick="ToggleSettings" 
+                            title="AI Settings (Gemini Key)">
+                        ⚙️
+                    </button>
+                    <button type="button" 
+                            class="chat-action-btn" 
+                            @onclick="DownloadCandidateBrief" 
+                            title="Download Candidate Summary (Markdown)">
+                        📥
+                    </button>
+                    <button type="button" 
+                            class="chat-action-btn" 
+                            @onclick="ToggleWidescreen" 
+                            title="@(isWidescreen ? "Normal view" : "Expand to widescreen")">
+                        @(isWidescreen ? "❐" : "⛶")
+                    </button>
+                    <button type="button" 
+                            class="chat-action-btn" 
+                            @onclick="CopyTranscript" 
+                            title="Copy chat conversation">
+                        @(isCopied ? "✓" : "📋")
+                    </button>
+                    <button type="button" 
+                            class="chat-action-btn" 
+                            @onclick="ClearChat" 
+                            title="Reset Conversation">
                         ↺
                     </button>
-                    <button type="button" class="chat-action-btn chat-close-btn" @onclick="ToggleChat" title="Close Chat">
+                    <button type="button" 
+                            class="chat-action-btn chat-close-btn" 
+                            @onclick="ToggleChat" 
+                            title="Close Chat">
                         ✕
                     </button>
                 </div>
+            </div>
+
+            <!-- Optional Gemini Settings Panel -->
+            @if (showSettings)
+            {
+                <div class="chat-settings-panel">
+                    <div class="settings-header">
+                        <span>✦ Hybrid Gemini AI Configuration</span>
+                        <button type="button" class="chat-action-btn" @onclick="ToggleSettings">✕</button>
+                    </div>
+                    <p style="margin: 0; color: #a4b2b8; font-size: 10.5px;">Enter a Google Gemini API Key to enable open-ended generative LLM reasoning, or leave blank to use the instant local Knowledge Engine.</p>
+                    <div class="settings-input-group">
+                        <input type="password" 
+                               class="settings-input" 
+                               placeholder="AIzaSy..." 
+                               @bind="geminiApiKey" />
+                        <button type="button" class="settings-save-btn" @onclick="SaveGeminiKey">Save</button>
+                    </div>
+                    <span class="settings-note">Key is stored locally in your browser session only.</span>
+                </div>
+            }
+
+            <!-- Persona Switcher Bar -->
+            <div class="chat-persona-bar">
+                <span class="persona-label">PERSONA:</span>
+                <button type="button" 
+                        class="chat-persona-btn @(selectedPersona == "general" ? "is-active" : "")"
+                        @onclick='() => SetPersona("general")'>
+                    ✦ General
+                </button>
+                <button type="button" 
+                        class="chat-persona-btn @(selectedPersona == "recruiter" ? "is-active" : "")"
+                        @onclick='() => SetPersona("recruiter")'>
+                    💼 Recruiter
+                </button>
+                <button type="button" 
+                        class="chat-persona-btn @(selectedPersona == "architect" ? "is-active" : "")"
+                        @onclick='() => SetPersona("architect")'>
+                    🛠️ Tech Lead
+                </button>
+                <button type="button" 
+                        class="chat-persona-btn @(selectedPersona == "client" ? "is-active" : "")"
+                        @onclick='() => SetPersona("client")'>
+                    🤝 Client
+                </button>
             </div>
 
             <!-- Messages Area -->
@@ -54,24 +141,127 @@
                             <div class="chat-bubble-text">
                                 @((MarkupString)FormatMessageText(msg.Text))
                             </div>
-                            @if (!string.IsNullOrEmpty(msg.ActionUrl))
+
+                            <!-- Interactive C# Code Snippet Card -->
+                            @if (msg.CodeSnippet != null)
                             {
-                                <div class="msg-action-wrap">
-                                    @if (msg.ActionUrl.StartsWith("#"))
+                                <div class="chat-code-card">
+                                    <div class="chat-code-header">
+                                        <span>💻 @msg.CodeSnippet.Title</span>
+                                        <button type="button" 
+                                                class="chat-code-copy-btn" 
+                                                @onclick="() => CopyCode(msg.CodeSnippet.Code)">
+                                            📋 Copy Code
+                                        </button>
+                                    </div>
+                                    <pre class="chat-code-body"><code>@msg.CodeSnippet.Code</code></pre>
+                                </div>
+                            }
+
+                            <!-- Interactive Estimator Step Box -->
+                            @if (msg.EstimatorStep > 0 && !msg.IsUser)
+                            {
+                                <div class="chat-estimator-box">
+                                    @if (msg.EstimatorStep == 1)
                                     {
-                                        <a href="@($"{Nav.BaseUri}{msg.ActionUrl}")" class="msg-action-link" @onclick="ToggleChat">
-                                            @msg.ActionText
-                                        </a>
+                                        <div class="estimator-step-title">
+                                            <span class="estimator-step-badge">STEP 1/3</span>
+                                            <span>Select Project Architecture:</span>
+                                        </div>
+                                        <div class="estimator-options-grid">
+                                            <button type="button" class="estimator-opt-btn" @onclick='() => HandleEstimatorStep(2, "E-Commerce System (Stripe & Catalog)")'>
+                                                🛒 Production E-Commerce Platform
+                                            </button>
+                                            <button type="button" class="estimator-opt-btn" @onclick='() => HandleEstimatorStep(2, "High-Performance REST Web API (Clean Arch)")'>
+                                                ⚡ Enterprise ASP.NET Core Web API
+                                            </button>
+                                            <button type="button" class="estimator-opt-btn" @onclick='() => HandleEstimatorStep(2, "Full-Stack Portal (Blazor / MVC + SQL)")'>
+                                                🌐 Full-Stack Corporate Portal
+                                            </button>
+                                        </div>
                                     }
-                                    else
+                                    else if (msg.EstimatorStep == 2)
                                     {
-                                        <a href="@msg.ActionUrl" class="msg-action-link">
-                                            @msg.ActionText
-                                        </a>
+                                        <div class="estimator-step-title">
+                                            <span class="estimator-step-badge">STEP 2/3</span>
+                                            <span>Select Key Requirements:</span>
+                                        </div>
+                                        <div class="estimator-options-grid">
+                                            <button type="button" class="estimator-opt-btn" @onclick='() => HandleEstimatorStep(3, "Secure Payment Webhooks & Role-based Auth")'>
+                                                🔐 Stripe Checkout & ASP.NET Identity
+                                            </button>
+                                            <button type="button" class="estimator-opt-btn" @onclick='() => HandleEstimatorStep(3, "High-Concurrency CQRS with Redis Caching")'>
+                                                🚀 CQRS + Redis Cache + Micro-benchmarks
+                                            </button>
+                                            <button type="button" class="estimator-opt-btn" @onclick='() => HandleEstimatorStep(3, "AI LLM Integration & Document Assistant")'>
+                                                🤖 Intelligent AI Integration & Retrieval
+                                            </button>
+                                        </div>
+                                    }
+                                    else if (msg.EstimatorStep == 3)
+                                    {
+                                        <div class="estimator-step-title">
+                                            <span class="estimator-step-badge">STEP 3/3</span>
+                                            <span>Target Launch Timeline:</span>
+                                        </div>
+                                        <div class="estimator-options-grid">
+                                            <button type="button" class="estimator-opt-btn" @onclick='() => FinishEstimator("1 to 2 Months (Rapid MVP)")'>
+                                                ⚡ Rapid MVP (1–2 Months)
+                                            </button>
+                                            <button type="button" class="estimator-opt-btn" @onclick='() => FinishEstimator("2 to 4 Months (Full Enterprise)")'>
+                                                🏗️ Enterprise Scale (2–4 Months)
+                                            </button>
+                                            <button type="button" class="estimator-opt-btn" @onclick='() => FinishEstimator("Flexible / Ongoing Advisory")'>
+                                                🔄 Flexible / Technical Advisory
+                                            </button>
+                                        </div>
                                     }
                                 </div>
                             }
-                            <span class="msg-time">@msg.Timestamp.ToString("h:mm tt")</span>
+
+                            <!-- Action Pills -->
+                            @if (msg.Actions.Count > 0)
+                            {
+                                <div class="msg-actions-grid">
+                                    @foreach (var action in msg.Actions)
+                                    {
+                                        @if (action.Url.StartsWith("#"))
+                                        {
+                                            <button type="button" class="msg-action-pill" @onclick="() => NavigateAndHighlight(action.Url)">
+                                                <span>@action.Label</span>
+                                                <span class="action-icon">↘</span>
+                                            </button>
+                                        }
+                                        else if (action.Url.StartsWith("http"))
+                                        {
+                                            <a href="@action.Url" target="_blank" rel="noreferrer" class="msg-action-pill">
+                                                <span>@action.Label</span>
+                                                <span class="action-icon">↗</span>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@action.Url" class="msg-action-pill">
+                                                <span>@action.Label</span>
+                                                <span class="action-icon">↗</span>
+                                            </a>
+                                        }
+                                    }
+                                </div>
+                            }
+
+                            <div class="chat-bubble-footer">
+                                @if (!msg.IsUser)
+                                {
+                                    <button type="button" 
+                                            class="chat-speak-btn @(activeSpeakingId == msg.Id ? "is-speaking" : "")" 
+                                            @onclick="() => ToggleSpeech(msg)" 
+                                            title="Read answer aloud">
+                                        @(activeSpeakingId == msg.Id ? "⏹ Stop" : "🔊 Listen")
+                                    </button>
+                                }
+                                <span class="msg-time">@msg.Timestamp.ToString("h:mm tt")</span>
+                            </div>
                         </div>
                     </div>
                 }
@@ -89,13 +279,13 @@
                 }
             </div>
 
-            <!-- Suggestion Quick Prompts -->
-            @if (messages.Count <= 2 && !isTyping)
+            <!-- Dynamic Suggestion Chips -->
+            @if (!isTyping && activeSuggestions.Count > 0)
             {
                 <div class="chat-suggestions">
-                    <span class="suggestions-label">SUGGESTED TOPICS</span>
+                    <span class="suggestions-label">SUGGESTED QUERIES</span>
                     <div class="suggestions-scroll">
-                        @foreach (var suggestion in suggestions)
+                        @foreach (var suggestion in activeSuggestions)
                         {
                             <button type="button" class="suggestion-chip" @onclick="() => SendPrompt(suggestion)">
                                 @suggestion
@@ -105,11 +295,17 @@
                 </div>
             }
 
-            <!-- Input Bar -->
+            <!-- Input Bar with Voice Recognition -->
             <form class="chat-input-bar" @onsubmit="SendMessage" @onsubmit:preventDefault>
+                <button type="button" 
+                        class="chat-mic-btn @(isListening ? "is-listening" : "")" 
+                        @onclick="ToggleVoiceRecognition" 
+                        title="@(isListening ? "Listening... click to stop" : "Speak your question (Voice Mode)")">
+                    🎙️
+                </button>
                 <input type="text"
                        class="chat-input-field"
-                       placeholder="Ask about skills, projects, booking..."
+                       placeholder="@(isListening ? "Listening to your voice..." : "Ask in English or Arabic (skills, code, estimator)...")"
                        @bind="userInput"
                        @bind:event="oninput"
                        disabled="@isTyping" />
@@ -127,30 +323,129 @@
 @code {
     private bool isOpen;
     private bool isTyping;
+    private bool isWidescreen;
+    private bool isCopied;
+    private bool isListening;
+    private bool showSettings;
+    private bool useGemini;
+    private string geminiApiKey = "";
+    private string selectedPersona = "general";
     private string userInput = "";
+    private string? activeSpeakingId;
+
+    private DotNetObjectReference<ChatWidget>? dotNetRef;
     private readonly List<ChatMessage> messages = [];
+    private List<string> activeSuggestions = [];
 
-    private readonly string[] suggestions =
-    [
-        "What are Ibrahim's core skills?",
-        "Tell me about Tech Xpress",
-        "How can I book a call?",
-        "Are you available for new roles?",
-        "What was your graduation project?"
-    ];
+    private Profile profile = new();
+    private List<Project> projects = [];
+    private List<Testimonial> testimonials = [];
+    private List<Certificate> certificates = [];
 
-    private record ChatMessage(string Text, bool IsUser, DateTime Timestamp, string? ActionUrl = null, string? ActionText = null);
+    // Temporary storage for 3-step project estimator
+    private string estimatorProjectType = "";
+    private string estimatorRequirements = "";
 
-    protected override void OnInitialized()
+    public sealed record ChatCodeSnippet(string Title, string Code);
+    public sealed record ChatAction(string Label, string Url);
+    public sealed record ChatMessage(string Id, string Text, bool IsUser, DateTime Timestamp, List<ChatAction> Actions, ChatCodeSnippet? CodeSnippet = null, int EstimatorStep = 0);
+
+    protected override async Task OnInitializedAsync()
     {
+        dotNetRef = DotNetObjectReference.Create(this);
+        try
+        {
+            profile = await Content.GetProfileAsync();
+            projects = await Content.GetProjectsAsync();
+            testimonials = await Content.GetTestimonialsAsync();
+            certificates = await Content.GetCertificatesAsync();
+        }
+        catch
+        {
+            // Fallback
+        }
+
         if (messages.Count == 0)
         {
             messages.Add(new ChatMessage(
-                "Hello! I am **Ibrahim's AI Assistant**. I can answer questions about his technical stack, backend projects like Tech Xpress, or help you schedule a 1:1 call with him. How can I help you today?",
+                Guid.NewGuid().ToString(),
+                "Welcome! I am **Ibrahim's AI Knowledge Assistant**.\n\nEquipped with **Voice Mode 🎙️**, **Persona Tuning 🎭**, **C# Code Cards 📦**, and an **Interactive Project Estimator 🧮**.\n\nAsk about his **ASP.NET Core & C# engineering**, **Google & Udemy certificates**, **recommendations**, or schedule a 1:1 call.",
                 false,
-                DateTime.Now
+                DateTime.Now,
+                new List<ChatAction>
+                {
+                    new("Book 1:1 Call 🗓️", "book-a-call"),
+                    new("View Certificates 📜", "#certifications"),
+                    new("Estimate My Project 🧮", "ESTIMATE_FLOW")
+                }
             ));
         }
+
+        UpdateSuggestionsForPersona();
+    }
+
+    private void SetPersona(string persona)
+    {
+        selectedPersona = persona;
+        UpdateSuggestionsForPersona();
+        messages.Add(new ChatMessage(
+            Guid.NewGuid().ToString(),
+            persona switch
+            {
+                "recruiter" => "Switched to **Recruiter Mode 💼**. Answers will focus on executive credentials, years of experience, hiring availability, and key achievements.",
+                "architect" => "Switched to **Tech Lead / Architect Mode 🛠️**. Answers will deep-dive into Clean Architecture, CQRS, EF Core compiled queries, memory efficiency, and threading.",
+                "client" => "Switched to **Client & Founder Mode 🤝**. Answers will focus on project turnaround times, business ROI, payment integrations, and delivery reliability.",
+                _ => "Switched to **General Mode ✦**. Balanced portfolio overview."
+            },
+            false,
+            DateTime.Now,
+            new List<ChatAction>
+            {
+                new("Book 1:1 Call 🗓️", "book-a-call"),
+                new("View Certificates 📜", "#certifications")
+            }
+        ));
+        ScrollToBottom();
+    }
+
+    private void UpdateSuggestionsForPersona()
+    {
+        activeSuggestions = selectedPersona switch
+        {
+            "recruiter" =>
+            [
+                "What is his hiring availability?",
+                "What certificates does he have?",
+                "Who gave verified testimonials?",
+                "Download Resume 📄",
+                "How to book a 1:1 interview?"
+            ],
+            "architect" =>
+            [
+                "Show CQRS & MediatR C# code 💻",
+                "Explain the 4-layer architecture",
+                "EF Core performance & indexing rules",
+                "Show Global Exception Handler code 💻",
+                "Tell me about Tech Xpress architecture"
+            ],
+            "client" =>
+            [
+                "Estimate My Project 🧮",
+                "What was the turnaround for El-Wakeel?",
+                "How does Stripe payment work?",
+                "What are client reviews & feedback?",
+                "Schedule a 60-min discussion"
+            ],
+            _ =>
+            [
+                "What are Ibrahim's core skills?",
+                "What certificates does he hold?",
+                "Who gave testimonials & feedback?",
+                "Show CQRS code snippet 💻",
+                "Estimate My Project 🧮",
+                "ما هي مهارات إبراهيم؟"
+            ]
+        };
     }
 
     public void Open()
@@ -163,20 +458,159 @@
     private void ToggleChat()
     {
         isOpen = !isOpen;
-        if (isOpen)
+        if (isOpen) ScrollToBottom();
+    }
+
+    private void ToggleWidescreen() => isWidescreen = !isWidescreen;
+    private void ToggleSettings() => showSettings = !showSettings;
+
+    private async Task SaveGeminiKey()
+    {
+        useGemini = !string.IsNullOrWhiteSpace(geminiApiKey);
+        showSettings = false;
+        messages.Add(new ChatMessage(
+            Guid.NewGuid().ToString(),
+            useGemini 
+                ? "✨ **Hybrid Gemini Mode Activated!** Questions will now leverage Google's Gemini LLM with Ibrahim's portfolio system prompt." 
+                : "Switched back to the instant **Local Knowledge Engine**.",
+            false,
+            DateTime.Now,
+            []
+        ));
+        ScrollToBottom();
+    }
+
+    [JSInvokable]
+    public void OnSpeechResult(string transcript)
+    {
+        userInput = transcript;
+        isListening = false;
+        StateHasChanged();
+        _ = SendMessage();
+    }
+
+    [JSInvokable]
+    public void OnSpeechStateChanged(bool listening)
+    {
+        isListening = listening;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void OnSpeakingStateChanged(bool speaking)
+    {
+        if (!speaking) activeSpeakingId = null;
+        StateHasChanged();
+    }
+
+    private async Task ToggleVoiceRecognition()
+    {
+        if (isListening)
         {
-            ScrollToBottom();
+            await JS.InvokeVoidAsync("portfolioSpeech.stopListening");
+            isListening = false;
         }
+        else
+        {
+            if (dotNetRef != null)
+            {
+                await JS.InvokeVoidAsync("portfolioSpeech.startListening", dotNetRef);
+            }
+        }
+    }
+
+    private async Task ToggleSpeech(ChatMessage msg)
+    {
+        if (activeSpeakingId == msg.Id)
+        {
+            await JS.InvokeVoidAsync("portfolioSpeech.stopSpeaking", dotNetRef);
+            activeSpeakingId = null;
+        }
+        else
+        {
+            activeSpeakingId = msg.Id;
+            await JS.InvokeVoidAsync("portfolioSpeech.speak", msg.Text, dotNetRef);
+        }
+    }
+
+    private async Task NavigateAndHighlight(string url)
+    {
+        if (url == "ESTIMATE_FLOW")
+        {
+            StartEstimatorFlow();
+            return;
+        }
+
+        await JS.InvokeVoidAsync("portfolioScrollAndHighlight", url);
+    }
+
+    private async Task CopyCode(string code)
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", code);
+    }
+
+    private async Task CopyTranscript()
+    {
+        if (isCopied) return;
+        var transcript = string.Join("\n\n", messages.Select(m => $"{(m.IsUser ? "User" : "Ibrahim AI")}: {m.Text}"));
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", transcript);
+            isCopied = true;
+            StateHasChanged();
+            await Task.Delay(2000);
+            isCopied = false;
+            StateHasChanged();
+        }
+        catch { }
+    }
+
+    private async Task DownloadCandidateBrief()
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("# Ibrahim Tarek — Candidate & Technical Assessment Brief");
+        sb.AppendLine($"*Generated on: {DateTime.Now:yyyy-MM-dd HH:mm}*");
+        sb.AppendLine();
+        sb.AppendLine("## Executive Profile");
+        sb.AppendLine($"- **Name**: Ibrahim Tarek");
+        sb.AppendLine($"- **Role**: .NET & ASP.NET Core Specialist");
+        sb.AppendLine($"- **Location**: Alexandria, Egypt (Open to Remote & Relocation)");
+        sb.AppendLine($"- **Email**: {profile.Email}");
+        sb.AppendLine($"- **Phone**: {profile.Phone}");
+        sb.AppendLine();
+        sb.AppendLine("## Verified Credentials");
+        sb.AppendLine("- Google Cybersecurity Professional Certificate (8 Courses · Credly: W5GLTB25)");
+        sb.AppendLine("- Build a Shopping Cart Using .NET Core from Scratch (Udemy · Mohamed Assem)");
+        sb.AppendLine("- Digital Egypt Pioneers Initiative (DEPI) 6-Month Intensive ASP.NET Track");
+        sb.AppendLine("- Bachelor of Technology in Information Systems (MTIS, Grade: Good, Project: Excellent)");
+        sb.AppendLine();
+        sb.AppendLine("## Conversation Transcript");
+        foreach (var msg in messages)
+        {
+            sb.AppendLine($"### {(msg.IsUser ? "Inquirer" : "Ibrahim AI")}");
+            sb.AppendLine(msg.Text);
+            sb.AppendLine();
+        }
+
+        await JS.InvokeVoidAsync("portfolioDownloadFile", "Ibrahim_Tarek_Candidate_Brief.md", sb.ToString());
     }
 
     private void ClearChat()
     {
         messages.Clear();
         messages.Add(new ChatMessage(
-            "Chat refreshed! Ask me anything about Ibrahim's ASP.NET experience, project architectures, or how to get in touch.",
+            Guid.NewGuid().ToString(),
+            "Chat refreshed! Ask me anything about Ibrahim's backend engineering, verified certificates, testimonials, or project estimates.",
             false,
-            DateTime.Now
+            DateTime.Now,
+            new List<ChatAction>
+            {
+                new("Explore Projects ↗", "#work"),
+                new("View Certificates 📜", "#certifications"),
+                new("Estimate My Project 🧮", "ESTIMATE_FLOW")
+            }
         ));
+        UpdateSuggestionsForPersona();
     }
 
     private async Task SendPrompt(string prompt)
@@ -185,26 +619,146 @@
         await SendMessage();
     }
 
+    private void StartEstimatorFlow()
+    {
+        messages.Add(new ChatMessage(
+            Guid.NewGuid().ToString(),
+            "**Interactive Project Architecture & Timeline Estimator**\n\nLet's configure your system requirements in 3 quick steps to calculate an estimated technical blueprint and turnaround.",
+            false,
+            DateTime.Now,
+            [],
+            null,
+            EstimatorStep: 1
+        ));
+        ScrollToBottom();
+    }
+
+    private void HandleEstimatorStep(int nextStep, string selectedValue)
+    {
+        if (nextStep == 2) estimatorProjectType = selectedValue;
+        if (nextStep == 3) estimatorRequirements = selectedValue;
+
+        messages.Add(new ChatMessage(Guid.NewGuid().ToString(), $"Selected: **{selectedValue}**", true, DateTime.Now, []));
+
+        messages.Add(new ChatMessage(
+            Guid.NewGuid().ToString(),
+            nextStep == 2 
+                ? $"Great choice. For **{estimatorProjectType}**, what are your priority requirements?" 
+                : $"Understood. For a system with **{estimatorRequirements}**, what is your target launch horizon?",
+            false,
+            DateTime.Now,
+            [],
+            null,
+            EstimatorStep: nextStep
+        ));
+        ScrollToBottom();
+    }
+
+    private void FinishEstimator(string timeline)
+    {
+        messages.Add(new ChatMessage(Guid.NewGuid().ToString(), $"Target Timeline: **{timeline}**", true, DateTime.Now, []));
+
+        var blueprint =
+            $"### 🏗️ Recommended System Blueprint\n\n" +
+            $"• **Project Type**: {estimatorProjectType}\n" +
+            $"• **Core Architecture**: Clean Architecture & CQRS with MediatR, FluentValidation\n" +
+            $"• **Persistence**: SQL Server with Entity Framework Core & Redis Distributed Cache\n" +
+            $"• **Key Features**: {estimatorRequirements}\n" +
+            $"• **Estimated Turnaround**: {timeline}\n\n" +
+            $"Ibrahim can deliver this end-to-end with high test coverage, automated migrations, and zero-downtime deployment.";
+
+        messages.Add(new ChatMessage(
+            Guid.NewGuid().ToString(),
+            blueprint,
+            false,
+            DateTime.Now,
+            new List<ChatAction>
+            {
+                new("Schedule 1:1 Discussion 🗓️", "book-a-call"),
+                new("Message on WhatsApp ↗", profile.WhatsAppUrl),
+                new("Send via Contact Form ↘", "#contact")
+            }
+        ));
+        ScrollToBottom();
+    }
+
     private async Task SendMessage()
     {
         if (string.IsNullOrWhiteSpace(userInput) || isTyping) return;
 
         var text = userInput.Trim();
         userInput = "";
-        messages.Add(new ChatMessage(text, true, DateTime.Now));
+        messages.Add(new ChatMessage(Guid.NewGuid().ToString(), text, true, DateTime.Now, []));
         ScrollToBottom();
 
         isTyping = true;
         StateHasChanged();
 
-        // Realistic typing latency
-        await Task.Delay(550);
+        if (text.Equals("ESTIMATE_FLOW", StringComparison.OrdinalIgnoreCase) || text.Contains("estimate", StringComparison.OrdinalIgnoreCase) && text.Contains("project"))
+        {
+            await Task.Delay(350);
+            StartEstimatorFlow();
+            isTyping = false;
+            StateHasChanged();
+            return;
+        }
 
-        var (reply, actionUrl, actionText) = GenerateResponse(text);
-        messages.Add(new ChatMessage(reply, false, DateTime.Now, actionUrl, actionText));
+        // Check if Gemini Hybrid is active
+        if (useGemini && !string.IsNullOrWhiteSpace(geminiApiKey))
+        {
+            var geminiReply = await CallGeminiAsync(text);
+            if (!string.IsNullOrEmpty(geminiReply))
+            {
+                messages.Add(new ChatMessage(
+                    Guid.NewGuid().ToString(),
+                    geminiReply,
+                    false,
+                    DateTime.Now,
+                    new List<ChatAction>
+                    {
+                        new("Book 1:1 Call 🗓️", "book-a-call"),
+                        new("View Certificates 📜", "#certifications")
+                    }
+                ));
+                isTyping = false;
+                StateHasChanged();
+                ScrollToBottom();
+                return;
+            }
+        }
+
+        // Knowledge Engine
+        await Task.Delay(420);
+        var (reply, actions, snippet) = GenerateResponse(text);
+        messages.Add(new ChatMessage(Guid.NewGuid().ToString(), reply, false, DateTime.Now, actions, snippet));
         isTyping = false;
         StateHasChanged();
         ScrollToBottom();
+    }
+
+    private async Task<string?> CallGeminiAsync(string prompt)
+    {
+        try
+        {
+            var systemPrompt = $"You are Ibrahim Tarek's AI Assistant on his portfolio website. Ibrahim is an ASP.NET Core and .NET backend developer in Alexandria, Egypt. He specializes in C#, Clean Architecture, CQRS, EF Core, and SQL Server. He has a Google Cybersecurity Professional Certificate, DEPI 6-month scholarship, and an Excellent grade on his AI E-Learning graduation project. Testimonials from Dr. Fifi Farouk, Eng. Mohamed Abdullah, Mr. Abdullah El-Wakeel. Be professional, concise, enthusiastic, and helpful. Inquirer asked: {prompt}";
+
+            var body = new
+            {
+                contents = new[]
+                {
+                    new { role = "user", parts = new[] { new { text = systemPrompt } } }
+                }
+            };
+
+            var response = await Http.PostAsJsonAsync($"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={geminiApiKey}", body);
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+                return json.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
+            }
+        }
+        catch { }
+        return null;
     }
 
     private void ScrollToBottom()
@@ -214,90 +768,280 @@
 
     private string FormatMessageText(string raw)
     {
-        // Simple safe inline bold formatting
-        return raw.Replace("**", "<strong>").Replace("</strong>", "</strong>", StringComparison.Ordinal);
+        if (string.IsNullOrEmpty(raw)) return "";
+
+        var formatted = raw
+            .Replace("\n\n", "<br /><br />")
+            .Replace("\n", "<br />");
+
+        while (formatted.Contains("**"))
+        {
+            var first = formatted.IndexOf("**", StringComparison.Ordinal);
+            var second = formatted.IndexOf("**", first + 2, StringComparison.Ordinal);
+            if (second == -1) break;
+            formatted = formatted.Substring(0, first) + "<strong>" + formatted.Substring(first + 2, second - first - 2) + "</strong>" + formatted.Substring(second + 2);
+        }
+
+        while (formatted.Contains('`'))
+        {
+            var first = formatted.IndexOf('`');
+            var second = formatted.IndexOf('`', first + 1);
+            if (second == -1) break;
+            formatted = formatted.Substring(0, first) + "<code class=\"chat-inline-code\">" + formatted.Substring(first + 1, second - first - 1) + "</code>" + formatted.Substring(second + 1);
+        }
+
+        return formatted;
     }
 
-    private (string Reply, string? ActionUrl, string? ActionText) GenerateResponse(string query)
+    private (string Reply, List<ChatAction> Actions, ChatCodeSnippet? Snippet) GenerateResponse(string query)
     {
         var q = query.ToLowerInvariant();
+        var actions = new List<ChatAction>();
 
-        if (q.Contains("book") || q.Contains("call") || q.Contains("schedule") || q.Contains("meeting") || q.Contains("calendar"))
+        // 1. Code Snippets request
+        if (q.Contains("cqrs") && (q.Contains("code") || q.Contains("snippet") || q.Contains("show") || q.Contains("handler") || q.Contains("كود")))
         {
+            var code = @"public record CreateOrderCommand(Guid CustomerId, List<OrderItemDto> Items) : IRequest<Result<Guid>>;
+
+public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher) 
+    : IRequestHandler<CreateOrderCommand, Result<Guid>>
+{
+    public async Task<Result<Guid>> Handle(CreateOrderCommand request, CancellationToken ct)
+    {
+        var order = Order.Create(request.CustomerId);
+        foreach (var item in request.Items) order.AddItem(item.ProductId, item.Quantity, item.Price);
+
+        db.Orders.Add(order);
+        await db.SaveChangesAsync(ct);
+        await publisher.Publish(new OrderCreatedEvent(order.Id), ct);
+
+        return Result.Success(order.Id);
+    }
+}";
+            actions.Add(new("Explore Clean Architecture 🏗️", "#process"));
+            actions.Add(new("View C# Recipe Vault 📦", "#skills"));
             return (
-                "Ibrahim offers **60-minute technical discussion calls** via Google Meet. You can select an open time slot directly on his live booking schedule.",
-                "book-a-call",
-                "Open Booking Calendar ↗"
+                "Here is an authentic pattern from Ibrahim's **CQRS & MediatR pipeline** showcasing Command encapsulation, Domain Events, and Result wrapping:",
+                actions,
+                new ChatCodeSnippet("CQRS Command Handler with MediatR & Result Pattern", code)
             );
         }
 
-        if (q.Contains("tech xpress") || q.Contains("ecommerce") || q.Contains("e-commerce") || q.Contains("stripe"))
+        if (q.Contains("exception") || q.Contains("error handler") || q.Contains("iexceptionhandler"))
         {
+            var code = @"public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+{
+    public async ValueTask<bool> TryHandleAsync(HttpContext ctx, Exception ex, CancellationToken ct)
+    {
+        logger.LogError(ex, ""Unhandled exception occurred: {Message}"", ex.Message);
+
+        var problem = new ProblemDetails
+        {
+            Status = StatusCodes.Status500InternalServerError,
+            Title = ""Internal Server Error"",
+            Detail = ex.Message
+        };
+
+        ctx.Response.StatusCode = problem.Status.Value;
+        await ctx.Response.WriteAsJsonAsync(problem, ct);
+        return true;
+    }
+}";
+            actions.Add(new("View C# Recipe Vault 📦", "#skills"));
             return (
-                "**Tech Xpress** is an ASP.NET Core MVC e-commerce platform built by Ibrahim. Key capabilities include **Stripe Checkout Sessions** with webhooks, multi-role ASP.NET Identity, and Entity Framework Core with SQL Server.",
-                "projects/tech-xpress-mvc",
-                "View Tech Xpress Case Study ↗"
+                "Here is Ibrahim's modern **.NET 8 `IExceptionHandler`** implementation replacing legacy middleware with structured RFC-7807 `ProblemDetails`:",
+                actions,
+                new ChatCodeSnippet(".NET 8 Global Exception Handler", code)
             );
         }
 
-        if (q.Contains("graduation") || q.Contains("elearning") || q.Contains("e-learning") || q.Contains("university"))
+        // 2. Estimator trigger
+        if (q.Contains("estimate") || q.Contains("quote") || q.Contains("cost") || q.Contains("تقدير") || q.Contains("تكلفة"))
         {
+            actions.Add(new("Launch Interactive Estimator 🧮", "ESTIMATE_FLOW"));
+            actions.Add(new("Book a 1:1 Call 🗓️", "book-a-call"));
             return (
-                "For his graduation project at MTIS (2024), Ibrahim and his team built an **AI-powered E-Learning Platform** featuring course management, resource querying, and conversational learning assistance. The project earned an **Excellent** evaluation.",
-                "projects/ai-elearning-platform",
-                "View AI E-Learning Project ↗"
-            );
-        }
-
-        if (q.Contains("skill") || q.Contains("stack") || q.Contains("c#") || q.Contains("dotnet") || q.Contains(".net") || q.Contains("technolog"))
-        {
-            return (
-                "Ibrahim's primary focus is the **.NET ecosystem**: **C#**, **ASP.NET Core (MVC & Web API)**, **Entity Framework Core**, **SQL Server**, and **Blazor WebAssembly**. He is also proficient in LINQ, ASP.NET Identity, and REST API design.",
-                "#skills",
-                "View Technical Toolkit ↗"
-            );
-        }
-
-        if (q.Contains("experience") || q.Contains("career") || q.Contains("education") || q.Contains("depi") || q.Contains("background"))
-        {
-            return (
-                "Ibrahim graduated with a Bachelor of Technology in Information Systems (MTIS, 2020–2024), completed an intensive **6-month ASP.NET Development Track** with DEPI, and has nearly 3 years of hands-on experience as a Technical IT Support Engineer.",
-                "#experience",
-                "View Career Timeline ↗"
-            );
-        }
-
-        if (q.Contains("contact") || q.Contains("email") || q.Contains("phone") || q.Contains("whatsapp") || q.Contains("reach"))
-        {
-            return (
-                "You can email Ibrahim directly at **ibrahem.elmasry.2001@gmail.com**, message him on WhatsApp, or send a direct inquiry through the contact form.",
-                "#contact",
-                "Go to Contact Form ↘"
-            );
-        }
-
-        if (q.Contains("availab") || q.Contains("hire") || q.Contains("rate") || q.Contains("freelance") || q.Contains("job") || q.Contains("remote"))
-        {
-            return (
-                "Ibrahim is currently **open to new opportunities**, including full-time remote or relocation engineering roles and select contract projects. Feel free to book a call or send a message!",
-                "book-a-call",
-                "Schedule a Discussion ↗"
-            );
-        }
-
-        if (q.Contains("hi") || q.Contains("hello") || q.Contains("hey") || q.Contains("salam") || q.Contains("welcome"))
-        {
-            return (
-                "Hello! Welcome to Ibrahim's portfolio. I can answer questions about his software projects, technology stack, or help connect you with him. What would you like to know?",
-                null,
+                "You can use Ibrahim's **Interactive Project Estimator** to configure your architecture requirements and timeline in 3 quick clicks!",
+                actions,
                 null
             );
         }
 
+        // 3. Certificates & Credentials
+        if (q.Contains("cert") || q.Contains("credential") || q.Contains("license") || q.Contains("degree") ||
+            q.Contains("google cyber") || q.Contains("credly") || q.Contains("udemy") ||
+            q.Contains("شهادة") || q.Contains("شهادات") || q.Contains("مؤهل") || q.Contains("سايبر"))
+        {
+            actions.Add(new("Explore All Certificates 📜", "#certifications"));
+            actions.Add(new("Verify Credly Badge ↗", "https://www.credly.com/go/W5GLTB25"));
+            actions.Add(new("Udemy Certificate ↗", "https://ude.my/UC-a4e382dc-1001-435f-b890-f8b9ce072483"));
+
+            return (
+                "Ibrahim holds **5 accredited professional credentials**:\n\n" +
+                "• **Google Cybersecurity Professional Certificate** (Google, 2024)\n" +
+                "  8-course specialization on Linux CLI, SQL, Python automation, SIEM/IDS, and threat mitigation. *Verified on Credly and Coursera*.\n\n" +
+                "• **Build a Shopping Cart Using .NET Core from Scratch** (Udemy · Eng. Mohamed Assem, 2024)\n" +
+                "  12-hour intensive architecture course implementing end-to-end shopping cart flows with .NET Core, EF Core, and SQL Server.\n\n" +
+                "• **ASP.NET Core Development Track (6 Months)** (DEPI · Ministry of Communications, 2024)\n" +
+                "  Intensive government scholarship in enterprise backend architecture, Clean Architecture, and CQRS.\n\n" +
+                "• **HP LIFE Foundation Certifications** (2022)\n" +
+                "  Credentials in *Starting a Small Business* and *Selling Online (البيع عبر الإنترنت)*.",
+                actions,
+                null
+            );
+        }
+
+        // 4. Testimonials & Recommendations
+        if (q.Contains("testimonial") || q.Contains("recommend") || q.Contains("endorse") || q.Contains("feedback") ||
+            q.Contains("reference") || q.Contains("fifi") || q.Contains("mohamed abdullah") || q.Contains("elwakeel") ||
+            q.Contains("wakeel") || q.Contains("rania") || q.Contains("rawafid") ||
+            q.Contains("توصيات") || q.Contains("اراء") || q.Contains("رأي") || q.Contains("عملاء") || q.Contains("مشرف"))
+        {
+            actions.Add(new("View Verified Testimonials ⭐", "#testimonials"));
+            actions.Add(new("Book a 1:1 Call 🗓️", "book-a-call"));
+
+            return (
+                "Ibrahim has **4 verified endorsements** from clients, academic supervisors, and senior engineering instructors:\n\n" +
+                "• **Dr. Fifi Farouk** (*Academic Supervisor & Faculty Instructor*):\n" +
+                "  *“Ibrahim demonstrated extraordinary technical maturity while architecting the AI-Powered E-Learning Platform. His command of ASP.NET Core and clean code set a benchmark for excellence in our department.”*\n\n" +
+                "• **Eng. Mohamed Abdullah** (*Lead ASP.NET Instructor · DEPI*):\n" +
+                "  *“Ibrahim masters backend engineering beyond tutorials—crafting resilient Web APIs, applying Clean Architecture and CQRS, and designing optimized SQL queries.”*\n\n" +
+                "• **Mr. Abdullah El-Wakeel** (*Founder & Managing Partner · El-Wakeel Legal Firm*):\n" +
+                "  *“Collaborating with Ibrahim was seamless. He translated our prestige into a fast, highly secure digital presence well ahead of deadlines.”*\n\n" +
+                "• **Mrs. Rania Elsayed** (*Product Lead · Rawafid Technology Hub*):\n" +
+                "  *“Exceptional energy and technical precision from structural database modeling to high-performance page rendering.”*",
+                actions,
+                null
+            );
+        }
+
+        // 5. Tech Xpress Project
+        if (q.Contains("tech xpress") || q.Contains("techxpress") || q.Contains("ecommerce") || q.Contains("e-commerce") || q.Contains("stripe") || q.Contains("متجر") || q.Contains("تجارة"))
+        {
+            actions.Add(new("Tech Xpress Case Study ↗", "projects/tech-xpress-mvc"));
+            actions.Add(new("Live Demo ↗", "https://techxpress-demo.somee.com"));
+            actions.Add(new("GitHub Repository ↗", "https://github.com/ibrahimelmasry/TechXpress-Ecommerce"));
+
+            return (
+                "**Tech Xpress** is an enterprise ASP.NET Core MVC e-commerce platform architected by Ibrahim:\n\n" +
+                "• **Payments**: Integrated Stripe Checkout Sessions with asynchronous Webhook synchronization.\n" +
+                "• **Security**: ASP.NET Core Identity with role-based access control (Admin, Customer, Vendor).\n" +
+                "• **Database**: SQL Server modeled with EF Core, optimized with compiled queries and indexes.\n" +
+                "• **Features**: Dynamic cart, order lifecycle tracking, inventory management, and invoice generation.",
+                actions,
+                null
+            );
+        }
+
+        // 6. AI E-Learning Project
+        if (q.Contains("elearning") || q.Contains("e-learning") || q.Contains("graduation") || q.Contains("مشروع التخرج") || q.Contains("تعليم"))
+        {
+            actions.Add(new("AI E-Learning Case Study ↗", "projects/ai-elearning-platform"));
+            actions.Add(new("Academic Supervisor Quote ⭐", "#testimonials"));
+
+            return (
+                "**AI-Powered E-Learning Platform** was Ibrahim's university graduation capstone project at MTIS (2024):\n\n" +
+                "• **Evaluation**: Awarded **Excellent (امتياز)** by faculty committee.\n" +
+                "• **Supervised By**: Dr. Fifi Farouk.\n" +
+                "• **Key Innovations**: Integrated intelligent conversational AI for student tutoring, automated quiz evaluation, and personalized course roadmaps.\n" +
+                "• **Stack**: ASP.NET Core MVC, SQL Server, Entity Framework Core, and LLM API integrations.",
+                actions,
+                null
+            );
+        }
+
+        // 7. Clean Architecture & CQRS
+        if (q.Contains("architecture") || q.Contains("clean arch") || q.Contains("cqrs") || q.Contains("mediatr") ||
+            q.Contains("solid") || q.Contains("pattern") || q.Contains("معمارية") || q.Contains("انماط"))
+        {
+            actions.Add(new("Open Architecture Explorer 🏗️", "#process"));
+            actions.Add(new("View C# Recipe Vault 📦", "#skills"));
+
+            return (
+                "Ibrahim adheres to strict **Domain-Driven Design (DDD)** and **Clean Architecture with CQRS**:\n\n" +
+                "• **Domain Layer**: Strict POCO entities, value objects, domain events, and zero external dependencies.\n" +
+                "• **Application Layer**: CQRS commands and queries decoupled via **MediatR**, validated with **FluentValidation** pipeline behaviors.\n" +
+                "• **Infrastructure Layer**: EF Core `DbContext`, SQL Server schema configurations, Redis distributed cache, and Unit of Work.\n" +
+                "• **Presentation Layer**: ASP.NET Core Minimal APIs / Web APIs, `.NET 8 IExceptionHandler`, rate limiting, and JWT authentication.",
+                actions,
+                null
+            );
+        }
+
+        // 8. Core Skills
+        if (q.Contains("skill") || q.Contains("stack") || q.Contains("c#") || q.Contains("dotnet") || q.Contains(".net") ||
+            q.Contains("technolog") || q.Contains("sql") || q.Contains("blazor") || q.Contains("مهارات") || q.Contains("تقنيات"))
+        {
+            actions.Add(new("View Technical Toolkit 🛠️", "#skills"));
+            actions.Add(new("View Certificates 📜", "#certifications"));
+
+            return (
+                "Ibrahim's technical toolkit centers on the high-performance **.NET ecosystem**:\n\n" +
+                "• **Backend & Frameworks**: C# 12, .NET 8, ASP.NET Core (Web API, MVC), Blazor WebAssembly, MediatR, FluentValidation.\n" +
+                "• **Data & Persistence**: Microsoft SQL Server, Entity Framework Core, LINQ, Dapper, Redis caching, Database Index Tuning.\n" +
+                "• **Architecture & Security**: Clean Architecture, CQRS, DDD, RESTful API design, JWT Bearer Auth, Rate Limiting, OWASP best practices.\n" +
+                "• **DevOps & Tooling**: Git, GitHub, Postman, Visual Studio, Swagger/OpenAPI.",
+                actions,
+                null
+            );
+        }
+
+        // 9. Booking & Availability
+        if (q.Contains("book") || q.Contains("call") || q.Contains("schedule") || q.Contains("meeting") || q.Contains("calendar") ||
+            q.Contains("hire") || q.Contains("availab") || q.Contains("job") || q.Contains("remote") ||
+            q.Contains("حجز") || q.Contains("ميعاد") || q.Contains("مكالمة") || q.Contains("توظيف"))
+        {
+            actions.Add(new("Open Google Meet Booking 🗓️", "book-a-call"));
+            actions.Add(new("Chat on WhatsApp ↗", profile.WhatsAppUrl));
+            actions.Add(new("Email Directly ✉️", $"mailto:{profile.Email}"));
+
+            return (
+                "Ibrahim is currently **open to new opportunities**—including full-time software engineering roles (remote or on-site/relocation) and selective contract engagements:\n\n" +
+                "• **Format**: 60-Minute Introductory Technical Call via Google Meet.\n" +
+                "• **Direct Booking**: You can select a convenient slot directly on his live calendar.\n" +
+                "• **Direct Contacts**:\n" +
+                $"  - Email: **{profile.Email}**\n" +
+                $"  - Phone: **{profile.Phone}**\n" +
+                "  - Location: Alexandria, Egypt (UTC+2 / UTC+3).",
+                actions,
+                null
+            );
+        }
+
+        // 10. Arabic Intro
+        if (q.Contains("مين ابراهيم") || q.Contains("من هو ابراهيم") || q.Contains("عرفني") || q.Contains("السلام عليكم") ||
+            q.Contains("مرحبا") || q.Contains("اهلا") || q.Contains("صباح الخير") || q.Contains("مساء الخير") || q.Contains("ازيك"))
+        {
+            actions.Add(new("عرض الشهادات المعتمدة 📜", "#certifications"));
+            actions.Add(new("عرض آراء العملاء والمشرفين ⭐", "#testimonials"));
+            actions.Add(new("حجز مكالمة 🗓️", "book-a-call"));
+
+            return (
+                "أهلاً بك! **إبراهيم طارق** هو مهندس برمجيات متخصص في تطوير الويب والـ Backend باستخدام **ASP.NET Core** و **C#** و **SQL Server**، مقيم في الإسكندرية، مصر.\n\n" +
+                "• **التعليم**: بكالوريوس في تكنولوجيا ونظم المعلومات (مشروع التخرج: منصة تعلم ذكية مدعومة بالذكاء الاصطناعي — تقدير ممتاز).\n" +
+                "• **التدريب المتخصص**: خريج منحة مبادرة مصر الرقمية (DEPI) المكثفة لمدة 6 أشهر في مسار ASP.NET.\n" +
+                "• **الشهادات**: حاصل على الشهادة الاحترافية في الأمن السيبراني من Google، وشهادة Udemy لبناء متجر إلكتروني بـ .NET Core.\n" +
+                "• **الخبرة**: أكثر من 3 سنوات خبرة عملية سابقة كمهندس دعم فني وتقني.\n\n" +
+                "كيف يمكنني مساعدتك اليوم؟",
+                actions,
+                null
+            );
+        }
+
+        // Default Fallback
+        actions.Add(new("View Technical Toolkit 🛠️", "#skills"));
+        actions.Add(new("View Certificates 📜", "#certifications"));
+        actions.Add(new("Schedule 1:1 Call 🗓️", "book-a-call"));
+
         return (
-            "I'm here to help with information about Ibrahim's ASP.NET Core experience, project architectures (like Tech Xpress), and availability. You can also reach him directly via the contact form or schedule a call.",
-            "#contact",
-            "Send Ibrahim a Message ↘"
+            "I'm here to assist with any questions about Ibrahim's **ASP.NET Core development**, **system architectures**, **verified certificates (Google, Udemy, DEPI)**, or **client & academic recommendations**.\n\nYou can also contact him directly or schedule a 1:1 technical call!",
+            actions,
+            null
         );
+    }
+
+    public void Dispose()
+    {
+        dotNetRef?.Dispose();
     }
 }

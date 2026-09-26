@@ -153,6 +153,108 @@
       }
     });
   };
+
+  window.portfolioScrollAndHighlight = (targetId) => {
+    const cleanId = (targetId || '').replace(/^#/, '');
+    const el = document.getElementById(cleanId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.remove('target-highlight-pulse');
+    void el.offsetWidth;
+    el.classList.add('target-highlight-pulse');
+    setTimeout(() => el.classList.remove('target-highlight-pulse'), 2600);
+  };
+
+  window.portfolioDownloadFile = (filename, content) => {
+    const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  window.portfolioSpeech = {
+    recognition: null,
+    isSpeaking: false,
+    startListening: (dotNetHelper) => {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Voice speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.");
+        return false;
+      }
+      try {
+        if (window.portfolioSpeech.recognition) {
+          window.portfolioSpeech.recognition.abort();
+        }
+        const recognition = new SpeechRecognition();
+        window.portfolioSpeech.recognition = recognition;
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        recognition.onstart = () => {
+          dotNetHelper.invokeMethodAsync('OnSpeechStateChanged', true);
+        };
+        recognition.onresult = (event) => {
+          if (event.results && event.results[0] && event.results[0][0]) {
+            const transcript = event.results[0][0].transcript;
+            dotNetHelper.invokeMethodAsync('OnSpeechResult', transcript);
+          }
+        };
+        recognition.onerror = (e) => {
+          console.warn("Speech recognition error:", e);
+          dotNetHelper.invokeMethodAsync('OnSpeechStateChanged', false);
+        };
+        recognition.onend = () => {
+          dotNetHelper.invokeMethodAsync('OnSpeechStateChanged', false);
+        };
+        recognition.start();
+        return true;
+      } catch (err) {
+        console.warn("Speech init failed:", err);
+        return false;
+      }
+    },
+    stopListening: () => {
+      if (window.portfolioSpeech.recognition) {
+        window.portfolioSpeech.recognition.stop();
+      }
+    },
+    speak: (text, dotNetHelper) => {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const clean = text.replace(/<[^>]*>/g, '').replace(/[\*\_`#]/g, '').trim();
+      const utterance = new SpeechSynthesisUtterance(clean);
+      const isArabic = /[\u0600-\u06FF]/.test(clean);
+      utterance.lang = isArabic ? 'ar-SA' : 'en-US';
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+      utterance.onstart = () => {
+        window.portfolioSpeech.isSpeaking = true;
+        if (dotNetHelper) dotNetHelper.invokeMethodAsync('OnSpeakingStateChanged', true);
+      };
+      utterance.onend = () => {
+        window.portfolioSpeech.isSpeaking = false;
+        if (dotNetHelper) dotNetHelper.invokeMethodAsync('OnSpeakingStateChanged', false);
+      };
+      utterance.onerror = () => {
+        window.portfolioSpeech.isSpeaking = false;
+        if (dotNetHelper) dotNetHelper.invokeMethodAsync('OnSpeakingStateChanged', false);
+      };
+      window.speechSynthesis.speak(utterance);
+    },
+    stopSpeaking: (dotNetHelper) => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        window.portfolioSpeech.isSpeaking = false;
+        if (dotNetHelper) dotNetHelper.invokeMethodAsync('OnSpeakingStateChanged', false);
+      }
+    }
+  };
+
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
