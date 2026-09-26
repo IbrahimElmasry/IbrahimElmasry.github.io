@@ -25,60 +25,96 @@
             <div class="chat-header">
                 <div class="chat-header-info">
                     <div class="chat-avatar">
-                        <span>IT</span>
-                        <i class="online-indicator"></i>
+                        <span class="avatar-letters">IA</span>
+                        <span class="online-indicator"></span>
                     </div>
-                    <div>
+                    <div class="chat-header-text">
                         <div class="chat-header-title-row">
-                            <h4 id="chat-title" class="chat-header-name">Ibrahim AI</h4>
-                            <span class="chat-model-badge">@(useGemini && !string.IsNullOrEmpty(geminiApiKey) ? "GEMINI HYBRID" : "KNOWLEDGE ENGINE")</span>
+                            <span id="chat-title" class="chat-header-name">Ibrahim AI</span>
+                            <span class="chat-model-badge">
+                                <span class="model-badge-dot"></span>
+                                @(useGemini && !string.IsNullOrEmpty(geminiApiKey) ? "GEMINI" : "ASSISTANT")
+                            </span>
                         </div>
                         <span class="chat-header-status">
                             @(selectedPersona switch {
-                                "recruiter" => "💼 Recruiter Mode · Executive Summary",
-                                "architect" => "🛠️ Tech Lead Mode · Deep Architecture",
-                                "client" => "🤝 Client Mode · Delivery & ROI",
-                                _ => "ASP.NET Core Specialist · Live Assistant"
+                                "recruiter" => "Recruiter Mode · Executive Brief",
+                                "architect" => "Tech Lead Mode · Architecture",
+                                "client" => "Client Mode · Delivery & ROI",
+                                _ => "ASP.NET Core & Cloud Specialist"
                             })
                         </span>
                     </div>
                 </div>
                 <div class="chat-header-actions">
-                    <button type="button" 
-                            class="chat-action-btn" 
-                            @onclick="ToggleSettings" 
-                            title="AI Settings (Gemini Key)">
-                        ⚙️
-                    </button>
-                    <button type="button" 
-                            class="chat-action-btn" 
-                            @onclick="DownloadCandidateBrief" 
-                            title="Download Candidate Summary (Markdown)">
-                        📥
-                    </button>
+                    <!-- Dropdown Menu for Auxiliary Actions -->
+                    <div class="chat-menu-wrapper">
+                        <button type="button" 
+                                class="chat-action-btn @(showMenu ? "is-active" : "")" 
+                                @onclick="ToggleMenu" 
+                                title="Conversation options">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="1.5"></circle>
+                                <circle cx="19" cy="12" r="1.5"></circle>
+                                <circle cx="5" cy="12" r="1.5"></circle>
+                            </svg>
+                        </button>
+                        @if (showMenu)
+                        {
+                            <div class="chat-dropdown-menu">
+                                <button type="button" class="chat-menu-item" @onclick="() => { ToggleSettings(); showMenu = false; }">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                    <span>AI Key (Gemini)</span>
+                                </button>
+                                <button type="button" class="chat-menu-item" @onclick="async () => { await CopyTranscript(); showMenu = false; }">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    <span>@(isCopied ? "Copied!" : "Copy Chat")</span>
+                                </button>
+                                <button type="button" class="chat-menu-item" @onclick="async () => { await DownloadCandidateBrief(); showMenu = false; }">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    <span>Export Brief (.md)</span>
+                                </button>
+                                <div class="chat-menu-divider"></div>
+                                <button type="button" class="chat-menu-item chat-menu-danger" @onclick="() => { ClearChat(); showMenu = false; }">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                                    <span>Reset Conversation</span>
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Expand / Widescreen View Button -->
                     <button type="button" 
                             class="chat-action-btn" 
                             @onclick="ToggleWidescreen" 
                             title="@(isWidescreen ? "Normal view" : "Expand to widescreen")">
-                        @(isWidescreen ? "❐" : "⛶")
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            @if (isWidescreen)
+                            {
+                                <polyline points="4 14 10 14 10 20"></polyline>
+                                <polyline points="20 10 14 10 14 4"></polyline>
+                                <line x1="14" y1="10" x2="21" y2="3"></line>
+                                <line x1="3" y1="21" x2="10" y2="14"></line>
+                            }
+                            else
+                            {
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <polyline points="9 21 3 21 3 15"></polyline>
+                                <line x1="21" y1="3" x2="14" y2="10"></line>
+                                <line x1="3" y1="21" x2="10" y2="14"></line>
+                            }
+                        </svg>
                     </button>
-                    <button type="button" 
-                            class="chat-action-btn" 
-                            @onclick="CopyTranscript" 
-                            title="Copy chat conversation">
-                        @(isCopied ? "✓" : "📋")
-                    </button>
-                    <button type="button" 
-                            class="chat-action-btn" 
-                            @onclick="ClearChat" 
-                            title="Reset Conversation">
-                        ↺
-                    </button>
+
+                    <!-- Close Button -->
                     <button type="button" 
                             class="chat-action-btn chat-close-btn" 
                             @onclick="ToggleChat" 
                             title="Close Chat">
-                        ✕
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -103,28 +139,31 @@
                 </div>
             }
 
-            <!-- Persona Switcher Bar -->
+            <!-- Modern Segmented Persona Switcher Bar -->
             <div class="chat-persona-bar">
-                <span class="persona-label">PERSONA:</span>
                 <button type="button" 
                         class="chat-persona-btn @(selectedPersona == "general" ? "is-active" : "")"
                         @onclick='() => SetPersona("general")'>
-                    ✦ General
+                    <span class="persona-dot"></span>
+                    <span>General</span>
                 </button>
                 <button type="button" 
                         class="chat-persona-btn @(selectedPersona == "recruiter" ? "is-active" : "")"
                         @onclick='() => SetPersona("recruiter")'>
-                    💼 Recruiter
+                    <span class="persona-dot"></span>
+                    <span>Recruiter</span>
                 </button>
                 <button type="button" 
                         class="chat-persona-btn @(selectedPersona == "architect" ? "is-active" : "")"
                         @onclick='() => SetPersona("architect")'>
-                    🛠️ Tech Lead
+                    <span class="persona-dot"></span>
+                    <span>Tech Lead</span>
                 </button>
                 <button type="button" 
                         class="chat-persona-btn @(selectedPersona == "client" ? "is-active" : "")"
                         @onclick='() => SetPersona("client")'>
-                    🤝 Client
+                    <span class="persona-dot"></span>
+                    <span>Client</span>
                 </button>
             </div>
 
@@ -300,12 +339,17 @@
                 <button type="button" 
                         class="chat-mic-btn @(isListening ? "is-listening" : "")" 
                         @onclick="ToggleVoiceRecognition" 
-                        title="@(isListening ? "Listening... click to stop" : "Speak your question (Voice Mode)")">
-                    🎙️
+                        title="@(isListening ? "Listening... click to stop" : "Speak question (Voice Mode)")">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>
                 </button>
                 <input type="text"
                        class="chat-input-field"
-                       placeholder="@(isListening ? "Listening to your voice..." : "Ask in English or Arabic (skills, code, estimator)...")"
+                       placeholder="@(isListening ? "Listening to your voice..." : "Ask in English or Arabic (skills, projects, code)...")"
                        @bind="userInput"
                        @bind:event="oninput"
                        disabled="@isTyping" />
@@ -313,7 +357,10 @@
                         class="chat-send-btn"
                         disabled="@(string.IsNullOrWhiteSpace(userInput) || isTyping)"
                         aria-label="Send message">
-                    ➤
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
                 </button>
             </form>
         </div>
@@ -327,6 +374,7 @@
     private bool isCopied;
     private bool isListening;
     private bool showSettings;
+    private bool showMenu;
     private bool useGemini;
     private string geminiApiKey = "";
     private string selectedPersona = "general";
@@ -369,7 +417,7 @@
         {
             messages.Add(new ChatMessage(
                 Guid.NewGuid().ToString(),
-                "Welcome! I am **Ibrahim's AI Knowledge Assistant**.\n\nEquipped with **Voice Mode 🎙️**, **Persona Tuning 🎭**, **C# Code Cards 📦**, and an **Interactive Project Estimator 🧮**.\n\nAsk about his **ASP.NET Core & C# engineering**, **Google & Udemy certificates**, **recommendations**, or schedule a 1:1 call.",
+                "Hello! I am **Ibrahim's AI Knowledge Assistant**.\n\nAsk me about his **ASP.NET Core & C# engineering**, explore his **production architectures & live projects**, review his **verified certificates**, or try the **Interactive Project Estimator**.",
                 false,
                 DateTime.Now,
                 new List<ChatAction>
@@ -458,9 +506,11 @@
     private void ToggleChat()
     {
         isOpen = !isOpen;
+        showMenu = false;
         if (isOpen) ScrollToBottom();
     }
 
+    private void ToggleMenu() => showMenu = !showMenu;
     private void ToggleWidescreen() => isWidescreen = !isWidescreen;
     private void ToggleSettings() => showSettings = !showSettings;
 
