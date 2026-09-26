@@ -424,18 +424,55 @@
     <section class="section-wrap testimonials-section" id="testimonials">
         <div class="section-heading">
             <div>
-                <span class="section-kicker">FEEDBACK</span>
-                <h2>What collaborators <em>say.</em></h2>
+                <span class="section-kicker">06 / VERIFIED TESTIMONIALS &amp; RECOMMENDATIONS</span>
+                <h2>What mentors &amp; clients <em>say.</em></h2>
             </div>
+            <p>Direct endorsements from project supervisors, business clients,<br />and technical instructors on architecture, code quality, and delivery speed.</p>
         </div>
         <div class="testimonials-grid">
             @foreach (var testimonial in testimonials)
             {
                 <article class="testimonial-card">
-                    <p class="testimonial-quote">“@testimonial.Quote”</p>
-                    <div class="testimonial-meta">
-                        <strong>@testimonial.Author</strong>
-                        <span>@testimonial.Role · @testimonial.Company</span>
+                    <div class="testimonial-card-header">
+                        <div class="testimonial-badge">
+                            <span class="badge-dot"></span>
+                            <span>@testimonial.Relationship</span>
+                        </div>
+                        <span class="testimonial-date">@testimonial.Date</span>
+                    </div>
+
+                    <div class="testimonial-project-pill">
+                        <span class="pill-icon">📌</span>
+                        <span class="pill-text">@testimonial.Project</span>
+                    </div>
+
+                    <div class="testimonial-quote-wrap">
+                        <span class="quote-mark">“</span>
+                        <blockquote class="testimonial-quote">@testimonial.Quote</blockquote>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(testimonial.SkillHighlight))
+                    {
+                        <div class="testimonial-skills-row">
+                            @foreach (var skill in testimonial.SkillHighlight.Split(new[] { '·', '•', ',' }, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <span class="testimonial-skill-tag">@skill</span>
+                            }
+                        </div>
+                    }
+
+                    <div class="testimonial-footer">
+                        <div class="testimonial-avatar" aria-hidden="true">
+                            @GetInitials(testimonial.Author)
+                        </div>
+                        <div class="testimonial-meta">
+                            <div class="testimonial-author-row">
+                                <strong class="testimonial-name">@testimonial.Author</strong>
+                                <span class="testimonial-check" title="Verified Professional Endorsement">✓ Verified</span>
+                            </div>
+                            <span class="testimonial-role">@testimonial.Role</span>
+                            <span class="testimonial-company">@testimonial.Company</span>
+                        </div>
                     </div>
                 </article>
             }
@@ -443,10 +480,12 @@
     </section>
 }
 
+<CertificatesSection />
+
 <section class="section-wrap faq-section" id="faq">
     <div class="section-heading">
         <div>
-            <span class="section-kicker">07 / FREQUENTLY ASKED QUESTIONS</span>
+            <span class="section-kicker">08 / FREQUENTLY ASKED QUESTIONS</span>
             <h2>Common questions, <em>clear answers.</em></h2>
         </div>
         <p>Quick answers regarding technology stack, project types,<br />and engagement availability.</p>
@@ -470,7 +509,7 @@
 
 <section class="section-wrap contact-section" id="contact">
     <div class="contact-heading">
-        <span class="section-kicker">08 / START A CONVERSATION</span>
+        <span class="section-kicker">09 / START A CONVERSATION</span>
         <span class="contact-availability"><i></i> OPEN TO GOOD WORK</span>
     </div>
     
@@ -582,4 +621,14 @@
 
     private void Filter(string? tag) => activeTag = activeTag == tag ? null : tag;
     private string ImageSource(string imageUrl) => Uri.TryCreate(imageUrl, UriKind.Absolute, out _) ? imageUrl : new Uri(new Uri(Nav.BaseUri), imageUrl.TrimStart('/')).ToString();
+
+    private static string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "IT";
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var filtered = parts.Where(p => !p.EndsWith('.') && !p.Equals("Dr", StringComparison.OrdinalIgnoreCase) && !p.Equals("Eng", StringComparison.OrdinalIgnoreCase) && !p.Equals("Mr", StringComparison.OrdinalIgnoreCase) && !p.Equals("Mrs", StringComparison.OrdinalIgnoreCase)).ToArray();
+        if (filtered.Length >= 2) return $"{filtered[0][0]}{filtered[1][0]}".ToUpperInvariant();
+        if (filtered.Length == 1) return filtered[0].Length >= 2 ? filtered[0][..2].ToUpperInvariant() : filtered[0].ToUpperInvariant();
+        return $"{parts[0][0]}{parts[1][0]}".ToUpperInvariant();
+    }
 }

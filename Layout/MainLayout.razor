@@ -13,6 +13,8 @@
             <a href="@($"{Nav.BaseUri}#process")">Process</a>
             <a href="@($"{Nav.BaseUri}#about")">About</a>
             <a href="@($"{Nav.BaseUri}#experience")">Journey</a>
+            <a href="@($"{Nav.BaseUri}#testimonials")">Testimonials</a>
+            <a href="@($"{Nav.BaseUri}#certifications")">Certifications</a>
             <a href="@($"{Nav.BaseUri}#faq")">FAQs</a>
             <a href="@($"{Nav.BaseUri}#contact")">Contact</a>
         </nav>
@@ -78,13 +80,23 @@
                     <span class="nav-text">Technical Toolkit</span>
                     <span class="nav-arrow">↗</span>
                 </a>
-                <a href="@($"{Nav.BaseUri}#faq")" @onclick="CloseMobileMenu">
+                <a href="@($"{Nav.BaseUri}#testimonials")" @onclick="CloseMobileMenu">
                     <span class="nav-num">07</span>
+                    <span class="nav-text">Verified Testimonials</span>
+                    <span class="nav-arrow">↗</span>
+                </a>
+                <a href="@($"{Nav.BaseUri}#certifications")" @onclick="CloseMobileMenu">
+                    <span class="nav-num">08</span>
+                    <span class="nav-text">Licenses &amp; Certifications</span>
+                    <span class="nav-arrow">↗</span>
+                </a>
+                <a href="@($"{Nav.BaseUri}#faq")" @onclick="CloseMobileMenu">
+                    <span class="nav-num">09</span>
                     <span class="nav-text">Frequently Asked Questions</span>
                     <span class="nav-arrow">↗</span>
                 </a>
                 <a href="@($"{Nav.BaseUri}#contact")" @onclick="CloseMobileMenu">
-                    <span class="nav-num">08</span>
+                    <span class="nav-num">10</span>
                     <span class="nav-text">Start a Conversation</span>
                     <span class="nav-arrow">↗</span>
                 </a>

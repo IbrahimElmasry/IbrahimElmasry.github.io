@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "Author": "Dr. Fifi Farouk",
+    "Role": "Graduation Project Supervisor & Faculty Instructor",
+    "Company": "Faculty of Management Technology & Information Systems",
+    "Relationship": "Academic Supervisor",
+    "Project": "AI-Powered E-Learning Platform (Graduation Project — Excellent)",
+    "SkillHighlight": "ASP.NET Core · System Architecture · AI Integration",
+    "Quote": "Ibrahim demonstrated extraordinary technical maturity while architecting the AI-Powered E-Learning Platform. His command of ASP.NET Core, database design, and seamless integration of intelligent features produced a system that set a benchmark for excellence in our department. His dedication to clean code and sound software engineering principles is truly remarkable.",
+    "Date": "2024"
+  },
+  {
+    "Author": "Eng. Mohamed Abdullah",
+    "Role": "Lead ASP.NET Track Instructor & Senior Software Engineer",
+    "Company": "Digital Egypt Pioneers Initiative (DEPI)",
+    "Relationship": "DEPI Track Instructor",
+    "Project": "DEPI 6-Month Intensive .NET Track",
+    "SkillHighlight": "Clean Architecture · CQRS · SQL Optimization · RESTful APIs",
+    "Quote": "Throughout the intensive 6-month DEPI ASP.NET Core track, Ibrahim consistently stood out for his analytical mindset and architectural rigor. He masters backend engineering beyond tutorials—crafting resilient Web APIs, applying Clean Architecture and CQRS, and designing optimized SQL queries. He is a standout backend engineer ready for high-scale enterprise work.",
+    "Date": "2024"
+  },
+  {
+    "Author": "Mr. Abdullah El-Wakeel",
+    "Role": "Managing Partner & Founder",
+    "Company": "El-Wakeel Legal Firm",
+    "Relationship": "Client & Firm Owner",
+    "Project": "El-Wakeel Legal Firm Digital Platform",
+    "SkillHighlight": "Responsive Web · Brand Execution · Dependability",
+    "Quote": "Collaborating with Ibrahim was a seamless experience. He understood our firm's prestige and translated it into a fast, highly secure, and elegant digital presence. His responsiveness, technical clarity, and commitment to delivering well ahead of deadlines made him a trusted technology partner for our practice.",
+    "Date": "2024"
+  },
+  {
+    "Author": "Mrs. Rania Elsayed",
+    "Role": "Product & Operations Lead",
+    "Company": "Rawafid Technology Hub",
+    "Relationship": "Client & Project Lead",
+    "Project": "Rawafid Technology Hub Platform",
+    "SkillHighlight": "Full-Stack ASP.NET · High Performance · Domain Modeling",
+    "Quote": "Ibrahim brought exceptional energy and technical precision to Rawafid Technology Hub. From structural database modeling to high-performance page rendering, he delivered an intuitive, robust platform that our users and stakeholders love. Highly dependable and proactive engineer.",
+    "Date": "2024"
+  }
+]

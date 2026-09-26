@@ -7,4 +7,7 @@ public sealed class Testimonial
     public string Company { get; set; } = "";
     public string Quote { get; set; } = "";
     public string Date { get; set; } = "";
+    public string Project { get; set; } = "";
+    public string SkillHighlight { get; set; } = "";
+    public string Relationship { get; set; } = "";
 }

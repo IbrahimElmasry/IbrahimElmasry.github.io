@@ -1,0 +1,152 @@
+@inject ContentService Content
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<section class="section-wrap certificates-section" id="certifications">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">08 / LICENSES &amp; CERTIFICATIONS</span>
+            <h2>Verified <em>qualifications.</em></h2>
+        </div>
+        <p>Officially accredited credentials in enterprise .NET engineering,<br />cloud security, and digital commerce systems.</p>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="cert-category-tabs" role="tablist">
+        <button type="button" 
+                class="cert-tab @(selectedCategory == "all" ? "is-active" : "")" 
+                @onclick='() => SelectCategory("all")'
+                role="tab"
+                aria-selected="@(selectedCategory == "all")">
+            All Credentials <span class="tab-count">@certificates.Count</span>
+        </button>
+        @foreach (var cat in Categories)
+        {
+            var count = certificates.Count(c => c.Category.Equals(cat, StringComparison.OrdinalIgnoreCase));
+            <button type="button" 
+                    class="cert-tab @(selectedCategory == cat ? "is-active" : "")" 
+                    @onclick="() => SelectCategory(cat)"
+                    role="tab"
+                    aria-selected="@(selectedCategory == cat)">
+                @cat <span class="tab-count">@count</span>
+            </button>
+        }
+    </div>
+
+    <!-- Certificates Grid -->
+    <div class="cert-grid">
+        @foreach (var cert in FilteredCertificates)
+        {
+            <article class="cert-card @(cert.Featured ? "is-featured" : "")" @key="cert.Id">
+                <div class="cert-card-top">
+                    <div class="cert-issuer-badge cert-issuer-@cert.IssuerCode">
+                        <span class="cert-issuer-icon">
+                            @if (cert.IssuerCode == "google")
+                            {
+                                <text>🛡️</text>
+                            }
+                            else if (cert.IssuerCode == "udemy")
+                            {
+                                <text>⚡</text>
+                            }
+                            else if (cert.IssuerCode == "depi")
+                            {
+                                <text>🏛️</text>
+                            }
+                            else
+                            {
+                                <text>💼</text>
+                            }
+                        </span>
+                        <span class="cert-issuer-name">@cert.Issuer</span>
+                    </div>
+
+                    <div class="cert-status-pill">
+                        <span class="cert-status-dot"></span>
+                        <span>Verified</span>
+                    </div>
+                </div>
+
+                <h3 class="cert-title">@cert.Title</h3>
+
+                <div class="cert-meta-row">
+                    <span class="cert-date">📅 @cert.IssueDate</span>
+                    @if (!string.IsNullOrWhiteSpace(cert.CredentialId))
+                    {
+                        <span class="cert-cred-id">ID: <code>@cert.CredentialId</code></span>
+                    }
+                </div>
+
+                <p class="cert-description">@cert.Description</p>
+
+                @if (cert.Skills.Count > 0)
+                {
+                    <div class="cert-skills-wrap">
+                        @foreach (var skill in cert.Skills)
+                        {
+                            <span class="cert-skill-chip">@skill</span>
+                        }
+                    </div>
+                }
+
+                <div class="cert-actions">
+                    @if (!string.IsNullOrWhiteSpace(cert.PdfUrl))
+                    {
+                        <a href="@cert.PdfUrl" 
+                           target="_blank" 
+                           rel="noreferrer" 
+                           class="cert-action-btn cert-action-primary"
+                           title="Open authentic certificate PDF in new tab">
+                            <span>View PDF</span>
+                            <span class="action-arrow">↗</span>
+                        </a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(cert.VerificationUrl))
+                    {
+                        <a href="@cert.VerificationUrl" 
+                           target="_blank" 
+                           rel="noreferrer" 
+                           class="cert-action-btn cert-action-secondary"
+                           title="Verify credential on external registry">
+                            <span>Verify Registry</span>
+                            <span class="action-arrow">↗</span>
+                        </a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(cert.SecondaryVerificationUrl))
+                    {
+                        <a href="@cert.SecondaryVerificationUrl" 
+                           target="_blank" 
+                           rel="noreferrer" 
+                           class="cert-action-btn cert-action-quiet"
+                           title="Coursera Verification">
+                            <span>Coursera</span>
+                            <span class="action-arrow">↗</span>
+                        </a>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+@code {
+    private List<Certificate> certificates = [];
+    private string selectedCategory = "all";
+
+    protected override async Task OnInitializedAsync()
+    {
+        certificates = await Content.GetCertificatesAsync();
+    }
+
+    private IEnumerable<string> Categories => certificates.Select(c => c.Category).Distinct();
+
+    private IEnumerable<Certificate> FilteredCertificates =>
+        selectedCategory == "all"
+            ? certificates
+            : certificates.Where(c => c.Category.Equals(selectedCategory, StringComparison.OrdinalIgnoreCase));
+
+    private void SelectCategory(string category)
+    {
+        selectedCategory = category;
+    }
+}

@@ -1,0 +1,108 @@
+[
+  {
+    "Id": "google-cybersecurity",
+    "Title": "Google Cybersecurity Professional Certificate",
+    "Issuer": "Google (via Coursera & Credly)",
+    "IssuerCode": "google",
+    "Category": "Security & Cloud",
+    "IssueDate": "Feb 20, 2024",
+    "CredentialId": "XNACC6T7MENY / Credly: W5GLTB25",
+    "VerificationUrl": "https://www.credly.com/go/W5GLTB25",
+    "SecondaryVerificationUrl": "https://coursera.org/verify/professional-cert/XNACC6T7MENY",
+    "PdfUrl": "certificates/google-cybersecurity-professional-certificate.pdf",
+    "Description": "Rigorous 8-course professional program developed by Google covering enterprise security operations, Python automation, Linux, SQL, SIEM & IDS, and risk mitigation.",
+    "Skills": [
+      "Cybersecurity",
+      "Python Automation",
+      "Linux CLI",
+      "SQL",
+      "Network Security",
+      "SIEM & IDS",
+      "Threat Mitigation"
+    ],
+    "Featured": true
+  },
+  {
+    "Id": "udemy-dotnet-shopping-cart",
+    "Title": "Build a Shopping Cart Using .NET Core from Scratch",
+    "Issuer": "Udemy · Mohamed Assem",
+    "IssuerCode": "udemy",
+    "Category": ".NET & Architecture",
+    "IssueDate": "Oct 11, 2024",
+    "CredentialId": "UC-a4e382dc-1001-435f-b890-f8b9ce072483",
+    "VerificationUrl": "https://ude.my/UC-a4e382dc-1001-435f-b890-f8b9ce072483",
+    "SecondaryVerificationUrl": "",
+    "PdfUrl": "certificates/udemy-dotnet-shopping-cart.pdf",
+    "Description": "Practical 12-hour intensive engineering course on designing and implementing a production-ready shopping cart e-commerce system with .NET Core, EF Core, and SQL Server.",
+    "Skills": [
+      ".NET Core",
+      "ASP.NET Core MVC",
+      "C#",
+      "Entity Framework Core",
+      "SQL Server",
+      "E-Commerce Architecture"
+    ],
+    "Featured": true
+  },
+  {
+    "Id": "depi-aspnet",
+    "Title": "ASP.NET Core Development Track (6-Month Specialization)",
+    "Issuer": "Digital Egypt Pioneers Initiative (DEPI) · MCIT",
+    "IssuerCode": "depi",
+    "Category": ".NET & Architecture",
+    "IssueDate": "2023 — 2024",
+    "CredentialId": "DEPI-ASPNET-ALX",
+    "VerificationUrl": "",
+    "SecondaryVerificationUrl": "",
+    "PdfUrl": "",
+    "Description": "Government-sponsored 6-month intensive training program by the Ministry of Communications and Information Technology (MCIT), focusing on enterprise ASP.NET Core, Clean Architecture, and SQL Server.",
+    "Skills": [
+      "ASP.NET Core Web API",
+      "Clean Architecture",
+      "CQRS & MediatR",
+      "SQL Optimization",
+      "C#"
+    ],
+    "Featured": true
+  },
+  {
+    "Id": "hp-small-business",
+    "Title": "Starting a Small Business",
+    "Issuer": "HP Foundation | HP LIFE",
+    "IssuerCode": "hp",
+    "Category": "Business & Strategy",
+    "IssueDate": "July 30, 2022",
+    "CredentialId": "b1f44eb4-a7f8-4414-9975-fb2f930fe8fb",
+    "VerificationUrl": "",
+    "SecondaryVerificationUrl": "",
+    "PdfUrl": "certificates/hp-life-starting-small-business.pdf",
+    "Description": "Specialized training in entrepreneurial thinking, business plan formulation, operational feasibility, and KPIs for measuring business success.",
+    "Skills": [
+      "Business Planning",
+      "Entrepreneurial Thinking",
+      "Success Metrics",
+      "Project Feasibility"
+    ],
+    "Featured": false
+  },
+  {
+    "Id": "hp-selling-online",
+    "Title": "Selling Online (البيع عبر الإنترنت)",
+    "Issuer": "HP Foundation | HP LIFE",
+    "IssuerCode": "hp",
+    "Category": "Business & Strategy",
+    "IssueDate": "July 30, 2022",
+    "CredentialId": "8a6ff83f-257d-478c-9bc3-0193b522fb9d",
+    "VerificationUrl": "",
+    "SecondaryVerificationUrl": "",
+    "PdfUrl": "certificates/hp-life-selling-online.pdf",
+    "Description": "Comprehensive coursework on digital commerce mechanisms, online sales channels, customer acquisition funnels, and performance tracking.",
+    "Skills": [
+      "E-Commerce Strategy",
+      "Digital Sales",
+      "Online Marketing",
+      "Customer Conversion"
+    ],
+    "Featured": false
+  }
+]
