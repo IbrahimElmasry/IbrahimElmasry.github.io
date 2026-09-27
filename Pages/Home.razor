@@ -620,7 +620,12 @@
     }
 
     private void Filter(string? tag) => activeTag = activeTag == tag ? null : tag;
-    private string ImageSource(string imageUrl) => Uri.TryCreate(imageUrl, UriKind.Absolute, out _) ? imageUrl : new Uri(new Uri(Nav.BaseUri), imageUrl.TrimStart('/')).ToString();
+    private string ImageSource(string imageUrl)
+    {
+        if (Uri.TryCreate(imageUrl, UriKind.Absolute, out _)) return imageUrl;
+        var resolved = new Uri(new Uri(Nav.BaseUri), imageUrl.TrimStart('/')).ToString();
+        return resolved + (resolved.Contains('?') ? "&" : "?") + "v=20260927-2";
+    }
 
     private static string GetInitials(string name)
     {

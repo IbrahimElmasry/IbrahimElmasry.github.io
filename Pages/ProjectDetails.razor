@@ -87,5 +87,10 @@
         project = (await Content.GetProjectsAsync()).FirstOrDefault(p => p.Slug.Equals(Slug, StringComparison.OrdinalIgnoreCase));
     }
 
-    private string ImageSource(string imageUrl) => Uri.TryCreate(imageUrl, UriKind.Absolute, out _) ? imageUrl : new Uri(new Uri(Nav.BaseUri), imageUrl.TrimStart('/')).ToString();
+    private string ImageSource(string imageUrl)
+    {
+        if (Uri.TryCreate(imageUrl, UriKind.Absolute, out _)) return imageUrl;
+        var resolved = new Uri(new Uri(Nav.BaseUri), imageUrl.TrimStart('/')).ToString();
+        return resolved + (resolved.Contains('?') ? "&" : "?") + "v=20260927-2";
+    }
 }

@@ -1000,6 +1000,24 @@ public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher)
             );
         }
 
+        // 7. El Wakeel Law Firm Project & Turnaround
+        if (q.Contains("wakeel") || q.Contains("elwakeel") || q.Contains("law firm") || q.Contains("legal") || q.Contains("turnaround") || q.Contains("محاماة") || q.Contains("الوكيل"))
+        {
+            actions.Add(new("Visit Live Site ↗", "https://elwakeellegal.com/index.html"));
+            actions.Add(new("Client Recommendation ⭐", "#testimonials"));
+            actions.Add(new("View Project Card ↘", "#work"));
+
+            return (
+                "**El Wakeel Law Firm** ([elwakeellegal.com](https://elwakeellegal.com/index.html)) is a live corporate web platform architected and built by Ibrahim for a premier legal consultancy in Egypt & GCC:\n\n" +
+                "• **Client**: Mr. Abdullah El-Wakeel (Founder & Managing Partner).\n" +
+                "• **Turnaround**: Delivered in a rapid **3-week cycle** from initial requirements to live production deployment.\n" +
+                "• **Key Features**: High-converting landing page with instant WhatsApp consultation routing, 12+ practice domain showcases, firm milestones (20+ years, 1,500+ cases), and responsive lead capture.\n" +
+                "• **Client Recommendation**: *“Collaborating with Ibrahim was a seamless experience. He understood our firm's prestige and translated it into a fast, highly secure, and elegant digital presence well ahead of deadlines.”*",
+                actions,
+                null
+            );
+        }
+
         // 7. Clean Architecture & CQRS
         if (q.Contains("architecture") || q.Contains("clean arch") || q.Contains("cqrs") || q.Contains("mediatr") ||
             q.Contains("solid") || q.Contains("pattern") || q.Contains("معمارية") || q.Contains("انماط"))
