@@ -23,7 +23,7 @@
                     <button type="button"
                             class="arch-tab-btn @(activeTab == "code" ? "active" : "")"
                             @onclick='() => activeTab = "code"'>
-                        <span>{ }</span> C# Implementation Snippet
+                        <span>{ }</span> @CodeTabLabel
                     </button>
                 }
             </div>
@@ -35,38 +35,140 @@
             {
                 <div class="diagram-canvas">
                     <div class="diagram-layers">
-                        <div class="diag-layer layer-presentation">
-                            <span class="layer-pill">1. PRESENTATION TIER</span>
-                            <div class="layer-boxes">
-                                <div class="diag-box">
-                                    <strong>ASP.NET Core MVC / Razor</strong>
-                                    <span>Controllers, ViewModels, TagHelpers</span>
-                                </div>
-                                <div class="diag-box">
-                                    <strong>Client UI Layer</strong>
-                                    <span>HTML5, CSS3, JavaScript, Bootstrap</span>
+                        @* ═══════════ RAWAFID ═══════════ *@
+                        @if (IsSlug("rawafid"))
+                        {
+                            <div class="diag-layer layer-presentation">
+                                <span class="layer-pill">1. PRESENTATION TIER</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>PHP Views & Templates</strong>
+                                        <span>Server-rendered pages, includes, layout partials</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Client UI Layer</strong>
+                                        <span>HTML5, CSS3, JavaScript, responsive design</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="diagram-arrow">↓ HTTP Requests / Model Binding ↓</div>
+                            <div class="diagram-arrow">↓ Form POST / GET Requests ↓</div>
 
-                        <div class="diag-layer layer-services">
-                            <span class="layer-pill">2. APPLICATION &amp; BUSINESS LOGIC</span>
-                            <div class="layer-boxes">
-                                @if (Project.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase))
-                                {
+                            <div class="diag-layer layer-services">
+                                <span class="layer-pill">2. APPLICATION & BUSINESS LOGIC</span>
+                                <div class="layer-boxes">
                                     <div class="diag-box">
-                                        <strong>Cart &amp; Order Manager</strong>
+                                        <strong>Content & Event Engine</strong>
+                                        <span>Article publishing, user permissions</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Multilingual Router</strong>
+                                        <span>Localization, category filters</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Admin Panel</strong>
+                                        <span>Content CRUD, user management</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-arrow">↓ PDO / MySQLi Queries ↓</div>
+
+                            <div class="diag-layer layer-data">
+                                <span class="layer-pill">3. DATA ACCESS & PERSISTENCE</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>PHP Data Layer</strong>
+                                        <span>PDO connections, prepared statements</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>MySQL Database</strong>
+                                        <span>Articles, users, events, categories</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @* ═══════════ TECH XPRESS ═══════════ *@
+                        else if (IsSlug("tech-xpress"))
+                        {
+                            <div class="diag-layer layer-presentation">
+                                <span class="layer-pill">1. PRESENTATION TIER</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>ASP.NET Core MVC / Razor</strong>
+                                        <span>Controllers, ViewModels, TagHelpers</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Client UI Layer</strong>
+                                        <span>HTML5, CSS3, JavaScript, Bootstrap</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-arrow">↓ HTTP Requests / Model Binding ↓</div>
+
+                            <div class="diag-layer layer-services">
+                                <span class="layer-pill">2. APPLICATION & BUSINESS LOGIC</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Cart & Order Manager</strong>
                                         <span>Order placement, status workflow</span>
                                     </div>
                                     <div class="diag-box">
                                         <strong>Stripe Payment Service</strong>
                                         <span>Checkout sessions, payment confirmation</span>
                                     </div>
-                                }
-                                else if (Project.Slug.Contains("elearning", StringComparison.OrdinalIgnoreCase))
-                                {
+                                    <div class="diag-box">
+                                        <strong>Product Catalog</strong>
+                                        <span>Browse, search, categories, admin CRUD</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-arrow">↓ Repository & Unit of Work Abstraction ↓</div>
+
+                            <div class="diag-layer layer-data">
+                                <span class="layer-pill">3. DATA ACCESS & PERSISTENCE</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Entity Framework Core</strong>
+                                        <span>DbContext, Fluent API mappings, LINQ</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Microsoft SQL Server</strong>
+                                        <span>Normalized relational tables & indexes</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>ASP.NET Identity</strong>
+                                        <span>User store, password hashing, roles</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @* ═══════════ E-LEARNING ═══════════ *@
+                        else if (IsSlug("elearning"))
+                        {
+                            <div class="diag-layer layer-presentation">
+                                <span class="layer-pill">1. PRESENTATION TIER</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>ASP.NET Core MVC / Razor</strong>
+                                        <span>Controllers, ViewModels, TagHelpers</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>AI Chat Interface</strong>
+                                        <span>Conversational UI, real-time responses</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-arrow">↓ HTTP Requests / AI Query Pipeline ↓</div>
+
+                            <div class="diag-layer layer-services">
+                                <span class="layer-pill">2. APPLICATION & BUSINESS LOGIC</span>
+                                <div class="layer-boxes">
                                     <div class="diag-box">
                                         <strong>Course Service</strong>
                                         <span>Tracks, materials, book library</span>
@@ -75,43 +177,121 @@
                                         <strong>Conversational AI Engine</strong>
                                         <span>Chatbot queries, study guidance</span>
                                     </div>
-                                }
-                                else
-                                {
                                     <div class="diag-box">
-                                        <strong>Content &amp; Event Engine</strong>
-                                        <span>Article publishing, user permissions</span>
+                                        <strong>Learning Path Manager</strong>
+                                        <span>Progress tracking, recommendations</span>
                                     </div>
-                                    <div class="diag-box">
-                                        <strong>Multilingual Router</strong>
-                                        <span>Localization, category filters</span>
-                                    </div>
-                                }
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="diagram-arrow">↓ Repository &amp; Unit of Work Abstraction ↓</div>
+                            <div class="diagram-arrow">↓ Repository & Unit of Work Abstraction ↓</div>
 
-                        <div class="diag-layer layer-data">
-                            <span class="layer-pill">3. DATA ACCESS &amp; PERSISTENCE</span>
-                            <div class="layer-boxes">
-                                <div class="diag-box">
-                                    <strong>Entity Framework Core</strong>
-                                    <span>DbContext, Fluent API mappings, LINQ</span>
-                                </div>
-                                <div class="diag-box">
-                                    <strong>Microsoft SQL Server</strong>
-                                    <span>Normalized relational tables &amp; indexes</span>
-                                </div>
-                                @if (Project.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase) || Project.Slug.Contains("elearning", StringComparison.OrdinalIgnoreCase))
-                                {
+                            <div class="diag-layer layer-data">
+                                <span class="layer-pill">3. DATA ACCESS & PERSISTENCE</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Entity Framework Core</strong>
+                                        <span>DbContext, Fluent API mappings, LINQ</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Microsoft SQL Server</strong>
+                                        <span>Normalized relational tables & indexes</span>
+                                    </div>
                                     <div class="diag-box">
                                         <strong>ASP.NET Identity</strong>
                                         <span>User store, password hashing, roles</span>
                                     </div>
-                                }
+                                </div>
                             </div>
-                        </div>
+                        }
+
+                        @* ═══════════ EL WAKEEL LAW FIRM ═══════════ *@
+                        else if (IsSlug("el-wakeel"))
+                        {
+                            <div class="diag-layer layer-presentation">
+                                <span class="layer-pill">1. CLIENT-SIDE PRESENTATION</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>HTML5 & Bootstrap 5</strong>
+                                        <span>Semantic markup, responsive grid, gold-accented theme</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>CSS3 & JavaScript</strong>
+                                        <span>Custom animations, jQuery carousels, smooth scroll</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-arrow">↓ Client-Side Interactions & API Calls ↓</div>
+
+                            <div class="diag-layer layer-services">
+                                <span class="layer-pill">2. INTEGRATION & LEAD CAPTURE</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Formspree Form Handler</strong>
+                                        <span>Contact form submission, email delivery</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>WhatsApp Business API</strong>
+                                        <span>Direct consultation booking, click-to-chat</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>SEO & Analytics</strong>
+                                        <span>Meta tags, Open Graph, performance optimization</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-arrow">↓ Static Hosting & CDN Delivery ↓</div>
+
+                            <div class="diag-layer layer-data">
+                                <span class="layer-pill">3. HOSTING & DEPLOYMENT</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Web Hosting Provider</strong>
+                                        <span>Static file serving, SSL/TLS, custom domain</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>CDN Assets</strong>
+                                        <span>Bootstrap CDN, Font Awesome, Google Fonts</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @* ═══════════ FALLBACK ═══════════ *@
+                        else
+                        {
+                            <div class="diag-layer layer-presentation">
+                                <span class="layer-pill">1. PRESENTATION TIER</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Front-End Layer</strong>
+                                        <span>UI components, user interactions</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="diagram-arrow">↓ Request / Response ↓</div>
+                            <div class="diag-layer layer-services">
+                                <span class="layer-pill">2. APPLICATION LOGIC</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Business Services</strong>
+                                        <span>Core features and integrations</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="diagram-arrow">↓ Data Operations ↓</div>
+                            <div class="diag-layer layer-data">
+                                <span class="layer-pill">3. DATA LAYER</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Data Storage</strong>
+                                        <span>Persistence and retrieval</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             }
@@ -119,7 +299,7 @@
             {
                 <div class="database-erd-view">
                     <div class="erd-grid">
-                        @if (Project.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase))
+                        @if (IsSlug("tech-xpress"))
                         {
                             <div class="erd-table">
                                 <div class="erd-table-head">
@@ -177,7 +357,7 @@
                                 </ul>
                             </div>
                         }
-                        else
+                        else if (IsSlug("elearning"))
                         {
                             <div class="erd-table">
                                 <div class="erd-table-head">
@@ -202,6 +382,87 @@
                                     <li>UserPrompt (nvarchar)</li>
                                     <li>BotResponse (nvarchar)</li>
                                     <li>Timestamp (datetime2)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">LearningPaths</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> Id (int)</li>
+                                    <li>PathName (nvarchar)</li>
+                                    <li class="col-fk"><b>FK</b> CourseId (int)</li>
+                                    <li>SortOrder (int)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">Books</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> Id (int)</li>
+                                    <li>Title (nvarchar)</li>
+                                    <li>Author (nvarchar)</li>
+                                    <li class="col-fk"><b>FK</b> CategoryId (int)</li>
+                                    <li>FileUrl (nvarchar)</li>
+                                </ul>
+                            </div>
+                        }
+                        else if (IsSlug("rawafid"))
+                        {
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">articles</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (int)</li>
+                                    <li>title (varchar)</li>
+                                    <li>body (text)</li>
+                                    <li class="col-fk"><b>FK</b> category_id (int)</li>
+                                    <li class="col-fk"><b>FK</b> author_id (int)</li>
+                                    <li>published_at (datetime)</li>
+                                    <li>lang (varchar)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">categories</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (int)</li>
+                                    <li>name_ar (varchar)</li>
+                                    <li>name_en (varchar)</li>
+                                    <li>slug (varchar)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">events</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (int)</li>
+                                    <li>title (varchar)</li>
+                                    <li>description (text)</li>
+                                    <li>event_date (datetime)</li>
+                                    <li>location (varchar)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">users</span>
+                                    <span class="erd-badge">Table</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (int)</li>
+                                    <li>username (varchar)</li>
+                                    <li>email (varchar)</li>
+                                    <li>password_hash (varchar)</li>
+                                    <li>role (enum)</li>
                                 </ul>
                             </div>
                         }
@@ -229,22 +490,36 @@
     private string activeTab = "diagram";
     private bool codeCopied;
 
+    private bool IsSlug(string partial) =>
+        Project?.Slug.Contains(partial, StringComparison.OrdinalIgnoreCase) == true;
+
     private bool HasDatabaseSchema =>
-        this.Project?.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase) == true ||
-        this.Project?.Slug.Contains("elearning", StringComparison.OrdinalIgnoreCase) == true;
+        IsSlug("tech-xpress") || IsSlug("elearning") || IsSlug("rawafid");
 
     private bool HasCodeSnippet =>
-        this.Project?.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase) == true ||
-        this.Project?.Slug.Contains("elearning", StringComparison.OrdinalIgnoreCase) == true;
+        IsSlug("tech-xpress") || IsSlug("elearning") || IsSlug("rawafid") || IsSlug("el-wakeel");
 
-    private string CodeSnippetFileName =>
-        this.Project?.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase) == true
-            ? "CartController.cs (Stripe Checkout Session)"
-            : "ChatbotService.cs (Conversation Flow)";
+    private string CodeTabLabel =>
+        IsSlug("el-wakeel") ? "HTML / JS Snippet" : "C# Implementation Snippet";
 
-    private string CodeSnippetContent =>
-        this.Project?.Slug.Contains("tech-xpress", StringComparison.OrdinalIgnoreCase) == true
-            ? @"// Stripe Checkout Session Creation in ASP.NET Core MVC
+    private string CodeSnippetFileName
+    {
+        get
+        {
+            if (IsSlug("tech-xpress")) return "CartController.cs (Stripe Checkout Session)";
+            if (IsSlug("elearning")) return "ChatbotService.cs (Conversation Flow)";
+            if (IsSlug("rawafid")) return "ArticleController.php (Multilingual Routing)";
+            if (IsSlug("el-wakeel")) return "script.js (WhatsApp & Form Integration)";
+            return "Code.cs";
+        }
+    }
+
+    private string CodeSnippetContent
+    {
+        get
+        {
+            if (IsSlug("tech-xpress"))
+                return @"// Stripe Checkout Session Creation in ASP.NET Core MVC
 [HttpPost]
 [ValidateAntiForgeryToken]
 public async Task<IActionResult> Checkout(ShoppingCartVM cartVM)
@@ -284,8 +559,10 @@ public async Task<IActionResult> Checkout(ShoppingCartVM cartVM)
 
     Response.Headers.Add(""Location"", session.Url);
     return new StatusCodeResult(303);
-}"
-            : @"// AI Chatbot Context & Knowledge Retrieval Service
+}";
+
+            if (IsSlug("elearning"))
+                return @"// AI Chatbot Context & Knowledge Retrieval Service
 public async Task<ChatbotResponseDto> ProcessStudentQueryAsync(string studentId, string prompt)
 {
     var relevantMaterials = await _unitOfWork.CourseMaterial
@@ -311,6 +588,87 @@ public async Task<ChatbotResponseDto> ProcessStudentQueryAsync(string studentId,
     return new ChatbotResponseDto { Answer = response.Text, Sources = relevantMaterials.Select(m => m.Title).ToList() };
 }";
 
+            if (IsSlug("rawafid"))
+                return @"<?php
+// Multilingual Article Routing – ArticleController.php
+
+class ArticleController
+{
+    private PDO $db;
+
+    public function __construct(PDO $db)
+    {
+        $this->db = $db;
+    }
+
+    public function index(string $lang = 'ar'): void
+    {
+        $stmt = $this->db->prepare(
+            'SELECT a.*, c.name_' . $lang . ' AS category_name
+             FROM articles a
+             JOIN categories c ON a.category_id = c.id
+             WHERE a.lang = :lang
+             ORDER BY a.published_at DESC'
+        );
+        $stmt->execute(['lang' => $lang]);
+        $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        include __DIR__ . ""/../views/{$lang}/articles/index.php"";
+    }
+
+    public function show(int $id): void
+    {
+        $stmt = $this->db->prepare(
+            'SELECT * FROM articles WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+        $article = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        include __DIR__ . ""/../views/{$article['lang']}/articles/show.php"";
+    }
+}";
+
+            if (IsSlug("el-wakeel"))
+                return @"// WhatsApp Click-to-Chat & Formspree Contact Integration
+document.addEventListener('DOMContentLoaded', function () {
+
+  // WhatsApp consultation booking
+  const whatsappBtns = document.querySelectorAll('.whatsapp-btn');
+  const phoneNumber = '201XXXXXXXXX'; // Mr. Abdullah El Wakeel
+
+  whatsappBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const service = btn.dataset.service || 'General Consultation';
+      const message = encodeURIComponent(
+        `Hello, I'd like to book a consultation regarding: ${service}`
+      );
+      window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    });
+  });
+
+  // Formspree contact form with validation
+  const contactForm = document.getElementById('contact-form');
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(contactForm);
+    
+    const res = await fetch(contactForm.action, {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (res.ok) {
+      contactForm.reset();
+      showNotification('Message sent successfully!');
+    }
+  });
+});";
+
+            return "// No snippet available for this project.";
+        }
+    }
+
     private async Task CopySnippet()
     {
         await JS.InvokeVoidAsync("navigator.clipboard.writeText", CodeSnippetContent);
@@ -320,4 +678,3 @@ public async Task<ChatbotResponseDto> ProcessStudentQueryAsync(string studentId,
         codeCopied = false;
     }
 }
-
