@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Top Face: Pure White/Silver Reflection -->
+    <linearGradient id="faceTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <!-- Right Face: Metallic Slate -->
+    <linearGradient id="faceRight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+    <!-- Left Face: Deep Obsidian Titanium -->
+    <linearGradient id="faceLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="limeEdge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c7f36b"/>
+      <stop offset="100%" stop-color="#38ef7d"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Interlocking Isometric Monogram forming 'I' and 'T' -->
+  <!-- "I" Pillar (Left Column in 3D Isometric Projection) -->
+  <polygon points="32,32 46,24 46,84 32,92" fill="url(#faceLeft)"/>
+  <polygon points="46,24 60,32 60,92 46,84" fill="url(#faceRight)"/>
+  <polygon points="32,32 46,24 60,32 46,40" fill="url(#faceTop)"/>
+
+  <!-- "T" Architectural Crossbeam & Column (Right Structure) -->
+  <!-- Crossbeam Top -->
+  <polygon points="68,24 92,10 106,18 82,32" fill="url(#faceTop)"/>
+  <!-- Crossbeam Front -->
+  <polygon points="68,24 82,32 82,44 68,36" fill="url(#faceLeft)"/>
+  <polygon points="82,32 106,18 106,30 82,44" fill="url(#faceRight)"/>
+
+  <!-- "T" Stem (dropping from beam) -->
+  <polygon points="80,44 94,36 94,92 80,100" fill="url(#faceLeft)"/>
+  <polygon points="94,36 104,42 104,98 94,92" fill="url(#faceRight)"/>
+
+  <!-- Precision Lime Accent line on spine -->
+  <line x1="46" y1="24" x2="46" y2="84" stroke="url(#limeEdge)" stroke-width="1.5"/>
+</svg>
