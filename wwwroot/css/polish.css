@@ -5757,16 +5757,72 @@ html, body {
     flex-shrink: 0;
     transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
 }
+.brand-mark-3d {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: #090c0f;
+    border: 1.5px solid rgba(199, 243, 107, 0.45);
+    box-shadow: 0 0 16px rgba(199, 243, 107, 0.22), inset 0 0 8px rgba(0, 0, 0, 0.9);
+}
 .brand-logo-img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     display: block;
 }
-.brand:hover .brand-mark,
-.footer-brand:hover .brand-mark {
-    transform: rotate(-6deg) scale(1.08);
-    box-shadow: 0 0 16px rgba(199, 243, 107, 0.35);
+.brand:hover .brand-mark-3d,
+.footer-brand:hover .brand-mark-3d {
+    transform: rotate(-6deg) scale(1.12);
+    box-shadow: 0 0 24px rgba(199, 243, 107, 0.5), 0 0 35px rgba(168, 156, 249, 0.35);
+    border-color: #c7f36b;
+}
+.brand-name-wrap {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    text-align: left;
+}
+.brand-name, .brand-text {
+    font: 700 15px Manrope, sans-serif;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+}
+.brand-sub {
+    font: 700 8px 'DM Mono', monospace;
+    letter-spacing: 0.16em;
+    color: #a89cf9;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+/* Hero Visual Core Card with 3D Brand Logo */
+.core-card-branded {
+    padding: 13px !important;
+    height: auto !important;
+    min-height: 300px !important;
+    box-shadow: 0 0 80px rgba(199, 243, 107, 0.15), 0 28px 75px rgba(0, 0, 0, 0.9) !important;
+}
+.core-brand-showcase {
+    position: relative;
+    width: 100%;
+    margin: 10px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(199, 243, 107, 0.3);
+    background: #090c0f;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+.core-brand-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.3s;
+}
+.core-card:hover .core-brand-img {
+    transform: scale(1.035);
+    filter: brightness(1.05);
 }
 
 .brand-modal-wrapper {
