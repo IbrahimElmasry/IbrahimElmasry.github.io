@@ -39,6 +39,11 @@
                         3D Titanium &amp; App Icons
                     </button>
                     <button type="button"
+                            class="brand-tab @(activeTab == "social" ? "is-active" : "")"
+                            @onclick='() => activeTab = "social"'>
+                        Facebook &amp; WhatsApp Kits
+                    </button>
+                    <button type="button"
                             class="brand-tab @(activeTab == "palette" ? "is-active" : "")"
                             @onclick='() => activeTab = "palette"'>
                         Color Palette &amp; Font
@@ -46,6 +51,90 @@
                 </div>
 
                 <div class="brand-content-view">
+                    @if (activeTab == "all" || activeTab == "social")
+                    {
+                        <div class="brand-section">
+                            <span class="brand-section-kicker">★ · OPTIMIZED FOR FACEBOOK &amp; WHATSAPP</span>
+                            
+                            <div class="brand-assets-grid">
+                                <!-- Card: Profile Avatar for WhatsApp & Facebook -->
+                                <div class="brand-card">
+                                    <div class="brand-card-preview dark-bg">
+                                        <img src="images/social/whatsapp-profile-avatar.png" alt="WhatsApp &amp; Facebook Avatar" class="brand-img-preview" />
+                                    </div>
+                                    <div class="brand-card-info">
+                                        <h4>WhatsApp &amp; Facebook Profile Avatar</h4>
+                                        <p>1024×1024 px lossless PNG. Formatted specifically with a circular safe zone so WhatsApp &amp; Facebook circular crops never clip the logo.</p>
+                                        <div class="brand-card-actions">
+                                            <a href="images/social/whatsapp-profile-avatar.png" download="Ibrahim-Tarek-Avatar.png" class="brand-btn brand-btn-primary">
+                                                ⬇ Download Avatar (1024px)
+                                            </a>
+                                            <a href="images/social/whatsapp-profile-avatar.png" target="_blank" class="brand-btn brand-btn-secondary">
+                                                Preview ↗
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card: Facebook Cover Banner -->
+                                <div class="brand-card">
+                                    <div class="brand-card-preview dark-bg">
+                                        <img src="images/social/facebook-cover-banner.png" alt="Facebook Cover Banner" class="brand-img-preview wide" />
+                                    </div>
+                                    <div class="brand-card-info">
+                                        <h4>Facebook Cover Banner</h4>
+                                        <p>1640×624 px (Retina 2x). Precision architectural banner with title, tech stack pills, and responsive safe margins for both mobile and desktop.</p>
+                                        <div class="brand-card-actions">
+                                            <a href="images/social/facebook-cover-banner.png" download="Ibrahim-Tarek-Facebook-Cover.png" class="brand-btn brand-btn-primary">
+                                                ⬇ Download Cover (1640x624)
+                                            </a>
+                                            <a href="images/social/facebook-cover-banner.png" target="_blank" class="brand-btn brand-btn-secondary">
+                                                Preview ↗
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card: Square Feed / Story Post -->
+                                <div class="brand-card">
+                                    <div class="brand-card-preview dark-bg">
+                                        <img src="images/social/facebook-post-square.png" alt="Square Feed Post" class="brand-img-preview" />
+                                    </div>
+                                    <div class="brand-card-info">
+                                        <h4>Square Post / WhatsApp Status Card</h4>
+                                        <p>1080×1080 px high-res graphic. Ready for Facebook posts, WhatsApp status updates, LinkedIn announcements, or Instagram.</p>
+                                        <div class="brand-card-actions">
+                                            <a href="images/social/facebook-post-square.png" download="Ibrahim-Tarek-Square-Post.png" class="brand-btn brand-btn-primary">
+                                                ⬇ Download Post (1080px)
+                                            </a>
+                                            <a href="images/social/facebook-post-square.png" target="_blank" class="brand-btn brand-btn-secondary">
+                                                Preview ↗
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card: OpenGraph Share Preview Card -->
+                                <div class="brand-card">
+                                    <div class="brand-card-preview dark-bg">
+                                        <img src="images/social/social-share-og.png" alt="OpenGraph Card" class="brand-img-preview wide" />
+                                    </div>
+                                    <div class="brand-card-info">
+                                        <h4>Social Link Preview Card (OpenGraph)</h4>
+                                        <p>1200×630 px. The exact preview card displayed automatically whenever your portfolio link is shared on Facebook, WhatsApp, or Twitter.</p>
+                                        <div class="brand-card-actions">
+                                            <a href="images/social/social-share-og.png" download="Ibrahim-Tarek-Social-OG.png" class="brand-btn brand-btn-primary">
+                                                ⬇ Download OG (1200x630)
+                                            </a>
+                                            <a href="images/social/social-share-og.png" target="_blank" class="brand-btn brand-btn-secondary">
+                                                Preview ↗
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
                     @if (activeTab == "all" || activeTab == "render")
                     {
                         <div class="brand-section">
