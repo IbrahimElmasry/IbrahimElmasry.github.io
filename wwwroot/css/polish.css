@@ -5884,49 +5884,244 @@ html, body {
     text-shadow: 0 0 10px rgba(168, 156, 249, 0.4);
 }
 
-/* Hero Visual Core Card with 3D Brand Logo */
+/* ==========================================================================
+   HERO 3D HOLOGRAPHIC IDENTITY HUD CARD
+   ========================================================================== */
+
 .core-card-branded {
-    padding: 14px !important;
-    height: auto !important;
-    min-height: 310px !important;
-    box-shadow: 0 0 80px rgba(199, 243, 107, 0.18), 0 28px 75px rgba(0, 0, 0, 0.9) !important;
-    animation: heroCardFloat 6s ease-in-out infinite alternate !important;
+    position: relative;
+    z-index: 10;
+    width: 295px !important;
+    min-height: 385px !important;
+    padding: 20px 22px !important;
+    border-radius: 16px !important;
+    background: linear-gradient(155deg, rgba(20, 26, 33, 0.94) 0%, rgba(11, 14, 18, 0.98) 100%) !important;
+    border: 1.5px solid rgba(199, 243, 107, 0.38) !important;
+    box-shadow: 
+        0 24px 60px rgba(0, 0, 0, 0.85),
+        0 0 50px rgba(199, 243, 107, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    transform: rotate(2deg) translateY(0) !important;
+    animation: heroHudFloat 6s ease-in-out infinite alternate !important;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.4s ease !important;
 }
 
-@keyframes heroCardFloat {
+.core-card-branded:hover {
+    transform: rotate(0deg) translateY(-8px) scale(1.03) !important;
+    border-color: rgba(199, 243, 107, 0.7) !important;
+    box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.92),
+        0 0 70px rgba(199, 243, 107, 0.25),
+        0 0 90px rgba(168, 156, 249, 0.2) !important;
+}
+
+@keyframes heroHudFloat {
     0% {
-        transform: rotate(3deg) translateY(0);
+        transform: rotate(2deg) translateY(0);
     }
     100% {
-        transform: rotate(3deg) translateY(-8px);
+        transform: rotate(1deg) translateY(-10px);
     }
 }
 
-.core-brand-showcase {
+/* Top HUD bar */
+.core-top-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.core-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font: 700 8.5px 'DM Mono', monospace;
+    letter-spacing: 0.12em;
+    color: #d7f994;
+}
+.core-status-pill .live-pulse {
+    width: 6px;
+    height: 6px;
+    background: var(--lime);
+    border-radius: 50%;
+    box-shadow: 0 0 10px #c7f36b;
+}
+.core-loc-tag {
+    font: 600 8.5px 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    color: #8c97a4;
+}
+
+/* Holographic Emblem Stage */
+.core-emblem-stage {
     position: relative;
     width: 100%;
-    margin: 10px 0;
-    border-radius: 9px;
-    overflow: hidden;
-    border: 1.5px solid rgba(199, 243, 107, 0.45);
-    background: #090c0f;
-    box-shadow: 
-        0 12px 35px rgba(0, 0, 0, 0.85),
-        0 0 25px rgba(199, 243, 107, 0.15);
+    height: 165px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 0 4px;
 }
 
-.core-brand-img {
+.emblem-halo {
+    position: absolute;
+    width: 145px;
+    height: 145px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(199, 243, 107, 0.28) 0%, rgba(168, 156, 249, 0.16) 50%, transparent 75%);
+    filter: blur(14px);
+    animation: haloGlowBreathe 4.5s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes haloGlowBreathe {
+    0% {
+        opacity: 0.6;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+}
+
+.emblem-ring {
+    position: absolute;
+    width: 152px;
+    height: 152px;
+    border-radius: 50%;
+    border: 1px dashed rgba(199, 243, 107, 0.35);
+    animation: ringOrbitSpin 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes ringOrbitSpin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.core-hero-emblem {
+    position: relative;
+    z-index: 2;
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 18px rgba(199, 243, 107, 0.45));
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s;
+    animation: emblemLevitate 5s ease-in-out infinite alternate;
+}
+
+@keyframes emblemLevitate {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        transform: translateY(-5px) scale(1.03);
+    }
+}
+
+.core-card-branded:hover .core-hero-emblem {
+    transform: scale(1.08) translateY(-4px);
+    filter: drop-shadow(0 14px 35px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 25px rgba(199, 243, 107, 0.7));
+}
+
+/* Identity Typography */
+.core-identity {
+    text-align: center;
+    margin: 4px 0 10px;
+}
+
+.core-name {
+    margin: 0;
+    font: 800 20px/1.2 Manrope, sans-serif;
+    color: #f8fafc;
+    letter-spacing: -0.025em;
+}
+
+.core-name-dot {
+    color: var(--lime);
+    text-shadow: 0 0 8px rgba(199, 243, 107, 0.7);
+}
+
+.core-role {
     display: block;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.3s;
-    filter: contrast(1.06) brightness(1.03);
+    margin-top: 4px;
+    font: 700 9px 'DM Mono', monospace;
+    letter-spacing: 0.14em;
+    color: #a89cf9;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(168, 156, 249, 0.35);
 }
 
-.core-card:hover .core-brand-img {
-    transform: scale(1.04);
-    filter: brightness(1.08) contrast(1.1);
+/* Tech Spec Chips */
+.core-spec-chips {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.spec-chip {
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    font: 600 9px 'DM Mono', monospace;
+    letter-spacing: 0.03em;
+    transition: all 0.2s ease;
+}
+
+.core-card-branded:hover .spec-chip {
+    border-color: rgba(199, 243, 107, 0.35);
+    background: rgba(199, 243, 107, 0.06);
+    color: #e2f8bb;
+}
+
+/* Bottom HUD Footer */
+.core-footer-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font: 700 8.5px 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+}
+
+.core-perf {
+    color: #94a3b8;
+}
+
+.core-ping {
+    color: var(--lime);
+    text-shadow: 0 0 8px rgba(199, 243, 107, 0.5);
+}
+
+/* Floating Tag Polish */
+.float-tag {
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    background: rgba(17, 22, 28, 0.85) !important;
+    border: 1px solid rgba(199, 243, 107, 0.35) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(199, 243, 107, 0.1) !important;
+    transition: transform 0.3s ease, border-color 0.3s ease !important;
+}
+
+.float-tag:hover {
+    transform: translateY(-3px) scale(1.05) !important;
+    border-color: var(--lime) !important;
 }
 
 .brand-modal-wrapper {
