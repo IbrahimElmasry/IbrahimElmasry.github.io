@@ -1018,7 +1018,26 @@ public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher)
             );
         }
 
-        // 7. Clean Architecture & CQRS
+        // 8. DevERP - Developer ERP & Multi-Currency Cash Flow Suite
+        if (q.Contains("deverp") || q.Contains("erp") || q.Contains("cash flow") || q.Contains("invoicing") || q.Contains("invoice") || (q.Contains("electron") && !q.Contains("elearning")))
+        {
+            actions.Add(new("View DevERP on GitHub ↗", "https://github.com/IbrahimElmasry/DevERP"));
+            actions.Add(new("DevERP Case Study ↘", "projects/deverp"));
+            actions.Add(new("Browse Selected Work 📁", "#work"));
+
+            return (
+                "**DevERP** is an offline-first Enterprise Resource Planning and multi-currency cash flow terminal built by Ibrahim for freelance developers, independent consultants, and agencies:\n\n" +
+                "• **Tech Stack**: React 19, TypeScript, Tailwind CSS v4, Vite, Electron, and jsPDF.\n" +
+                "• **Financial Features**: Multi-currency accounting across **EGP (E£)**, **USD ($)**, and **EUR (€)** with locked FX conversion rates, milestone-based CRM (Net 15/30/60), 30-day runway projection, and real-time cash flow ledger.\n" +
+                "• **PDF Engine**: Client-side, printable invoice generation powered by `jspdf`, embedding corporate banking & wire remittance coordinates (IBAN & SWIFT/BIC).\n" +
+                "• **Architecture**: 100% offline data privacy with zero external server dependencies, JSON backup export/restore, packaged into a native Windows executable (`.exe`) via Electron & NSIS, plus responsive web distribution.\n" +
+                "• **Source Code**: [github.com/IbrahimElmasry/DevERP](https://github.com/IbrahimElmasry/DevERP).",
+                actions,
+                null
+            );
+        }
+
+        // 9. Clean Architecture & CQRS
         if (q.Contains("architecture") || q.Contains("clean arch") || q.Contains("cqrs") || q.Contains("mediatr") ||
             q.Contains("solid") || q.Contains("pattern") || q.Contains("معمارية") || q.Contains("انماط"))
         {

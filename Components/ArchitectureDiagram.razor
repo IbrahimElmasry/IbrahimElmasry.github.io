@@ -259,6 +259,72 @@
                             </div>
                         }
 
+                        @* ═══════════ DEVERP ═══════════ *@
+                        else if (IsSlug("deverp"))
+                        {
+                            <div class="diag-layer layer-presentation">
+                                <span class="layer-pill">1. CLIENT-SIDE PRESENTATION &amp; RUNTIME</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>React 19 &amp; TypeScript</strong>
+                                        <span>Executive terminal, component hierarchy, custom reactive state</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Tailwind CSS v4 &amp; Motion</strong>
+                                        <span>Dark glassmorphic finance UI, cash flow charts, smooth animations</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Electron Desktop Shell</strong>
+                                        <span>Cross-platform desktop packaging, NSIS Windows installer, local bridge</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-arrow">↓ Financial State Actions / FX Calculation Pipeline ↓</div>
+
+                            <div class="diag-layer layer-services">
+                                <span class="layer-pill">2. APPLICATION SERVICES &amp; FINANCIAL LOGIC</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Multi-Currency FX Engine</strong>
+                                        <span>Real-time conversion across EGP, USD, EUR with locked invoice rates</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Client CRM &amp; Milestone Engine</strong>
+                                        <span>Contract terms (Net 15/30/60), retainers, deliverable lifecycles</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>jsPDF Document Generator</strong>
+                                        <span>Client-side PDF invoicing with banking &amp; wire remittance coordinates</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Cash Flow &amp; Burn-Rate Analyzer</strong>
+                                        <span>Double-entry ledger reconciliation, 30-day runway projection</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-arrow">↓ Client-Side Local Storage &amp; File I/O ↓</div>
+
+                            <div class="diag-layer layer-data">
+                                <span class="layer-pill">3. ZERO-CLOUD LOCAL PERSISTENCE</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Isolated LocalStorage Schema</strong>
+                                        <span>Entities for clients, invoices, milestones, and cash flow entries</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>JSON Backup &amp; Migration Engine</strong>
+                                        <span>One-click export/import for effortless workstation synchronization</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Zero-Telemetry Privacy Core</strong>
+                                        <span>100% offline data sovereignty with zero external API dependencies</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
                         @* ═══════════ FALLBACK ═══════════ *@
                         else
                         {
@@ -466,6 +532,70 @@
                                 </ul>
                             </div>
                         }
+                        else if (IsSlug("deverp"))
+                        {
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">Clients</span>
+                                    <span class="erd-badge">Entity</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (string/uuid)</li>
+                                    <li>name (string)</li>
+                                    <li>company (string)</li>
+                                    <li>email (string)</li>
+                                    <li>paymentTerms (Net15/30/60)</li>
+                                    <li>currency (EGP/USD/EUR)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">Invoices</span>
+                                    <span class="erd-badge">Entity</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (string)</li>
+                                    <li>invoiceNumber (INV-YYYY-XXX)</li>
+                                    <li class="col-fk"><b>FK</b> clientId (string)</li>
+                                    <li>issueDate (ISO string)</li>
+                                    <li>dueDate (ISO string)</li>
+                                    <li>currency (string)</li>
+                                    <li>fxRateToBase (decimal)</li>
+                                    <li>totalAmount (decimal)</li>
+                                    <li>status (Draft/Sent/Settled)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">Milestones</span>
+                                    <span class="erd-badge">Entity</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (string)</li>
+                                    <li class="col-fk"><b>FK</b> clientId (string)</li>
+                                    <li>title (string)</li>
+                                    <li>amount (decimal)</li>
+                                    <li>status (Pending/Done/Billed)</li>
+                                    <li>targetDate (ISO string)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">CashFlowLedger</span>
+                                    <span class="erd-badge">Entity</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (string)</li>
+                                    <li>type (Inflow/Outflow)</li>
+                                    <li>amount (decimal)</li>
+                                    <li>currency (string)</li>
+                                    <li>baseEgpAmount (decimal)</li>
+                                    <li>category (Retainer/Hosting/etc)</li>
+                                    <li class="col-fk"><b>FK</b> invoiceId (nullable)</li>
+                                    <li>timestamp (datetime)</li>
+                                </ul>
+                            </div>
+                        }
                     </div>
                 </div>
             }
@@ -494,13 +624,13 @@
         Project?.Slug.Contains(partial, StringComparison.OrdinalIgnoreCase) == true;
 
     private bool HasDatabaseSchema =>
-        IsSlug("tech-xpress") || IsSlug("elearning") || IsSlug("rawafid");
+        IsSlug("tech-xpress") || IsSlug("elearning") || IsSlug("rawafid") || IsSlug("deverp");
 
     private bool HasCodeSnippet =>
-        IsSlug("tech-xpress") || IsSlug("elearning") || IsSlug("rawafid") || IsSlug("el-wakeel");
+        IsSlug("tech-xpress") || IsSlug("elearning") || IsSlug("rawafid") || IsSlug("el-wakeel") || IsSlug("deverp");
 
     private string CodeTabLabel =>
-        IsSlug("el-wakeel") ? "HTML / JS Snippet" : "C# Implementation Snippet";
+        IsSlug("el-wakeel") ? "HTML / JS Snippet" : IsSlug("deverp") ? "TypeScript / React Snippet" : "C# Implementation Snippet";
 
     private string CodeSnippetFileName
     {
@@ -510,6 +640,7 @@
             if (IsSlug("elearning")) return "ChatbotService.cs (Conversation Flow)";
             if (IsSlug("rawafid")) return "ArticleController.php (Multilingual Routing)";
             if (IsSlug("el-wakeel")) return "script.js (WhatsApp & Form Integration)";
+            if (IsSlug("deverp")) return "invoiceGenerator.ts (jsPDF & Multi-Currency Engine)";
             return "Code.cs";
         }
     }
@@ -664,6 +795,59 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });";
+
+            if (IsSlug("deverp"))
+                return @"// DevERP — Client-Side Multi-Currency PDF Invoice Generator
+import jsPDF from 'jspdf';
+import { Invoice, Client, ExchangeRates } from '../types';
+
+export function generateInvoicePdf(invoice: Invoice, client: Client, rates: ExchangeRates): jsPDF {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const baseCurrency = 'EGP';
+  const fxMultiplier = rates[invoice.currency] || 1.0;
+  const totalInBase = invoice.totalAmount * fxMultiplier;
+
+  // Header & Executive Terminal Branding
+  doc.setFillColor(15, 23, 42); // slate-900
+  doc.rect(0, 0, 210, 36, 'F');
+  doc.setTextColor(248, 250, 252);
+  doc.setFontSize(20);
+  doc.text('DevERP · EXECUTIVE INVOICE', 14, 22);
+
+  // Remittance & Banking Coordinates (IBAN / SWIFT)
+  doc.setFontSize(9);
+  doc.setTextColor(148, 163, 184);
+  doc.text(`Invoice ID: ${invoice.invoiceNumber}`, 140, 16);
+  doc.text(`Issue Date: ${invoice.issueDate}`, 140, 22);
+  doc.text(`Due Date: ${invoice.dueDate} (${client.paymentTerms})`, 140, 28);
+
+  // Client Bill-To
+  doc.setTextColor(30, 41, 59);
+  doc.setFontSize(11);
+  doc.text('BILLED TO:', 14, 48);
+  doc.setFontSize(10);
+  doc.text(`${client.name} — ${client.company}`, 14, 55);
+  doc.text(`Contact: ${client.email}`, 14, 61);
+
+  // Line items and FX conversion table
+  let y = 80;
+  invoice.items.forEach((item, index) => {
+    doc.text(`${index + 1}. ${item.description}`, 14, y);
+    doc.text(`${invoice.currency} ${item.amount.toLocaleString()}`, 170, y, { align: 'right' });
+    y += 10;
+  });
+
+  // Locked Multi-Currency Settlement
+  doc.line(14, y + 2, 196, y + 2);
+  doc.setFontSize(12);
+  doc.text(`Total Due (${invoice.currency}):`, 120, y + 12);
+  doc.text(`${invoice.currency} ${invoice.totalAmount.toLocaleString()}`, 196, y + 12, { align: 'right' });
+  doc.setFontSize(9);
+  doc.setTextColor(100, 116, 139);
+  doc.text(`Reporting Base: E£ ${totalInBase.toLocaleString(undefined, { minimumFractionDigits: 2 })} (FX: ${fxMultiplier})`, 120, y + 18);
+
+  return doc;
+}";
 
             return "// No snippet available for this project.";
         }
