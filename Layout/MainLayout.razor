@@ -4,7 +4,9 @@
 <div class="site-shell">
     <header class="topbar">
         <a href="@Nav.BaseUri" class="brand" @onclick="CloseMobileMenu">
-            <span class="brand-mark">IT</span>
+            <span class="brand-mark">
+                <img src="images/logo/it-mark.svg" alt="IT Logo" class="brand-logo-img" />
+            </span>
             <span>Ibrahim Tarek<span class="brand-dot">.</span></span>
         </a>
         <nav class="desktop-nav" aria-label="Main navigation">
@@ -43,7 +45,9 @@
         <div class="mobile-nav-sheet">
             <div class="mobile-nav-header">
                 <div class="mobile-nav-brand">
-                    <span class="brand-mark">IT</span>
+                    <span class="brand-mark">
+                        <img src="images/logo/it-mark.svg" alt="IT Logo" class="brand-logo-img" />
+                    </span>
                     <span>Ibrahim Tarek<span class="brand-dot">.</span></span>
                 </div>
                 <button type="button" class="mobile-nav-close" @onclick="CloseMobileMenu" aria-label="Close menu">✕</button>
@@ -121,7 +125,9 @@
             <!-- Col 1: Identity & Bio -->
             <div class="footer-col footer-identity">
                 <a href="@Nav.BaseUri" class="footer-brand">
-                    <span class="brand-mark">IT</span>
+                    <span class="brand-mark">
+                        <img src="images/logo/it-mark.svg" alt="IT Logo" class="brand-logo-img" />
+                    </span>
                     <span class="brand-text">Ibrahim Tarek<span class="brand-dot">.</span></span>
                 </a>
                 <p class="footer-bio">
@@ -224,14 +230,20 @@
             <div class="footer-copy">
                 <span>© @DateTime.Now.Year @(profile.Name.Length > 0 ? profile.Name : "Ibrahim Tarek"). Engineered with C# &amp; Blazor WebAssembly.</span>
             </div>
-            <a class="footer-top-btn" href="@($"{Nav.BaseUri}#top")" aria-label="Back to top">
-                <span>Back to top</span>
-                <span class="top-arrow">↑</span>
-            </a>
+            <div class="footer-bottom-actions" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button type="button" class="footer-top-btn" @onclick="() => brandKitModalRef?.Open()" style="cursor: pointer; border-color: rgba(199, 243, 107, 0.45); color: #d5fb83;" title="View & Download Official Brand Logos">
+                    <span>⚡ Brand &amp; Logo Kit</span>
+                </button>
+                <a class="footer-top-btn" href="@($"{Nav.BaseUri}#top")" aria-label="Back to top">
+                    <span>Back to top</span>
+                    <span class="top-arrow">↑</span>
+                </a>
+            </div>
         </div>
     </footer>
-    <CommandPalette @ref="commandPaletteRef" OnOpenResume="() => resumeModalRef?.Open()" OnOpenChat="OpenChatWidget" />
+    <CommandPalette @ref="commandPaletteRef" OnOpenResume="() => resumeModalRef?.Open()" OnOpenChat="OpenChatWidget" OnOpenBrandKit="() => brandKitModalRef?.Open()" />
     <ResumeModal @ref="resumeModalRef" ResumeUrl="@profile.ResumeUrl" />
+    <BrandKitModal @ref="brandKitModalRef" />
     <ChatWidget @ref="chatWidgetRef" />
 </div>
 <script src="js/motion.js?v=20260924-7"></script>
@@ -239,6 +251,7 @@
     private Profile profile = new();
     private CommandPalette? commandPaletteRef;
     private ResumeModal? resumeModalRef;
+    private BrandKitModal? brandKitModalRef;
     private ChatWidget? chatWidgetRef;
     private bool isMobileMenuOpen;
 

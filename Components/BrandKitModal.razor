@@ -1,0 +1,283 @@
+@inject IJSRuntime JS
+
+<div class="brand-modal-wrapper @(isOpen ? "is-open" : "")">
+    @if (isOpen)
+    {
+        <div class="brand-backdrop" @onclick="Close"></div>
+        <div class="brand-modal" role="dialog" aria-modal="true" aria-labelledby="brand-modal-title">
+            <div class="brand-modal-header">
+                <div class="brand-header-left">
+                    <img src="images/logo/it-mark.svg" alt="IT" class="brand-modal-badge" />
+                    <div>
+                        <h3 id="brand-modal-title" class="brand-modal-title">Brand Identity &amp; Logo Kit</h3>
+                        <span class="brand-modal-sub">Official assets for Ibrahim Tarek (.NET &amp; Full-Stack)</span>
+                    </div>
+                </div>
+                <div class="brand-header-actions">
+                    <button type="button" class="brand-close-btn" @onclick="Close" aria-label="Close brand modal">
+                        ✕
+                    </button>
+                </div>
+            </div>
+
+            <div class="brand-modal-body">
+                <!-- Asset Navigation Tabs -->
+                <div class="brand-tabs">
+                    <button type="button"
+                            class="brand-tab @(activeTab == "all" ? "is-active" : "")"
+                            @onclick='() => activeTab = "all"'>
+                        All Logo Assets
+                    </button>
+                    <button type="button"
+                            class="brand-tab @(activeTab == "vector" ? "is-active" : "")"
+                            @onclick='() => activeTab = "vector"'>
+                        Scalable Vectors (SVG)
+                    </button>
+                    <button type="button"
+                            class="brand-tab @(activeTab == "render" ? "is-active" : "")"
+                            @onclick='() => activeTab = "render"'>
+                        3D Titanium &amp; App Icons
+                    </button>
+                    <button type="button"
+                            class="brand-tab @(activeTab == "palette" ? "is-active" : "")"
+                            @onclick='() => activeTab = "palette"'>
+                        Color Palette &amp; Font
+                    </button>
+                </div>
+
+                <div class="brand-content-view">
+                    @if (activeTab == "all" || activeTab == "render")
+                    {
+                        <div class="brand-section">
+                            <span class="brand-section-kicker">01 · HIGH-RESOLUTION 3D BRAND LOGOS</span>
+                            
+                            <div class="brand-assets-grid">
+                                <!-- Card 1: 3D Signature Lockup -->
+                                <div class="brand-card">
+                                    <div class="brand-card-preview dark-bg">
+                                        <img src="images/logo/ibrahim-tarek-logo.jpg" alt="Ibrahim Tarek 3D Brand Logo" class="brand-img-preview" />
+                                    </div>
+                                    <div class="brand-card-info">
+                                        <h4>3D Cyber Titanium Brand Lockup</h4>
+                                        <p>Luminous neon lime (#c7f36b) &amp; ultraviolet (#a89cf9) rim light with full typography lockup.</p>
+                                        <div class="brand-card-actions">
+                                            <a href="images/logo/ibrahim-tarek-logo.jpg" download="Ibrahim-Tarek-3D-Brand-Logo.jpg" class="brand-btn brand-btn-primary">
+                                                ⬇ Download JPG
+                                            </a>
+                                            <a href="images/logo/ibrahim-tarek-logo.jpg" target="_blank" class="brand-btn brand-btn-secondary">
+                                                Open Full-Res ↗
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card 2: App Icon Squircle Badge -->
+                                <div class="brand-card">
+                                    <div class="brand-card-preview dark-bg">
+                                        <img src="images/logo/ibrahim-icon-badge.jpg" alt="Ibrahim Tarek App Icon Badge" class="brand-img-preview" />
+                                    </div>
+                                    <div class="brand-card-info">
+                                        <h4>App Icon &amp; Profile Avatar Squircle</h4>
+                                        <p>Optimized for GitHub avatar, LinkedIn profile picture, Favicon, and mobile desktop launcher.</p>
+                                        <div class="brand-card-actions">
+                                            <a href="images/logo/ibrahim-icon-badge.jpg" download="Ibrahim-Tarek-App-Icon.jpg" class="brand-btn brand-btn-primary">
+                                                ⬇ Download JPG
+                                            </a>
+                                            <a href="images/logo/ibrahim-icon-badge.jpg" target="_blank" class="brand-btn brand-btn-secondary">
+                                                Open Full-Res ↗
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (activeTab == "all" || activeTab == "vector")
+                    {
+                        <div class="brand-section">
+                            <span class="brand-section-kicker">02 · PURE SCALABLE VECTOR GRAPHICS (SVG)</span>
+
+                            <div class="brand-assets-grid">
+                                <!-- Card 3: Vector Square Monogram -->
+                                <div class="brand-card">
+                                    <div class="brand-card-preview dark-bg">
+                                        <img src="images/logo/it-mark.svg" alt="IT Monogram Vector SVG" class="brand-svg-preview" />
+                                    </div>
+                                    <div class="brand-card-info">
+                                        <h4>IT Monogram Squircle Mark</h4>
+                                        <p>Infinite resolution vector graphic with subtle grid line accents and neon gradient borders.</p>
+                                        <div class="brand-card-actions">
+                                            <a href="images/logo/it-mark.svg" download="IT-Monogram-Mark.svg" class="brand-btn brand-btn-primary">
+                                                ⬇ Download SVG
+                                            </a>
+                                            <button type="button" class="brand-btn brand-btn-secondary" @onclick='() => CopyAssetLink("images/logo/it-mark.svg", "mark")'>
+                                                @(copiedKey == "mark" ? "✓ URL Copied" : "Copy Relative Path")
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card 4: Horizontal Header Lockup -->
+                                <div class="brand-card">
+                                    <div class="brand-card-preview dark-bg">
+                                        <img src="images/logo/it-logo-horizontal.svg" alt="IT Horizontal Logo SVG" class="brand-svg-preview wide" />
+                                    </div>
+                                    <div class="brand-card-info">
+                                        <h4>Horizontal Identity Lockup</h4>
+                                        <p>Full brand identity with Manrope bold typography, ideal for website headers, pitch decks, and invoices.</p>
+                                        <div class="brand-card-actions">
+                                            <a href="images/logo/it-logo-horizontal.svg" download="Ibrahim-Tarek-Horizontal-Logo.svg" class="brand-btn brand-btn-primary">
+                                                ⬇ Download SVG
+                                            </a>
+                                            <button type="button" class="brand-btn brand-btn-secondary" @onclick='() => CopyAssetLink("images/logo/it-logo-horizontal.svg", "horizontal")'>
+                                                @(copiedKey == "horizontal" ? "✓ URL Copied" : "Copy Relative Path")
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card 5: Transparent Background Monogram -->
+                                <div class="brand-card">
+                                    <div class="brand-card-preview checker-bg">
+                                        <img src="images/logo/it-mark-transparent.svg" alt="IT Transparent Monogram" class="brand-svg-preview" />
+                                    </div>
+                                    <div class="brand-card-info">
+                                        <h4>Transparent Vector Glyph</h4>
+                                        <p>Zero-background transparent SVG symbol for watermarks, light/dark overlays, and custom UI components.</p>
+                                        <div class="brand-card-actions">
+                                            <a href="images/logo/it-mark-transparent.svg" download="IT-Mark-Transparent.svg" class="brand-btn brand-btn-primary">
+                                                ⬇ Download SVG
+                                            </a>
+                                            <button type="button" class="brand-btn brand-btn-secondary" @onclick='() => CopyAssetLink("images/logo/it-mark-transparent.svg", "trans")'>
+                                                @(copiedKey == "trans" ? "✓ URL Copied" : "Copy Relative Path")
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (activeTab == "all" || activeTab == "palette")
+                    {
+                        <div class="brand-section">
+                            <span class="brand-section-kicker">03 · OFFICIAL BRAND COLOR PALETTE</span>
+
+                            <div class="brand-palette-grid">
+                                <div class="palette-card" @onclick='() => CopyColor("#C7F36B")'>
+                                    <div class="palette-swatch" style="background: #C7F36B; color: #090B0E;">
+                                        <strong>#C7F36B</strong>
+                                    </div>
+                                    <div class="palette-meta">
+                                        <span class="palette-name">Electric Lime</span>
+                                        <span class="palette-usage">Primary brand accent &amp; interactive signals</span>
+                                        <span class="palette-action">@(copiedColor == "#C7F36B" ? "✓ Copied!" : "Click to copy HEX")</span>
+                                    </div>
+                                </div>
+
+                                <div class="palette-card" @onclick='() => CopyColor("#A89CF9")'>
+                                    <div class="palette-swatch" style="background: #A89CF9; color: #090B0E;">
+                                        <strong>#A89CF9</strong>
+                                    </div>
+                                    <div class="palette-meta">
+                                        <span class="palette-name">Ultraviolet Neon</span>
+                                        <span class="palette-usage">Secondary gradient edge &amp; tech badge highlight</span>
+                                        <span class="palette-action">@(copiedColor == "#A89CF9" ? "✓ Copied!" : "Click to copy HEX")</span>
+                                    </div>
+                                </div>
+
+                                <div class="palette-card" @onclick='() => CopyColor("#090B0E")'>
+                                    <div class="palette-swatch" style="background: #090B0E; color: #F8FAFC; border: 1px solid #2a323c;">
+                                        <strong>#090B0E</strong>
+                                    </div>
+                                    <div class="palette-meta">
+                                        <span class="palette-name">Deep Obsidian</span>
+                                        <span class="palette-usage">Core surface backdrop &amp; terminal contrast</span>
+                                        <span class="palette-action">@(copiedColor == "#090B0E" ? "✓ Copied!" : "Click to copy HEX")</span>
+                                    </div>
+                                </div>
+
+                                <div class="palette-card" @onclick='() => CopyColor("#242C33")'>
+                                    <div class="palette-swatch" style="background: #242C33; color: #F8FAFC;">
+                                        <strong>#242C33</strong>
+                                    </div>
+                                    <div class="palette-meta">
+                                        <span class="palette-name">Cyber Titanium</span>
+                                        <span class="palette-usage">Metallic logo facets &amp; card borders</span>
+                                        <span class="palette-action">@(copiedColor == "#242C33" ? "✓ Copied!" : "Click to copy HEX")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="brand-section">
+                            <span class="brand-section-kicker">04 · TYPOGRAPHY SPECIFICATION</span>
+                            <div class="brand-typography-card">
+                                <div class="type-row">
+                                    <span class="type-role">Display &amp; Headings:</span>
+                                    <strong class="type-spec">Manrope (Bold 700 / ExtraBold 800)</strong>
+                                </div>
+                                <div class="type-row">
+                                    <span class="type-role">Body &amp; Interface:</span>
+                                    <strong class="type-spec">DM Sans (Regular 400 / Medium 500 / SemiBold 600)</strong>
+                                </div>
+                                <div class="type-row">
+                                    <span class="type-role">Code, Subtitles &amp; Telemetry:</span>
+                                    <strong class="type-spec">DM Mono / Cascadia Code (Medium 500)</strong>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="brand-modal-footer">
+                <span class="brand-footer-hint">💡 All vector SVGs are lightweight and compatible with Figma, Illustrator, GitHub, and print.</span>
+                <button type="button" class="brand-btn brand-btn-secondary" @onclick="Close">
+                    Done
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isOpen;
+    private string activeTab = "all";
+    private string? copiedKey;
+    private string? copiedColor;
+
+    public void Open()
+    {
+        isOpen = true;
+        activeTab = "all";
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        isOpen = false;
+        StateHasChanged();
+    }
+
+    private async Task CopyAssetLink(string relativePath, string key)
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", relativePath);
+        copiedKey = key;
+        StateHasChanged();
+        await Task.Delay(2000);
+        copiedKey = null;
+        StateHasChanged();
+    }
+
+    private async Task CopyColor(string hex)
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", hex);
+        copiedColor = hex;
+        StateHasChanged();
+        await Task.Delay(2000);
+        copiedColor = null;
+        StateHasChanged();
+    }
+}

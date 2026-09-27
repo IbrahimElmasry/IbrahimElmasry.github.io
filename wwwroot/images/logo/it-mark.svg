@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#141c18" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#090b0e" stop-opacity="1" />
+    </radialGradient>
+
+    <!-- Neon Rim Gradient -->
+    <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c7f36b" />
+      <stop offset="50%" stop-color="#7bf099" />
+      <stop offset="100%" stop-color="#a89cf9" />
+    </linearGradient>
+
+    <!-- Metallic Facet Gradients -->
+    <linearGradient id="metalLight" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#2a333c" />
+      <stop offset="50%" stop-color="#192026" />
+      <stop offset="100%" stop-color="#0f1317" />
+    </linearGradient>
+    <linearGradient id="metalDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c242b" />
+      <stop offset="100%" stop-color="#0b0e11" />
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base with Cyber Border -->
+  <rect x="6" y="6" width="108" height="108" rx="28" fill="url(#bgGlow)" stroke="url(#neonGradient)" stroke-width="1.8" stroke-opacity="0.5" />
+  
+  <!-- Subtle Grid Accent Lines -->
+  <line x1="6" y1="40" x2="114" y2="40" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1" />
+  <line x1="6" y1="80" x2="114" y2="80" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1" />
+  <line x1="40" y1="6" x2="40" y2="114" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1" />
+  <line x1="80" y1="6" x2="80" y2="114" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1" />
+
+  <!-- Monogram Group (IT) with Neon Glow -->
+  <g filter="url(#neonGlow)">
+    <!-- 'I' Letterform -->
+    <!-- Top Cap of I -->
+    <polygon points="30,26 48,26 44,34 30,34" fill="url(#metalLight)" stroke="#c7f36b" stroke-width="1.5" stroke-linejoin="round" />
+    <!-- Main Stem of I -->
+    <polygon points="34,35 44,35 44,82 34,88" fill="url(#metalDark)" stroke="#c7f36b" stroke-width="1.5" stroke-linejoin="round" />
+    <!-- Bottom Shelf of I -->
+    <polygon points="26,88 52,88 46,94 22,94" fill="url(#metalLight)" stroke="#c7f36b" stroke-width="1.5" stroke-linejoin="round" />
+    <!-- Cut Accent in I -->
+    <polygon points="34,54 44,48 44,56 34,62" fill="#c7f36b" fill-opacity="0.85" />
+
+    <!-- 'T' Letterform -->
+    <!-- Top Bar of T -->
+    <polygon points="52,26 96,26 92,36 60,36" fill="url(#metalLight)" stroke="#a89cf9" stroke-width="1.5" stroke-linejoin="round" />
+    <!-- Cyber Wing on T -->
+    <polygon points="96,26 90,36 82,36 92,26" fill="#a89cf9" fill-opacity="0.75" />
+    <!-- Stem of T -->
+    <polygon points="60,37 72,37 72,94 60,86" fill="url(#metalDark)" stroke="#a89cf9" stroke-width="1.5" stroke-linejoin="round" />
+    <!-- Diagonal Energy Shard between I and T -->
+    <polygon points="47,42 56,33 58,37 49,46" fill="url(#neonGradient)" />
+  </g>
+
+  <!-- Ambient Light Dot -->
+  <circle cx="94" cy="24" r="2.5" fill="#c7f36b" filter="url(#neonGlow)" />
+</svg>
