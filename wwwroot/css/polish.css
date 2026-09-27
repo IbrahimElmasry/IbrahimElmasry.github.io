@@ -1330,6 +1330,354 @@
 }
 
 /* ==========================================================================
+   PROJECT DETAIL PAGE – Header Restyle & Animations
+   ========================================================================== */
+
+/* ── entrance keyframes ── */
+@keyframes detail-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes detail-slide-right {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes detail-scale-in {
+  from { opacity: 0; transform: scale(.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes detail-title-reveal {
+  from { opacity: 0; transform: translateY(30px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes cover-shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+@keyframes tag-pop {
+  from { opacity: 0; transform: scale(.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes bullet-grow {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+/* ── page container ── */
+.detail-page {
+    min-height: 68vh;
+    padding-top: 90px !important;
+    padding-bottom: 100px;
+}
+
+/* ── back link ── */
+.detail-page .back-link {
+    font: 500 11px 'DM Mono', monospace;
+    color: #7b858e;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 48px;
+    padding: 8px 16px 8px 12px;
+    border: 1px solid #1e262e;
+    border-radius: 8px;
+    background: #0e121700;
+    transition: all .3s cubic-bezier(.16,1,.3,1);
+    animation: detail-slide-right .5s ease-out both;
+    letter-spacing: .03em;
+}
+.detail-page .back-link:hover {
+    color: var(--lime);
+    border-color: #c7f36b55;
+    background: #c7f36b08;
+    transform: translateX(-4px);
+}
+
+/* ── project kicker ── */
+.detail-page > .section-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #14181e, #101317);
+    border: 1px solid #1e262e;
+    border-radius: 6px;
+    color: #8cefe3;
+    font-size: 9px !important;
+    animation: detail-fade-up .5s ease-out .08s both;
+    margin-bottom: 8px;
+}
+
+/* ── title ── */
+.detail-page h1 {
+    font: 700 clamp(44px, 7.5vw, 78px)/1.02 Manrope, sans-serif !important;
+    letter-spacing: -.065em !important;
+    margin: 18px 0 20px !important;
+    animation: detail-title-reveal .65s cubic-bezier(.2,.8,.2,1) .14s both;
+    max-width: 900px;
+}
+.detail-page h1 .gradient-title {
+    font-size: inherit;
+    animation: gradient-travel 7s ease-in-out infinite alternate;
+}
+
+/* ── lead description ── */
+.detail-page .detail-lead {
+    font-size: 15px !important;
+    line-height: 1.85 !important;
+    color: #94a0ac !important;
+    max-width: 660px;
+    animation: detail-fade-up .55s ease-out .22s both;
+    margin-bottom: 32px;
+}
+
+/* ── cover image ── */
+.detail-page .detail-cover {
+    display: block;
+    width: 100%;
+    max-width: 920px;
+    border-radius: 14px;
+    border: 1px solid #1e262e;
+    box-shadow: 0 24px 64px #00000055, 0 0 0 1px #ffffff06 inset;
+    object-fit: cover;
+    object-position: top center;
+    aspect-ratio: 16 / 9;
+    transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s, border-color .5s;
+    animation: detail-scale-in .6s ease-out .28s both;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+.detail-page .detail-cover:hover {
+    transform: translateY(-4px) scale(1.005);
+    border-color: #c7f36b33;
+    box-shadow: 0 32px 80px #00000066, 0 0 40px #c7f36b08;
+}
+
+/* ── period kicker (below image) ── */
+.detail-page .detail-actions ~ .section-kicker,
+.detail-page > .section-kicker:nth-of-type(2) {
+    margin-top: -8px;
+}
+
+/* ── action buttons row ── */
+.detail-page .detail-actions {
+    display: flex;
+    gap: 12px;
+    margin: 28px 0 48px;
+    animation: detail-fade-up .5s ease-out .36s both;
+}
+.detail-page .detail-actions .button {
+    border-radius: 10px;
+    padding: 13px 22px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    transition: all .3s cubic-bezier(.16,1,.3,1);
+    position: relative;
+    overflow: hidden;
+}
+.detail-page .detail-actions .button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity .3s;
+}
+.detail-page .detail-actions .button-primary {
+    background: linear-gradient(135deg, var(--lime), #a8d960);
+    border-color: var(--lime);
+    box-shadow: 0 4px 20px #c7f36b30;
+}
+.detail-page .detail-actions .button-primary::before {
+    background: linear-gradient(135deg, #d5fb83, #c7f36b);
+}
+.detail-page .detail-actions .button-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px #c7f36b40;
+}
+.detail-page .detail-actions .button-primary:hover::before { opacity: 1; }
+
+.detail-page .detail-actions .button-quiet {
+    border: 1px solid #2a3138;
+    background: linear-gradient(135deg, #14181e, #101317);
+}
+.detail-page .detail-actions .button-quiet:hover {
+    transform: translateY(-2px);
+    border-color: #c7f36b55;
+    background: linear-gradient(135deg, #1a2218, #141a14);
+    color: var(--lime);
+    box-shadow: 0 8px 24px #00000044;
+}
+
+/* ── detail panel (highlights, overview, tags) ── */
+.detail-page .detail-panel {
+    border: 1px solid #1e262e !important;
+    background: linear-gradient(165deg, #0e1217, #090b0e) !important;
+    border-radius: 14px !important;
+    padding: 28px !important;
+    max-width: 920px !important;
+    box-shadow: 0 16px 48px #00000044;
+    animation: detail-fade-up .55s ease-out .44s both;
+    position: relative;
+    overflow: hidden;
+}
+.detail-page .detail-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c7f36b22, #a89cf922, transparent);
+}
+
+/* section kickers inside the panel */
+.detail-page .detail-panel .section-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    background: #14181e;
+    border: 1px solid #1e262e;
+    border-radius: 5px;
+    color: #8cefe3;
+    font-size: 8px !important;
+    margin-bottom: 12px;
+}
+
+/* system overview text */
+.detail-page .detail-panel > p {
+    font-size: 13.5px !important;
+    line-height: 1.9 !important;
+    color: #a0a8b2 !important;
+    max-width: 80ch;
+}
+
+/* ── highlights list ── */
+.detail-page .detail-highlights ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 28px;
+}
+.detail-page .detail-highlights li {
+    position: relative;
+    padding: 0 0 0 20px;
+    color: #b0b8c2;
+    font-size: 12.5px;
+    line-height: 1.75;
+    animation: detail-fade-up .4s ease-out both;
+}
+.detail-page .detail-highlights li:nth-child(1) { animation-delay: .48s; }
+.detail-page .detail-highlights li:nth-child(2) { animation-delay: .53s; }
+.detail-page .detail-highlights li:nth-child(3) { animation-delay: .58s; }
+.detail-page .detail-highlights li:nth-child(4) { animation-delay: .63s; }
+.detail-page .detail-highlights li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .7em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--lime);
+    box-shadow: 0 0 8px #c7f36b55;
+    animation: bullet-grow .3s ease-out both;
+}
+.detail-page .detail-highlights li:nth-child(1)::before { animation-delay: .5s; }
+.detail-page .detail-highlights li:nth-child(2)::before { animation-delay: .55s; }
+.detail-page .detail-highlights li:nth-child(3)::before { animation-delay: .6s; }
+.detail-page .detail-highlights li:nth-child(4)::before { animation-delay: .65s; }
+.detail-page .detail-highlights li:hover {
+    color: #e0e5ea;
+}
+
+/* ── tech / topic tags ── */
+.detail-page .detail-tags {
+    margin: 10px 0 16px !important;
+}
+.detail-page .detail-tags .tech-tag {
+    border: 1px solid #242c34;
+    background: linear-gradient(135deg, #14181e, #101317);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font: 500 9px 'DM Mono', monospace;
+    color: #a0a8b2;
+    transition: all .25s cubic-bezier(.16,1,.3,1);
+    animation: tag-pop .35s ease-out both;
+}
+.detail-page .detail-tags .tech-tag:nth-child(1) { animation-delay: .5s; }
+.detail-page .detail-tags .tech-tag:nth-child(2) { animation-delay: .55s; }
+.detail-page .detail-tags .tech-tag:nth-child(3) { animation-delay: .56s; }
+.detail-page .detail-tags .tech-tag:nth-child(4) { animation-delay: .58s; }
+.detail-page .detail-tags .tech-tag:nth-child(5) { animation-delay: .6s; }
+.detail-page .detail-tags .tech-tag:nth-child(6) { animation-delay: .62s; }
+.detail-page .detail-tags .tech-tag:nth-child(7) { animation-delay: .64s; }
+.detail-page .detail-tags .tech-tag:hover {
+    border-color: #c7f36b55;
+    color: var(--lime);
+    background: linear-gradient(135deg, #1a2218, #141a14);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px #00000044;
+}
+
+/* ── responsive ── */
+@media (max-width: 600px) {
+    .detail-page { padding-top: 55px !important; }
+    .detail-page .back-link {
+        margin-bottom: 32px;
+        padding: 6px 12px 6px 10px;
+        font-size: 10px;
+    }
+    .detail-page h1 {
+        font-size: clamp(36px, 10vw, 52px) !important;
+        margin: 14px 0 16px !important;
+    }
+    .detail-page .detail-lead {
+        font-size: 13.5px !important;
+        margin-bottom: 24px;
+    }
+    .detail-page .detail-cover {
+        border-radius: 10px;
+        aspect-ratio: 16 / 10;
+    }
+    .detail-page .detail-actions {
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 20px 0 36px;
+    }
+    .detail-page .detail-actions .button {
+        padding: 11px 16px;
+        font-size: 11px;
+    }
+    .detail-page .detail-panel {
+        padding: 20px !important;
+        border-radius: 10px !important;
+    }
+    .detail-page .detail-highlights ul {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+/* ── reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+    .detail-page .back-link,
+    .detail-page > .section-kicker,
+    .detail-page h1,
+    .detail-page .detail-lead,
+    .detail-page .detail-cover,
+    .detail-page .detail-actions,
+    .detail-page .detail-panel,
+    .detail-page .detail-highlights li,
+    .detail-page .detail-tags .tech-tag {
+        animation: none !important;
+    }
+    .detail-page .detail-cover:hover,
+    .detail-page .detail-actions .button:hover {
+        transform: none !important;
+    }
+}
+
+/* ==========================================================================
    FEATURE 4: Architecture Diagrams, ERD Schemas & Code Deep-Dive
    ========================================================================== */
 /* ==========================================================================
