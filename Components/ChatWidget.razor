@@ -1037,7 +1037,25 @@ public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher)
             );
         }
 
-        // 9. Clean Architecture & CQRS
+        // 9. Alkian Alsaamy - Digital Marketing & Social Media Agency
+        if (q.Contains("alkian") || q.Contains("alsaamy") || q.Contains("marketing") || q.Contains("social media") || q.Contains("paid ads") || q.Contains("advertising") || q.Contains("تسويق") || q.Contains("الكيان") || q.Contains("السامي"))
+        {
+            actions.Add(new("View Alkian on GitHub ↗", "https://github.com/IbrahimElmasry/Alkian-Alsaamy-For-Marketing-Services-Via-Social-Media"));
+            actions.Add(new("Alkian Case Study ↘", "projects/alkian-alsaamy"));
+            actions.Add(new("Browse Selected Work 📁", "#work"));
+
+            return (
+                "**Alkian Alsaamy** is a digital marketing agency platform built by Ibrahim for a premier agency based in the UAE specializing in paid advertising campaigns and social media solutions:\n\n" +
+                "• **Tech Stack**: HTML5, CSS3, JavaScript, Bootstrap, Owl Carousel, WOW.js, and Google Maps API.\n" +
+                "• **Core Focus**: Designing and running high-ROI ad campaigns across **Google, Meta (Facebook/Instagram), and TikTok**, audience segmentation, and SEO optimization.\n" +
+                "• **Features**: Interactive services carousel, proven client milestones (200+ ad campaigns, 300+ creative assets, 150+ happy clients), multi-field inquiry dispatch form, and embedded Dubai headquarters map.\n" +
+                "• **Source Code**: [github.com/IbrahimElmasry/Alkian-Alsaamy-For-Marketing-Services-Via-Social-Media](https://github.com/IbrahimElmasry/Alkian-Alsaamy-For-Marketing-Services-Via-Social-Media).",
+                actions,
+                null
+            );
+        }
+
+        // 10. Clean Architecture & CQRS
         if (q.Contains("architecture") || q.Contains("clean arch") || q.Contains("cqrs") || q.Contains("mediatr") ||
             q.Contains("solid") || q.Contains("pattern") || q.Contains("معمارية") || q.Contains("انماط"))
         {

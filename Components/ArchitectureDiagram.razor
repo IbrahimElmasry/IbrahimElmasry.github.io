@@ -325,6 +325,68 @@
                             </div>
                         }
 
+                        @* ═══════════ ALKIAN ALSAAMY ═══════════ *@
+                        else if (IsSlug("alkian-alsaamy"))
+                        {
+                            <div class="diag-layer layer-presentation">
+                                <span class="layer-pill">1. CLIENT-SIDE PRESENTATION &amp; CAROUSELS</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>HTML5 &amp; Bootstrap 5</strong>
+                                        <span>Responsive grid system, fluid layout, mobile-first navigation</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Owl Carousel 2 &amp; WOW.js</strong>
+                                        <span>Multi-slide service carousels, banner animations, smooth scroll</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Agency Visual Assets</strong>
+                                        <span>High-converting hero illustration, vector branding, service iconography</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-arrow">↓ Interactive Client Interactions &amp; Geolocation Embed ↓</div>
+
+                            <div class="diag-layer layer-services">
+                                <span class="layer-pill">2. SERVICE SHOWCASE &amp; LEAD CAPTURE</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>Paid Ad Services Showcase</strong>
+                                        <span>Google, Meta &amp; TikTok campaign strategies, audience targeting</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Interactive Lead Ingestion</strong>
+                                        <span>Multi-field inquiry capture, client telephone routing, email dispatch</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Google Maps Geolocation</strong>
+                                        <span>Dubai/UAE agency headquarters embedded viewport</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-arrow">↓ CDN &amp; High-Availability Web Hosting ↓</div>
+
+                            <div class="diag-layer layer-data">
+                                <span class="layer-pill">3. HOSTING &amp; ASSET INFRASTRUCTURE</span>
+                                <div class="layer-boxes">
+                                    <div class="diag-box">
+                                        <strong>High-Speed Static Hosting</strong>
+                                        <span>Optimized asset delivery, TLS encryption, edge caching</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Global CDN Pipelines</strong>
+                                        <span>Google Fonts (Poppins), Font Awesome 5, Bootstrap CDN assets</span>
+                                    </div>
+                                    <div class="diag-box">
+                                        <strong>Social Media Deep-Links</strong>
+                                        <span>Direct WhatsApp &amp; Instagram communication bridges</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
                         @* ═══════════ FALLBACK ═══════════ *@
                         else
                         {
@@ -596,6 +658,48 @@
                                 </ul>
                             </div>
                         }
+                        else if (IsSlug("alkian-alsaamy"))
+                        {
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">Inquiries</span>
+                                    <span class="erd-badge">Entity</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (int)</li>
+                                    <li>name (varchar)</li>
+                                    <li>email (varchar)</li>
+                                    <li>phone (varchar)</li>
+                                    <li>message (text)</li>
+                                    <li>submittedAt (datetime)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">Campaigns</span>
+                                    <span class="erd-badge">Entity</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (int)</li>
+                                    <li>platform (Google/Meta/TikTok)</li>
+                                    <li>adBudget (decimal)</li>
+                                    <li>targetAudience (varchar)</li>
+                                    <li>status (Active/Completed)</li>
+                                </ul>
+                            </div>
+                            <div class="erd-table">
+                                <div class="erd-table-head">
+                                    <span class="erd-name">AgencyServices</span>
+                                    <span class="erd-badge">Entity</span>
+                                </div>
+                                <ul class="erd-cols">
+                                    <li class="col-pk"><b>PK</b> id (int)</li>
+                                    <li>serviceTitle (varchar)</li>
+                                    <li>category (PaidAds/SEO/Creative)</li>
+                                    <li>deliverableType (varchar)</li>
+                                </ul>
+                            </div>
+                        }
                     </div>
                 </div>
             }
@@ -624,13 +728,13 @@
         Project?.Slug.Contains(partial, StringComparison.OrdinalIgnoreCase) == true;
 
     private bool HasDatabaseSchema =>
-        IsSlug("tech-xpress") || IsSlug("elearning") || IsSlug("rawafid") || IsSlug("deverp");
+        IsSlug("tech-xpress") || IsSlug("elearning") || IsSlug("rawafid") || IsSlug("deverp") || IsSlug("alkian-alsaamy");
 
     private bool HasCodeSnippet =>
-        IsSlug("tech-xpress") || IsSlug("elearning") || IsSlug("rawafid") || IsSlug("el-wakeel") || IsSlug("deverp");
+        IsSlug("tech-xpress") || IsSlug("elearning") || IsSlug("rawafid") || IsSlug("el-wakeel") || IsSlug("deverp") || IsSlug("alkian-alsaamy");
 
     private string CodeTabLabel =>
-        IsSlug("el-wakeel") ? "HTML / JS Snippet" : IsSlug("deverp") ? "TypeScript / React Snippet" : "C# Implementation Snippet";
+        IsSlug("el-wakeel") || IsSlug("alkian-alsaamy") ? "HTML / JS Snippet" : IsSlug("deverp") ? "TypeScript / React Snippet" : "C# Implementation Snippet";
 
     private string CodeSnippetFileName
     {
@@ -641,6 +745,7 @@
             if (IsSlug("rawafid")) return "ArticleController.php (Multilingual Routing)";
             if (IsSlug("el-wakeel")) return "script.js (WhatsApp & Form Integration)";
             if (IsSlug("deverp")) return "invoiceGenerator.ts (jsPDF & Multi-Currency Engine)";
+            if (IsSlug("alkian-alsaamy")) return "main.js (Owl Carousel & Lead Dispatch)";
             return "Code.cs";
         }
     }
@@ -848,6 +953,50 @@ export function generateInvoicePdf(invoice: Invoice, client: Client, rates: Exch
 
   return doc;
 }";
+
+            if (IsSlug("alkian-alsaamy"))
+                return @"// Alkian Alsaamy — Interactive Carousel & Inquiry Form Validation
+$(document).ready(function () {
+  // Banner & Services Owl Carousel
+  $('.owl-services').owlCarousel({
+    items: 4,
+    loop: true,
+    dots: true,
+    nav: false,
+    autoplay: true,
+    margin: 30,
+    responsive: {
+      0: { items: 1 },
+      600: { items: 2 },
+      1000: { items: 4 }
+    }
+  });
+
+  // Smooth scroll to target section
+  $('.scroll-to-section a[href*=\\#]:not([href=\\#])').on('click', function () {
+    const target = $(this.hash);
+    if (target.length) {
+      $('html, body').animate({ scrollTop: target.offset().top - 80 }, 700);
+      return false;
+    }
+  });
+
+  // Lead inquiry form dispatch
+  $('#contact').on('submit', function (e) {
+    e.preventDefault();
+    const phone = $('#phone').val();
+    const email = $('#email').val();
+    if (!email || !phone) return;
+
+    // Dispatch marketing inquiry to agency desk
+    $('#form-submit').prop('disabled', true).text('Sending Inquiry...');
+    setTimeout(() => {
+      alert('Thank you! Your inquiry has been dispatched to Alkian Alsaamy.');
+      $('#contact')[0].reset();
+      $('#form-submit').prop('disabled', false).text('Send Message');
+    }, 800);
+  });
+});";
 
             return "// No snippet available for this project.";
         }
