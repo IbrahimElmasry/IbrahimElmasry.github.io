@@ -848,6 +848,25 @@
         var q = query.ToLowerInvariant();
         var actions = new List<ChatAction>();
 
+        // 0. Brand & Logo Kit
+        if (q.Contains("logo") || q.Contains("brand") || q.Contains("icon") || q.Contains("لوجو") || q.Contains("شعار") || q.Contains("هوية"))
+        {
+            actions.Add(new("3D Titanium Brand Logo ⬇", "images/logo/ibrahim-tarek-logo.jpg"));
+            actions.Add(new("App Icon Squircle Badge ⬇", "images/logo/ibrahim-icon-badge.jpg"));
+            actions.Add(new("Scalable Vector SVG ⬇", "images/logo/it-mark.svg"));
+
+            return (
+                "**Ibrahim Tarek's Official Brand & Logo Kit** is available in multiple high-res formats:\n\n" +
+                "• **3D Cyber Titanium Brand Lockup**: Luminous neon lime (`#C7F36B`) & ultraviolet (`#A89CF9`) rim light with full typography lockup.\n" +
+                "• **App Icon / Squircle Profile Badge**: Tailored for GitHub avatar, LinkedIn, and app launcher.\n" +
+                "• **Scalable Vector SVG (`it-mark.svg`)**: Infinite resolution vector monogram with subtle cyber grid accents.\n" +
+                "• **Horizontal Identity Lockup (`it-logo-horizontal.svg`)**: Complete header lockup with typography.\n\n" +
+                "💡 You can open the **Brand & Logo Kit** via the footer button or by pressing <kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd> to preview and download all assets with 1 click!",
+                actions,
+                null
+            );
+        }
+
         // 1. Code Snippets request
         if (q.Contains("cqrs") && (q.Contains("code") || q.Contains("snippet") || q.Contains("show") || q.Contains("handler") || q.Contains("كود")))
         {
