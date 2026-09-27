@@ -7,7 +7,7 @@ namespace PortfolioApp.Services;
 public sealed class ContentService(HttpClient http, Microsoft.AspNetCore.Components.NavigationManager navigation)
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web) { WriteIndented = true };
-    public Task<List<Project>> GetProjectsAsync() => ReadAsync<List<Project>>("data/projects.json?v=20260927-4");
+    public Task<List<Project>> GetProjectsAsync() => ReadAsync<List<Project>>("data/projects.json?v=20260928-1");
     public Task<List<Experience>> GetExperienceAsync() => ReadAsync<List<Experience>>("data/experience.json?v=20260927-1");
     public Task<List<Skill>> GetSkillsAsync() => ReadAsync<List<Skill>>("data/skills.json?v=20260927-1");
     public Task<Profile> GetProfileAsync() => ReadAsync<Profile>("data/profile.json?v=20260927-1");

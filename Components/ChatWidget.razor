@@ -1018,7 +1018,25 @@ public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher)
             );
         }
 
-        // 8. DevERP - Developer ERP & Multi-Currency Cash Flow Suite
+        // 8. DevERP PRO (.NET 8 WPF) & DevERP (React 19 / Electron)
+        if (q.Contains("wpf") || q.Contains("deverp-wpf") || q.Contains("questpdf") || (q.Contains("deverp") && (q.Contains("c#") || q.Contains(".net") || q.Contains("desktop") || q.Contains("sqlite") || q.Contains("mica"))))
+        {
+            actions.Add(new("DevERP PRO Case Study ↘", "projects/deverp-wpf"));
+            actions.Add(new("View WPF Repo on GitHub ↗", "https://github.com/IbrahimElmasry/DevERP-WPF-DotNet"));
+            actions.Add(new("Browse Selected Work 📁", "#work"));
+
+            return (
+                "**DevERP PRO** is a native offline-first Windows desktop ERP & financial suite built with **C#, .NET 8, WPF, and Entity Framework Core SQLite**:\n\n" +
+                "• **Architecture & UI**: Clean Architecture + MVVM pattern, Windows 11 Mica Dark theme via `WPF-UI`, hardware-accelerated rendering, and responsive desktop UX.\n" +
+                "• **Persistence**: Local SQLite 3 database operating in **Write-Ahead Logging (WAL)** mode at `%LocalAppData%\\DevERP\\deverp.db` for safe multi-thread concurrency and complete data sovereignty.\n" +
+                "• **Invoicing Engine**: Vector PDF engine built with `QuestPDF` and `QRCoder` generating A4 invoices with client remittance details and QR verification.\n" +
+                "• **Cash Flow & CRM**: Multi-currency ledger (EGP, USD, EUR), milestone-based invoicing with lifecycle states, client directory, and instant visual telemetry.\n" +
+                "• **Source Code**: [github.com/IbrahimElmasry/DevERP-WPF-DotNet](https://github.com/IbrahimElmasry/DevERP-WPF-DotNet).",
+                actions,
+                null
+            );
+        }
+
         if (q.Contains("deverp") || q.Contains("erp") || q.Contains("cash flow") || q.Contains("invoicing") || q.Contains("invoice") || (q.Contains("electron") && !q.Contains("elearning")))
         {
             actions.Add(new("View DevERP on GitHub ↗", "https://github.com/IbrahimElmasry/DevERP"));
