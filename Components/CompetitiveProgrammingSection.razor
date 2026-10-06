@@ -1,0 +1,99 @@
+@inject LanguageService Lang
+
+<section class="section-wrap cp-section" id="problem-solving">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">06 / @(Lang.IsArabic ? "الخوارزميات وحل المشكلات التنافسي" : "PROBLEM SOLVING & MENTORSHIP")</span>
+            <h2>
+                @(Lang.IsArabic ? "خلفية خوارزمية " : "Algorithmic ")
+                <em>@(Lang.IsArabic ? "وتدريب تنافسي." : "Rigor.")</em>
+            </h2>
+        </div>
+        <p>
+            @(Lang.IsArabic ? "شغف بالخوارزميات وهياكل البيانات يترجم إلى كتابة كود عالي الأداء مع تجنب أخطاء التعقيد الزمني (Time Complexity) والحالات الحدية (Edge Cases)." : "Mentoring collegiate problem solvers in competitive programming and applying strict mathematical complexity standards to enterprise backend code.")
+        </p>
+    </div>
+
+    <div class="cp-grid">
+        <!-- Main stats card -->
+        <div class="cp-stat-card">
+            <div class="cp-badge-row">
+                <span class="cp-badge">
+                    <span class="badge-dot"></span>
+                    <span>ECPC COACH · PORT SAID UNIVERSITY</span>
+                </span>
+                <span class="cp-verified">✓ VERIFIED MENTOR</span>
+            </div>
+
+            <div class="cp-hero-metrics">
+                <div class="cp-metric-box">
+                    <span class="cp-num">500+</span>
+                    <span class="cp-label">Problems Solved</span>
+                    <small>Codeforces, LeetCode, ECPC</small>
+                </div>
+                <div class="cp-metric-box">
+                    <span class="cp-num">40+</span>
+                    <span class="cp-label">Engineers Coached</span>
+                    <small>Data structures &amp; contest prep</small>
+                </div>
+                <div class="cp-metric-box">
+                    <span class="cp-num">O(1)</span>
+                    <span class="cp-label">Algorithmic Mindset</span>
+                    <small>Applied to DB indexes &amp; APIs</small>
+                </div>
+            </div>
+
+            <div class="cp-narrative">
+                <p>
+                    As a problem-solving mentor with the <strong>ECPC (Egyptian Collegiate Programming Contest)</strong> club at Port Said University, I trained engineering students to decompose complex mathematical problems into optimal algorithmic routines under strict contest constraints.
+                </p>
+                <p>
+                    This background directly informs my backend engineering philosophy: anticipating edge cases before writing tests, choosing asymptotically optimal algorithms, and designing database schema indexes that prevent costly table scans.
+                </p>
+            </div>
+        </div>
+
+        <!-- Topics Mastered Grid -->
+        <div class="cp-topics-card">
+            <span class="card-kicker">ALGORITHMIC DOMAINS MASTERED</span>
+            
+            <div class="topics-accordion">
+                <div class="topic-item">
+                    <div class="topic-header">
+                        <span class="topic-icon">🕸️</span>
+                        <strong>Graph Theory &amp; Traversal</strong>
+                        <span class="complexity-tag">O(V + E)</span>
+                    </div>
+                    <p>Breadth-First Search (BFS), Depth-First Search (DFS), Dijkstra's Shortest Path, Topological Sorting (applied to Dependency Injection DAGs), and Minimum Spanning Trees (Kruskal/Prim).</p>
+                </div>
+
+                <div class="topic-item">
+                    <div class="topic-header">
+                        <span class="topic-icon">🧠</span>
+                        <strong>Dynamic Programming (DP)</strong>
+                        <span class="complexity-tag">O(N × W)</span>
+                    </div>
+                    <p>Memoization, tabulation, 0/1 Knapsack, Longest Common Subsequence, interval DP, and state space reductions to eliminate exponential recursion.</p>
+                </div>
+
+                <div class="topic-item">
+                    <div class="topic-header">
+                        <span class="topic-icon">🌲</span>
+                        <strong>Advanced Data Structures</strong>
+                        <span class="complexity-tag">O(log N)</span>
+                    </div>
+                    <p>Disjoint Set Union (DSU with path compression and union by rank), Segment Trees with lazy propagation, Fenwick Trees (BIT), and Monotonic Queues.</p>
+                </div>
+
+                <div class="topic-item">
+                    <div class="topic-header">
+                        <span class="topic-icon">🔍</span>
+                        <strong>Two Pointers &amp; Binary Search</strong>
+                        <span class="complexity-tag">O(log N) / O(N)</span>
+                    </div>
+                    <p>Sliding window state tracking, binary search over continuous answer spaces, and two-pointer sweeps for linear-time array processing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,404 @@
+@inject ContentService Content
+@inject LanguageService Lang
+@inject IJSRuntime JS
+
+<div class="api-explorer-card" id="api-explorer">
+    <div class="api-header">
+        <div class="api-badge">
+            <span class="api-pulse"></span>
+            <span>@(Lang.IsArabic ? "واجهة برمجة التطبيقات التفاعلية" : "ASP.NET CORE 8 MINIMAL API EXPLORER")</span>
+        </div>
+        <div class="api-heading-row">
+            <div>
+                <h3 class="api-title">
+                    @(Lang.IsArabic ? "تجربة واجهة برمجة التطبيقات " : "Live Interactive ")
+                    <em>API Sandbox</em>
+                </h3>
+                <p class="api-subtitle">
+                    @(Lang.IsArabic ? "اختبر نقاط نهاية ASP.NET Core 8 الفعلية مباشرة من المتصفح مع معاينة أكواد C# وهياكل Clean Architecture." : "Execute simulated high-throughput ASP.NET Core 8 Web API endpoints directly in your browser. Inspect real headers, JSON responses, and production C# Minimal API handlers.")
+                </p>
+            </div>
+            <div class="api-env-badge">
+                <span class="env-dot"></span>
+                <span>Kestrel v8.0 / Linux x64</span>
+                <span class="env-time">@simulatedLatency ms</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Endpoint selector pills -->
+    <div class="api-endpoint-list" role="tablist">
+        @foreach (var ep in Endpoints)
+        {
+            <button type="button" 
+                    class="api-ep-btn @(selectedEndpoint.Id == ep.Id ? "active" : "")" 
+                    @onclick="() => SelectEndpoint(ep)">
+                <span class="method-tag method-@ep.Method.ToLowerInvariant()">@ep.Method</span>
+                <span class="path-tag">@ep.Path</span>
+                <span class="ep-desc">@ep.ShortDescription</span>
+            </button>
+        }
+    </div>
+
+    <!-- Main Playground Console -->
+    <div class="api-console-grid">
+        <!-- Request Panel -->
+        <div class="api-panel api-request-panel">
+            <div class="panel-header">
+                <span class="panel-tag">REQUEST DETAILS</span>
+                <div class="panel-actions">
+                    <button type="button" class="btn-execute @(isExecuting ? "loading" : "")" @onclick="ExecuteRequest">
+                        @if (isExecuting)
+                        {
+                            <span class="exec-spinner"></span>
+                            <span>@(Lang.IsArabic ? "جارٍ الإرسال..." : "Sending...")</span>
+                        }
+                        else
+                        {
+                            <span>▶</span>
+                            <span>@(Lang.IsArabic ? "تنفيذ الطلب" : "Send Request")</span>
+                        }
+                    </button>
+                </div>
+            </div>
+
+            <div class="request-bar">
+                <span class="method-tag method-@selectedEndpoint.Method.ToLowerInvariant()">@selectedEndpoint.Method</span>
+                <span class="req-url">https://api.ibrahimtarek.dev@selectedEndpoint.Path@(GetQueryString())</span>
+            </div>
+
+            @if (selectedEndpoint.HasParams)
+            {
+                <div class="req-section">
+                    <span class="section-micro-label">QUERY PARAMETERS</span>
+                    <div class="param-inputs">
+                        @foreach (var p in selectedEndpoint.Params)
+                        {
+                            <div class="param-row">
+                                <label>@p.Name</label>
+                                <input type="text" @bind="p.CurrentValue" placeholder="@p.DefaultValue" />
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (selectedEndpoint.HasBody)
+            {
+                <div class="req-section">
+                    <span class="section-micro-label">JSON REQUEST BODY (EDITABLE)</span>
+                    <textarea class="body-editor" @bind="requestBody" rows="6" spellcheck="false"></textarea>
+                </div>
+            }
+
+            <div class="req-headers-summary">
+                <span class="section-micro-label">DEFAULT HEADERS</span>
+                <div class="header-chips">
+                    <code>Accept: application/json</code>
+                    <code>Authorization: Bearer jwt_sim_2026_it</code>
+                    <code>X-Client-Platform: Portfolio-Blazor</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response Panel -->
+        <div class="api-panel api-response-panel">
+            <div class="panel-header">
+                <div class="response-tabs">
+                    <button type="button" class="resp-tab-btn @(activeRespTab == "body" ? "active" : "")" @onclick='() => activeRespTab = "body"'>
+                        <span>{ }</span> Response Body
+                    </button>
+                    <button type="button" class="resp-tab-btn @(activeRespTab == "headers" ? "active" : "")" @onclick='() => activeRespTab = "headers"'>
+                        <span>≡</span> HTTP Headers
+                    </button>
+                    <button type="button" class="resp-tab-btn @(activeRespTab == "code" ? "active" : "")" @onclick='() => activeRespTab = "code"'>
+                        <span>C#</span> Minimal API Code
+                    </button>
+                </div>
+                <div class="resp-meta-indicators">
+                    <span class="status-pill status-@lastStatusCode">@lastStatusCode @lastStatusText</span>
+                    <span class="latency-pill">⚡ @lastLatencyMs ms</span>
+                    <span class="size-pill">@lastResponseSize</span>
+                </div>
+            </div>
+
+            <div class="panel-content">
+                @if (activeRespTab == "body")
+                {
+                    <div class="json-viewer">
+                        <pre><code>@lastResponseBody</code></pre>
+                    </div>
+                }
+                else if (activeRespTab == "headers")
+                {
+                    <div class="headers-viewer">
+                        <div class="header-line"><strong>HTTP/1.1</strong> <span>@lastStatusCode @lastStatusText</span></div>
+                        <div class="header-line"><strong>Date:</strong> <span>@DateTime.UtcNow.ToString("r")</span></div>
+                        <div class="header-line"><strong>Server:</strong> <span>Kestrel / ASP.NET Core 8.0</span></div>
+                        <div class="header-line"><strong>Content-Type:</strong> <span>application/json; charset=utf-8</span></div>
+                        <div class="header-line"><strong>X-Correlation-Id:</strong> <span>@correlationId</span></div>
+                        <div class="header-line"><strong>X-Execution-Latency:</strong> <span>@lastLatencyMs ms</span></div>
+                        <div class="header-line"><strong>X-RateLimit-Remaining:</strong> <span>4998</span></div>
+                        <div class="header-line"><strong>Strict-Transport-Security:</strong> <span>max-age=31536000; includeSubDomains</span></div>
+                    </div>
+                }
+                else if (activeRespTab == "code")
+                {
+                    <div class="code-viewer">
+                        <div class="code-banner">
+                            <span>ASP.NET Core 8 Minimal API &amp; Clean Architecture (C#)</span>
+                        </div>
+                        <pre><code>@selectedEndpoint.CSharpCode</code></pre>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string activeRespTab = "body";
+    private bool isExecuting = false;
+    private int simulatedLatency = 3;
+    private int lastLatencyMs = 4;
+    private int lastStatusCode = 200;
+    private string lastStatusText = "OK";
+    private string lastResponseSize = "1.4 KB";
+    private string correlationId = Guid.NewGuid().ToString("N")[..12];
+    private string requestBody = "";
+    private string lastResponseBody = "";
+
+    private List<ApiEndpoint> Endpoints = new();
+    private ApiEndpoint selectedEndpoint = null!;
+
+    public class ApiParam
+    {
+        public string Name { get; set; } = "";
+        public string DefaultValue { get; set; } = "";
+        public string CurrentValue { get; set; } = "";
+    }
+
+    public class ApiEndpoint
+    {
+        public string Id { get; set; } = "";
+        public string Method { get; set; } = "GET";
+        public string Path { get; set; } = "";
+        public string ShortDescription { get; set; } = "";
+        public bool HasParams { get; set; }
+        public List<ApiParam> Params { get; set; } = new();
+        public bool HasBody { get; set; }
+        public string DefaultBody { get; set; } = "";
+        public string CSharpCode { get; set; } = "";
+        public Func<ApiEndpoint, string, (int Code, string Text, string Body)> ResponseGenerator { get; set; } = null!;
+    }
+
+    protected override void OnInitialized()
+    {
+        Endpoints = new List<ApiEndpoint>
+        {
+            new ApiEndpoint
+            {
+                Id = "health",
+                Method = "GET",
+                Path = "/api/v1/health",
+                ShortDescription = "System Health & Diagnostic Telemetry",
+                HasParams = false,
+                HasBody = false,
+                CSharpCode = @"// Minimal API Endpoint in ASP.NET Core 8
+app.MapGet(""/api/v1/health"", (IHealthCheckService health) =>
+{
+    var status = new
+    {
+        status = ""Healthy"",
+        timestamp = DateTime.UtcNow,
+        runtime = "".NET 8.0.425 (x64-Kestrel)"",
+        uptime = ""14d 6h 32m 11s"",
+        memoryAllocated = $""{GC.GetTotalMemory(false) / 1024 / 1024:F1} MB"",
+        database = new
+        {
+            engine = ""SQL Server 2022 / SQLite WAL"",
+            latencyMs = 0.8,
+            status = ""Connected"",
+            activeConnections = 12
+        }
+    };
+    return Results.Ok(status);
+})
+.WithName(""GetSystemHealth"")
+.WithTags(""Health"")
+.Produces(StatusCodes.Status200OK);",
+                ResponseGenerator = (ep, body) => (
+                    200, "OK",
+                    @"{\n  ""status"": ""Healthy"",\n  ""timestamp"": ""2026-10-07T02:18:00Z"",\n  ""runtime"": "".NET 8.0.425 (x64-Kestrel)"",\n  ""uptime"": ""14d 6h 32m 11s"",\n  ""processId"": 4096,\n  ""memoryAllocated"": ""18.4 MB"",\n  ""database"": {\n    ""engine"": ""SQL Server 2022 / SQLite WAL"",\n    ""latencyMs"": 0.8,\n    ""status"": ""Connected"",\n    ""activeConnections"": 12\n  },\n  ""checks"": [\n    { ""name"": ""MemoryCache"", ""status"": ""Healthy"" },\n    { ""name"": ""DiskStorage"", ""status"": ""Healthy"" },\n    { ""name"": ""StripeGateway"", ""status"": ""Healthy"" }\n  ]\n}".Replace("\\n", "\n")
+                )
+            },
+            new ApiEndpoint
+            {
+                Id = "projects",
+                Method = "GET",
+                Path = "/api/v1/projects",
+                ShortDescription = "Query Projects with Tag & Featured Filter",
+                HasParams = true,
+                Params = new List<ApiParam>
+                {
+                    new ApiParam { Name = "tag", DefaultValue = "dotnet", CurrentValue = "dotnet" },
+                    new ApiParam { Name = "featured", DefaultValue = "true", CurrentValue = "true" }
+                },
+                HasBody = false,
+                CSharpCode = @"// Clean Architecture CQRS Pattern with MediatR
+app.MapGet(""/api/v1/projects"", async (
+    [FromQuery] string? tag,
+    [FromQuery] bool? featured,
+    ISender mediator,
+    CancellationToken ct) =>
+{
+    var query = new GetProjectsQuery(tag, featured ?? false);
+    var projects = await mediator.Send(query, ct);
+    
+    return Results.Ok(new ApiResponse<IReadOnlyList<ProjectDto>>
+    {
+        Success = true,
+        Data = projects,
+        TotalCount = projects.Count
+    });
+})
+.WithName(""GetProjects"")
+.Produces<ApiResponse<IReadOnlyList<ProjectDto>>>(StatusCodes.Status200OK);",
+                ResponseGenerator = (ep, body) => (
+                    200, "OK",
+                    @"{\n  ""success"": true,\n  ""totalCount"": 4,\n  ""data"": [\n    {\n      ""title"": ""DevERP PRO — Native .NET 8 Desktop ERP"",\n      ""slug"": ""deverp-wpf"",\n      ""architecture"": ""Clean Architecture MVVM, EF Core SQLite WAL, QuestPDF vector invoicing"",\n      ""techStack"": [""C# .NET 8"", ""WPF-UI (Mica)"", ""EF Core SQLite"", ""QuestPDF""],\n      ""featured"": true\n    },\n    {\n      ""title"": ""Tech Xpress — Electronics E-Commerce"",\n      ""slug"": ""tech-xpress"",\n      ""architecture"": ""ASP.NET Core MVC, EF Core, SQL Server, ASP.NET Identity, Stripe Webhooks"",\n      ""techStack"": [""ASP.NET Core MVC"", ""Entity Framework"", ""SQL Server"", ""Stripe""],\n      ""featured"": true\n    },\n    {\n      ""title"": ""Rawafid — Multilingual CMS Platform"",\n      ""slug"": ""rawafid"",\n      ""architecture"": ""High-traffic PHP/MySQL content engine with responsive multilingual layout"",\n      ""techStack"": [""PHP"", ""CSS3"", ""JavaScript"", ""MySQL""],\n      ""featured"": true\n    }\n  ]\n}".Replace("\\n", "\n")
+                )
+            },
+            new ApiEndpoint
+            {
+                Id = "leads",
+                Method = "POST",
+                Path = "/api/v1/leads",
+                ShortDescription = "Submit Client Project Proposal (Validated)",
+                HasParams = false,
+                HasBody = true,
+                DefaultBody = @"{\n  ""clientName"": ""Enterprise Solutions FZ-LLC"",\n  ""email"": ""director@techventure.ae"",\n  ""projectType"": "".NET Core Enterprise Migration"",\n  ""budgetTier"": ""$5,000 - $15,000"",\n  ""estimatedTimeline"": ""6 Weeks"",\n  ""requirements"": ""Migrate legacy SQL server monolithic services to Clean Architecture ASP.NET Core 8 APIs."",\n  ""location"": ""Dubai, UAE""\n}".Replace("\\n", "\n"),
+                CSharpCode = @"// Endpoint with FluentValidation & Result Pattern
+app.MapPost(""/api/v1/leads"", async (
+    [FromBody] CreateLeadCommand command,
+    IValidator<CreateLeadCommand> validator,
+    ISender mediator,
+    CancellationToken ct) =>
+{
+    var validationResult = await validator.ValidateAsync(command, ct);
+    if (!validationResult.IsValid)
+    {
+        return Results.ValidationProblem(validationResult.ToDictionary());
+    }
+
+    var leadId = await mediator.Send(command, ct);
+    return Results.Created($""/api/v1/leads/{leadId}"", new
+    {
+        LeadId = leadId,
+        Status = ""QueuedForReview"",
+        DirectEngineer = ""Ibrahim Tarek"",
+        SlaResponseTimeHours = 4
+    });
+})
+.WithName(""CreateLead"")
+.Produces(StatusCodes.Status201Created)
+.ProducesValidationProblem();",
+                ResponseGenerator = (ep, body) => (
+                    201, "Created",
+                    @"{\n  ""success"": true,\n  ""leadId"": ""LEAD-2026-" + new Random().Next(1000, 9999) + @""",\n  ""status"": ""QueuedForReview"",\n  ""assignedTo"": ""Ibrahim Tarek (.NET Architect)"",\n  ""slaResponseTime"": ""< 4 Hours"",\n  ""directMeetingBooking"": ""https://calendar.app.google/Rfi2iSDSt9Fq3xef6"",\n  ""channels"": [""Email confirmation dispatched"", ""WhatsApp notification triggered""]\n}".Replace("\\n", "\n")
+                )
+            },
+            new ApiEndpoint
+            {
+                Id = "telemetry",
+                Method = "GET",
+                Path = "/api/v1/telemetry/metrics",
+                ShortDescription = "High-Throughput Performance Metrics",
+                HasParams = false,
+                HasBody = false,
+                CSharpCode = @"// High-frequency low-allocation telemetry provider
+app.MapGet(""/api/v1/telemetry/metrics"", (ITelemetryCollector metrics) =>
+{
+    // Uses ArrayPool and zero heap allocations for metric snapshots
+    var snapshot = metrics.GetLiveSnapshot();
+    return Results.Ok(snapshot);
+})
+.WithName(""GetMetrics"")
+.CacheOutput(p => p.Expire(TimeSpan.FromSeconds(5)));",
+                ResponseGenerator = (ep, body) => (
+                    200, "OK",
+                    @"{\n  ""throughputRps"": 4820,\n  ""latencyP50Ms"": 0.74,\n  ""latencyP99Ms"": 3.82,\n  ""activeConnections"": 214,\n  ""threadPoolQueueDepth"": 0,\n  ""gcGen0CollectionsPerMin"": 12,\n  ""gcGen2CollectionsPerMin"": 0,\n  ""cacheHitRatePercent"": 98.4\n}".Replace("\\n", "\n")
+                )
+            },
+            new ApiEndpoint
+            {
+                Id = "auth-token",
+                Method = "POST",
+                Path = "/api/v1/auth/token",
+                ShortDescription = "Issue Simulated JWT Token with Claims",
+                HasParams = false,
+                HasBody = true,
+                DefaultBody = @"{\n  ""clientId"": ""recruiter_portal_guest"",\n  ""scope"": ""projects:read telemetry:view booking:create"",\n  ""grantType"": ""client_credentials""\n}".Replace("\\n", "\n"),
+                CSharpCode = @"// JWT Security Token Handler with Custom Claims
+app.MapPost(""/api/v1/auth/token"", (
+    [FromBody] TokenRequest request,
+    ITokenService tokenService) =>
+{
+    var claims = new[]
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, request.ClientId),
+        new Claim(""role"", ""PortfolioVisitor""),
+        new Claim(""permissions"", ""projects:read,booking:create"")
+    };
+
+    var token = tokenService.GenerateJwt(claims, TimeSpan.FromHours(1));
+    return Results.Ok(new { access_token = token, token_type = ""Bearer"", expires_in = 3600 });
+});",
+                ResponseGenerator = (ep, body) => (
+                    200, "OK",
+                    @"{\n  ""token_type"": ""Bearer"",\n  ""access_token"": ""eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyZWNydWl0ZXIiLCJyb2xlIjoiVmlzaXRvciIsImlzcyI6ImFwaS5pYnJhaGltdGFyZWsuZGV2IiwiZXhwIjoxNzkxMTM2MzgwfQ.7d2b8F..."",\n  ""expires_in"": 3600,\n  ""claims"": {\n    ""sub"": ""recruiter_portal_guest"",\n    ""role"": "".NET Engineering Reviewer"",\n    ""permissions"": [""projects:read"", ""telemetry:view"", ""booking:create""]\n  }\n}".Replace("\\n", "\n")
+                )
+            }
+        };
+
+        selectedEndpoint = Endpoints[0];
+        requestBody = selectedEndpoint.DefaultBody;
+        ExecuteInternal();
+    }
+
+    private void SelectEndpoint(ApiEndpoint ep)
+    {
+        selectedEndpoint = ep;
+        requestBody = ep.DefaultBody;
+        ExecuteInternal();
+    }
+
+    private string GetQueryString()
+    {
+        if (!selectedEndpoint.HasParams || selectedEndpoint.Params.Count == 0) return "";
+        var pairs = selectedEndpoint.Params.Select(p => $"{p.Name}={Uri.EscapeDataString(string.IsNullOrWhiteSpace(p.CurrentValue) ? p.DefaultValue : p.CurrentValue)}");
+        return "?" + string.Join("&", pairs);
+    }
+
+    private async Task ExecuteRequest()
+    {
+        isExecuting = true;
+        StateHasChanged();
+        await Task.Delay(240); // Simulate network roundtrip
+        ExecuteInternal();
+        isExecuting = false;
+        StateHasChanged();
+    }
+
+    private void ExecuteInternal()
+    {
+        correlationId = Guid.NewGuid().ToString("N")[..12];
+        lastLatencyMs = new Random().Next(2, 6);
+        simulatedLatency = lastLatencyMs;
+        var (code, text, body) = selectedEndpoint.ResponseGenerator(selectedEndpoint, requestBody);
+        lastStatusCode = code;
+        lastStatusText = text;
+        lastResponseBody = body;
+        lastResponseSize = $"{Math.Max(0.8, body.Length / 1024.0):F1} KB";
+    }
+}

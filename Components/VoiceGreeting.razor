@@ -1,0 +1,70 @@
+@inject IJSRuntime JS
+@inject LanguageService Lang
+
+<div class="voice-greeting-badge @(isPlaying ? "is-playing" : "")" @onclick="ToggleAudio" title="@(isPlaying ? "Pause audio introduction" : "Listen to 15s audio greeting")">
+    <button type="button" class="voice-play-btn" aria-label="@(isPlaying ? "Pause audio introduction" : "Play audio introduction")">
+        @if (isPlaying)
+        {
+            <span>❚❚</span>
+        }
+        else
+        {
+            <span>▶</span>
+        }
+    </button>
+    <div class="voice-info">
+        <span class="voice-title">
+            @(Lang.IsArabic ? "مقدمة صوتية سريعة (١٥ ثانية)" : "15s Audio Introduction")
+        </span>
+        <span class="voice-sub">
+            @(isPlaying 
+                ? (Lang.IsArabic ? "جارٍ الاستماع..." : "Playing audio...") 
+                : (Lang.IsArabic ? "اضغط للاستماع" : "Click to hear voice intro"))
+        </span>
+    </div>
+    <div class="voice-waveform" aria-hidden="true">
+        <span class="wave-bar"></span>
+        <span class="wave-bar"></span>
+        <span class="wave-bar"></span>
+        <span class="wave-bar"></span>
+        <span class="wave-bar"></span>
+    </div>
+</div>
+
+@code {
+    private bool isPlaying = false;
+
+    private async Task ToggleAudio()
+    {
+        if (isPlaying)
+        {
+            isPlaying = false;
+            await JS.InvokeVoidAsync("stopVoiceGreeting");
+        }
+        else
+        {
+            isPlaying = true;
+            string text = Lang.IsArabic
+                ? "أهلاً بك! أنا إبراهيم طارق، مهندس برمجيات و دوت نت أركيتكت. مرحباً بك في معرض أعمالي، يسعدني استكشافك للمشاريع واختبار واجهات البرمجة التفاعلية بالأسفل!"
+                : "Hello! I'm Ibrahim Tarek, a .NET Architect and Backend Software Engineer based in Alexandria, Egypt. Welcome to my portfolio! Feel free to explore my verified projects and test the live API sandbox below.";
+
+            string langCode = Lang.IsArabic ? "ar-SA" : "en-US";
+
+            try
+            {
+                await JS.InvokeVoidAsync("playVoiceGreeting", text, langCode);
+
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(12000);
+                    isPlaying = false;
+                    await InvokeAsync(StateHasChanged);
+                });
+            }
+            catch
+            {
+                isPlaying = false;
+            }
+        }
+    }
+}

@@ -1,0 +1,95 @@
+@inject ContentService Content
+@inject LanguageService Lang
+
+<section class="section-wrap articles-section" id="articles">
+    <div class="section-heading">
+        <div>
+            <span class="section-kicker">07 / @(Lang.IsArabic ? "مقالات وكتابات هندسية" : "ENGINEERING NOTES & ARCHITECTURE")</span>
+            <h2>
+                @(Lang.IsArabic ? "أفكار برمجية و" : "Engineering ")
+                <em>@(Lang.IsArabic ? "تجارب معمارية." : "Insights.")</em>
+            </h2>
+        </div>
+        <p>
+            @(Lang.IsArabic ? "مقالات تقنية مفصلة من واقع بناء تطبيقات الـ .NET، وتحسين الأداء، وتصميم المعماريات النظيفة." : "In-depth technical writeups and real production lessons from building .NET applications, optimizing databases, and mentoring problem solvers.")
+        </p>
+    </div>
+
+    <div class="articles-grid">
+        @foreach (var article in Articles)
+        {
+            <article class="article-card" @onclick="() => OpenArticle(article)">
+                <div class="article-meta-top">
+                    <span class="article-tag">@article.Category</span>
+                    <span class="article-read-time">@article.ReadTime</span>
+                </div>
+                <h3 class="article-title">@article.Title</h3>
+                <p class="article-snippet">@article.Snippet</p>
+                <div class="article-footer">
+                    <span class="article-date">@article.Date</span>
+                    <button type="button" class="article-read-btn">
+                        <span>@(Lang.IsArabic ? "قراءة المقال" : "Read Article")</span>
+                        <span class="btn-arrow">↗</span>
+                    </button>
+                </div>
+            </article>
+        }
+    </div>
+
+    @if (activeArticle is not null)
+    {
+        <div class="article-modal-backdrop" @onclick="CloseArticle" role="dialog" aria-modal="true">
+            <div class="article-modal-sheet" @onclick:stopPropagation="true">
+                <div class="modal-top-bar">
+                    <div class="modal-meta">
+                        <span class="modal-tag">@activeArticle.Category</span>
+                        <span class="modal-time">@activeArticle.ReadTime</span>
+                        <span class="modal-date">@activeArticle.Date</span>
+                    </div>
+                    <button type="button" class="btn-modal-close" @onclick="CloseArticle" aria-label="Close article">✕</button>
+                </div>
+
+                <div class="modal-article-body">
+                    <h2 class="modal-article-title">@activeArticle.Title</h2>
+                    <div class="article-author-pill">
+                        <span class="author-dot"></span>
+                        <span>By Ibrahim Tarek · .NET Architect &amp; Software Engineer</span>
+                    </div>
+
+                    <div class="article-content-prose">
+                        @((MarkupString)activeArticle.HtmlContent)
+                    </div>
+                </div>
+
+                <div class="modal-bottom-bar">
+                    <button type="button" class="button button-quiet" @onclick="CloseArticle">
+                        ← @(Lang.IsArabic ? "العودة للمقالات" : "Back to Articles")
+                    </button>
+                    <a class="button button-primary" href="#contact" @onclick="CloseArticle">
+                        @(Lang.IsArabic ? "ناقش هذا الحل معي" : "Discuss this approach") <span>↗</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</section>
+
+@code {
+    private List<ArticleItem> Articles = new();
+    private ArticleItem? activeArticle = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Articles = await Content.GetArticlesAsync();
+    }
+
+    private void OpenArticle(ArticleItem article)
+    {
+        activeArticle = article;
+    }
+
+    private void CloseArticle()
+    {
+        activeArticle = null;
+    }
+}

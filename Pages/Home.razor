@@ -2,30 +2,42 @@
 @inject ContentService Content
 @inject NavigationManager Nav
 @inject Microsoft.JSInterop.IJSRuntime JS
+@inject LanguageService Lang
+@implements IDisposable
 
 <PageTitle>@profile.Name — @profile.Title</PageTitle>
 
 <section class="hero section-wrap" id="top">
     <div class="hero-copy">
-        <div class="eyebrow"><span class="status-dot"></span> OPEN TO ASP.NET OPPORTUNITIES <span class="eyebrow-line"></span> ALEXANDRIA, EGYPT</div>
+        <div class="eyebrow"><span class="status-dot"></span> @(Lang.IsArabic ? "متاح لفرص ومشاريع ASP.NET" : "OPEN TO ASP.NET OPPORTUNITIES") <span class="eyebrow-line"></span> @(Lang.IsArabic ? "الإسكندرية، مصر" : "ALEXANDRIA, EGYPT")</div>
         <h1>
             <span class="hero-title-line">.NET</span><br />
-            <span class="hero-title-line gradient-title">developer.</span><br />
-            <span class="hero-title-line serif-title">Building for people.</span>
+            <span class="hero-title-line gradient-title">@(Lang.IsArabic ? "مهندس برمجيات." : "developer.")</span><br />
+            <span class="hero-title-line serif-title">@(Lang.IsArabic ? "أبني حلولاً تصنع فارقاً." : "Building for people.")</span>
         </h1>
         <p class="hero-lead">
-            I build practical web applications with <span class="hero-lead-highlight">ASP.NET Core</span>, <span class="hero-lead-highlight">C#</span>, and <span class="hero-lead-highlight">SQL Server</span>, with a focus on <span class="hero-lead-highlight">clean architecture</span>, useful features, and reliable user experiences.
+            @if (Lang.IsArabic)
+            {
+                <span>أبني تطبيقات ويب وأنظمة مكتبية موثوقة وعالية الأداء باستخدام <span class="hero-lead-highlight">ASP.NET Core</span> و <span class="hero-lead-highlight">C#</span> و <span class="hero-lead-highlight">SQL Server</span>، مع تركيز دقيق على <span class="hero-lead-highlight">Clean Architecture</span> وتجربة مستخدم متكاملة.</span>
+            }
+            else
+            {
+                <span>I build practical web applications with <span class="hero-lead-highlight">ASP.NET Core</span>, <span class="hero-lead-highlight">C#</span>, and <span class="hero-lead-highlight">SQL Server</span>, with a focus on <span class="hero-lead-highlight">clean architecture</span>, useful features, and reliable user experiences.</span>
+            }
         </p>
         
         <div class="hero-actions">
-            <a class="button button-primary" href="book-a-call">Book a call <span>↗</span></a>
-            <a class="button button-quiet" href="#work">Explore work <span>↘</span></a>
-            <a class="button button-quiet" href="#contact">Get in touch <span>↗</span></a>
+            <a class="button button-primary" href="book-a-call">@(Lang.IsArabic ? "احجز مكالمة" : "Book a call") <span>↗</span></a>
+            <a class="button button-quiet" href="#work">@(Lang.IsArabic ? "استكشف الأعمال" : "Explore work") <span>↘</span></a>
+            <a class="button button-quiet" href="#api-explorer">@(Lang.IsArabic ? "واجهة الـ API" : "Live API") <span>⚡</span></a>
+            <a class="button button-quiet" href="#contact">@(Lang.IsArabic ? "تواصل معي" : "Get in touch") <span>↗</span></a>
             @if (!string.IsNullOrWhiteSpace(profile.ResumeUrl))
             {
-                <a class="button button-quiet" href="@profile.ResumeUrl" target="_blank" rel="noreferrer">Resume <span>↗</span></a>
+                <a class="button button-quiet" href="@profile.ResumeUrl" target="_blank" rel="noreferrer">@(Lang.IsArabic ? "السيرة الذاتية" : "Resume") <span>↗</span></a>
             }
         </div>
+
+        <VoiceGreeting />
 
         <div class="social-row">
             <a href="@profile.GithubUrl" target="_blank" rel="noreferrer">GitHub ↗</a>
@@ -229,6 +241,12 @@
     <GitHubActivity />
 </section>
 
+<div class="section-wrap interactive-suite-wrap">
+    <ApiExplorer />
+    <ArchitectureViewer />
+    <BenchmarkShowcase />
+</div>
+
 <section class="section-wrap services-section" id="services">
     <div class="section-heading">
         <div>
@@ -319,6 +337,9 @@
     <CodeOptimizer />
     <CleanArchitectureExplorer />
 </section>
+
+<CompetitiveProgrammingSection />
+<ArticlesSection />
 
 <section class="section-wrap about-section" id="about">
     <div class="section-heading">
@@ -626,6 +647,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Lang.OnLanguageChanged += HandleLangChanged;
         profile = await Content.GetProfileAsync();
         projects = await Content.GetProjectsAsync();
         services = await Content.GetServicesAsync();
@@ -635,6 +657,13 @@
         faqs = await Content.GetFaqsAsync();
         testimonials = await Content.GetTestimonialsAsync();
         contentReady = true;
+    }
+
+    private void HandleLangChanged() => StateHasChanged();
+
+    public void Dispose()
+    {
+        Lang.OnLanguageChanged -= HandleLangChanged;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

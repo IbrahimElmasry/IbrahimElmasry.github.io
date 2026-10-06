@@ -16,6 +16,7 @@ public sealed class ContentService(HttpClient http, Microsoft.AspNetCore.Compone
     public Task<List<ProcessStep>> GetProcessStepsAsync() => ReadAsync<List<ProcessStep>>("data/process.json?v=20260927-1");
     public Task<List<Testimonial>> GetTestimonialsAsync() => ReadAsync<List<Testimonial>>("data/testimonials.json?v=20260927-1");
     public Task<List<Certificate>> GetCertificatesAsync() => ReadAsync<List<Certificate>>("data/certificates.json?v=20260927-1");
+    public Task<List<ArticleItem>> GetArticlesAsync() => ReadAsync<List<ArticleItem>>("data/articles.json?v=20261007-1");
     public Task<string> GetRawAsync(string path) => http.GetStringAsync(new Uri(new Uri(navigation.BaseUri), path).ToString());
     public string Serialize<T>(T value) => JsonSerializer.Serialize(value, JsonOptions);
 

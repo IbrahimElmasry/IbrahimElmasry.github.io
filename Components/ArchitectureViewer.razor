@@ -1,0 +1,594 @@
+@inject LanguageService Lang
+
+<div class="arch-viewer-card" id="architecture-viewer">
+    <div class="arch-viewer-header">
+        <div class="arch-badge">
+            <span class="badge-dot"></span>
+            <span>@(Lang.IsArabic ? "مخططات المعمارية وقواعد البيانات (ERD)" : "SYSTEM TOPOLOGY & DATABASE SCHEMAS")</span>
+        </div>
+        <div class="arch-heading-row">
+            <div>
+                <h3 class="arch-title">
+                    @(Lang.IsArabic ? "معمارية الأنظمة ومخططات " : "Interactive Architecture & ")
+                    <em>ERD Viewer</em>
+                </h3>
+                <p class="arch-subtitle">
+                    @(Lang.IsArabic ? "استعرض المعمارية الهندسية، وفصل الطبقات (Clean Architecture)، ومخططات قواعد البيانات العلائقية لأبرز المشاريع مع سجلات القرارات الهندسية (ADRs)." : "Deep-dive into multi-tier software design, Clean Architecture boundaries, and relational ERDs with production Architecture Decision Records (ADRs).")
+                </p>
+            </div>
+            <!-- Project selector -->
+            <div class="project-pill-selector">
+                @foreach (var proj in Projects)
+                {
+                    <button type="button" 
+                            class="proj-select-pill @(selectedProject.Id == proj.Id ? "active" : "")" 
+                            @onclick="() => SelectProject(proj)">
+                        <span>@proj.Icon</span>
+                        <span>@proj.Name</span>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- View mode tabs -->
+        <div class="viewer-mode-tabs">
+            <button type="button" class="mode-tab-btn @(activeMode == "topology" ? "active" : "")" @onclick='() => activeMode = "topology"'>
+                <span>✦</span> @(Lang.IsArabic ? "طبقات النظام (Layers)" : "System Layers & Topology")
+            </button>
+            <button type="button" class="mode-tab-btn @(activeMode == "erd" ? "active" : "")" @onclick='() => activeMode = "erd"'>
+                <span>⌁</span> @(Lang.IsArabic ? "مخطط قاعدة البيانات (ERD)" : "Database Schema (ERD)")
+            </button>
+            <button type="button" class="mode-tab-btn @(activeMode == "adr" ? "active" : "")" @onclick='() => activeMode = "adr"'>
+                <span>⚖</span> @(Lang.IsArabic ? "القرارات الهندسية (ADRs)" : "Architectural Decisions (ADRs)")
+            </button>
+        </div>
+    </div>
+
+    <div class="arch-viewer-body">
+        @if (activeMode == "topology")
+        {
+            <div class="topology-stage">
+                <div class="topology-grid">
+                    @foreach (var layer in selectedProject.Layers)
+                    {
+                        <div class="topo-layer-card" style="border-left: 3px solid @layer.AccentColor">
+                            <div class="layer-meta">
+                                <span class="layer-num" style="color: @layer.AccentColor">@layer.TierNumber</span>
+                                <h4>@layer.Name</h4>
+                                <span class="layer-focus">@layer.KeyPattern</span>
+                            </div>
+                            <p class="layer-desc">@layer.Description</p>
+                            <div class="layer-components">
+                                <span class="micro-label">COMPONENTS &amp; ARTIFACTS:</span>
+                                <div class="comp-chips">
+                                    @foreach (var comp in layer.Components)
+                                    {
+                                        <span class="comp-chip">@comp</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="layer-footer">
+                                <span class="rule-text"><strong>RULE:</strong> @layer.DependencyRule</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="dataflow-indicator">
+                    <span>▼ Data Flow: Client Request ➔ Presentation ➔ Application (MediatR/CQRS) ➔ Domain ➔ Infrastructure ➔ Database ▼</span>
+                </div>
+            </div>
+        }
+        else if (activeMode == "erd")
+        {
+            <div class="erd-stage">
+                <div class="erd-banner">
+                    <div>
+                        <strong>@selectedProject.DatabaseEngine Relational Schema</strong>
+                        <p>@selectedProject.DatabaseDescription</p>
+                    </div>
+                    <span class="erd-counter">@selectedProject.Tables.Count Relational Tables</span>
+                </div>
+
+                <div class="erd-tables-grid">
+                    @foreach (var table in selectedProject.Tables)
+                    {
+                        <div class="erd-table-box">
+                            <div class="table-box-header">
+                                <span class="table-icon">▦</span>
+                                <strong class="table-name">@table.Name</strong>
+                                <span class="table-type">@table.Category</span>
+                            </div>
+                            <div class="table-columns">
+                                @foreach (var col in table.Columns)
+                                {
+                                    <div class="table-col-row @(col.IsPk ? "is-pk" : "") @(col.IsFk ? "is-fk" : "")">
+                                        <span class="col-key">
+                                            @if (col.IsPk) { <b title="Primary Key">PK</b> }
+                                            else if (col.IsFk) { <b title="Foreign Key">FK</b> }
+                                            else { <i>•</i> }
+                                        </span>
+                                        <span class="col-name">@col.Name</span>
+                                        <span class="col-type">@col.DataType</span>
+                                        @if (!string.IsNullOrWhiteSpace(col.Constraint))
+                                        {
+                                            <span class="col-extra">@col.Constraint</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            @if (table.Indexes.Length > 0)
+                            {
+                                <div class="table-indexes">
+                                    <span class="idx-label">INDEXES:</span>
+                                    @foreach (var idx in table.Indexes)
+                                    {
+                                        <span class="idx-tag">@idx</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else if (activeMode == "adr")
+        {
+            <div class="adr-stage">
+                <div class="adr-list">
+                    @foreach (var adr in selectedProject.Decisions)
+                    {
+                        <div class="adr-card">
+                            <div class="adr-card-top">
+                                <div class="adr-badge">
+                                    <span>ADR #@adr.Id</span>
+                                    <span class="adr-status-approved">ACCEPTED</span>
+                                </div>
+                                <span class="adr-date">@adr.Date</span>
+                            </div>
+                            <h4>@adr.Title</h4>
+                            
+                            <div class="adr-split-grid">
+                                <div class="adr-col adr-col-problem">
+                                    <span class="col-label">THE PROBLEM / CONTEXT</span>
+                                    <p>@adr.Context</p>
+                                </div>
+                                <div class="adr-col adr-col-decision">
+                                    <span class="col-label">THE ARCHITECTURAL DECISION</span>
+                                    <p>@adr.Decision</p>
+                                </div>
+                            </div>
+
+                            <div class="adr-consequences">
+                                <span class="col-label">VERIFIED PRODUCTION IMPACT</span>
+                                <div class="impact-metrics-row">
+                                    @foreach (var impact in adr.Impacts)
+                                    {
+                                        <div class="impact-metric-pill">
+                                            <span class="impact-check">✓</span>
+                                            <span>@impact</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string activeMode = "topology";
+    private ArchProject selectedProject = null!;
+
+    public class LayerInfo
+    {
+        public string TierNumber { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string KeyPattern { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string AccentColor { get; set; } = "#c7f36b";
+        public List<string> Components { get; set; } = new();
+        public string DependencyRule { get; set; } = "";
+    }
+
+    public class TableCol
+    {
+        public string Name { get; set; } = "";
+        public string DataType { get; set; } = "";
+        public bool IsPk { get; set; }
+        public bool IsFk { get; set; }
+        public string Constraint { get; set; } = "";
+    }
+
+    public class TableInfo
+    {
+        public string Name { get; set; } = "";
+        public string Category { get; set; } = "";
+        public List<TableCol> Columns { get; set; } = new();
+        public string[] Indexes { get; set; } = Array.Empty<string>();
+    }
+
+    public class DecisionRecord
+    {
+        public string Id { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Date { get; set; } = "";
+        public string Context { get; set; } = "";
+        public string Decision { get; set; } = "";
+        public List<string> Impacts { get; set; } = new();
+    }
+
+    public class ArchProject
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Icon { get; set; } = "🏛️";
+        public string DatabaseEngine { get; set; } = "";
+        public string DatabaseDescription { get; set; } = "";
+        public List<LayerInfo> Layers { get; set; } = new();
+        public List<TableInfo> Tables { get; set; } = new();
+        public List<DecisionRecord> Decisions { get; set; } = new();
+    }
+
+    private List<ArchProject> Projects = new();
+
+    protected override void OnInitialized()
+    {
+        Projects = new List<ArchProject>
+        {
+            new ArchProject
+            {
+                Id = "deverp",
+                Name = "DevERP PRO (.NET 8 WPF)",
+                Icon = "💻",
+                DatabaseEngine = "SQLite 3 with WAL Mode",
+                DatabaseDescription = "Embedded zero-latency persistence with concurrency support and zero external server dependency.",
+                Layers = new List<LayerInfo>
+                {
+                    new LayerInfo
+                    {
+                        TierNumber = "01",
+                        Name = "Presentation (DevERP.Wpf)",
+                        KeyPattern = "MVVM + Windows 11 Mica Fluent UI",
+                        Description = "Hardware-accelerated XAML presentation with non-blocking async dispatchers, dark Mica acrylic backdrop, and InfoBar toasts.",
+                        AccentColor = "#80f2e2",
+                        Components = new() { "WPF-UI Controls", "NavigationStore", "InvoicingViewModel", "CashFlowChart", "RelayCommand" },
+                        DependencyRule = "References DevERP.Application and DevERP.Core only."
+                    },
+                    new LayerInfo
+                    {
+                        TierNumber = "02",
+                        Name = "Application (DevERP.Application)",
+                        KeyPattern = "CQRS & Mediator Pipeline",
+                        Description = "Orchestrates business use cases, milestone status lifecycle transitions, and PDF report requests via MediatR handlers.",
+                        AccentColor = "#c7f36b",
+                        Components = new() { "GenerateInvoiceCommand", "ForecastRunwayQuery", "FxRateConverter", "DeliverableWorkflowValidator" },
+                        DependencyRule = "Pure C# business rules. No direct UI or EF Core DbContext coupling."
+                    },
+                    new LayerInfo
+                    {
+                        TierNumber = "03",
+                        Name = "Domain Core (DevERP.Core)",
+                        KeyPattern = "Domain Entities & Invariants",
+                        Description = "Pure domain models, aggregate roots, enumerations, and financial calculation invariants with zero external dependencies.",
+                        AccentColor = "#a89cf9",
+                        Components = new() { "InvoiceAggregate", "MilestoneEntity", "MoneyValueObject", "CurrencyExchangeMatrix" },
+                        DependencyRule = "Zero dependencies on any framework or persistence library."
+                    },
+                    new LayerInfo
+                    {
+                        TierNumber = "04",
+                        Name = "Infrastructure (DevERP.Infrastructure)",
+                        KeyPattern = "EF Core SQLite WAL & QuestPDF",
+                        Description = "Direct SQLite engine configuration with Write-Ahead Logging, vector PDF document drawing, and QRCoder generation.",
+                        AccentColor = "#f5c389",
+                        Components = new() { "DevErpDbContext", "SqliteConnectionFactory", "QuestPdfInvoiceDrawer", "QrCodeGenerator" },
+                        DependencyRule = "Implements interfaces declared in Application & Core."
+                    }
+                },
+                Tables = new List<TableInfo>
+                {
+                    new TableInfo
+                    {
+                        Name = "Invoices",
+                        Category = "Aggregate Root",
+                        Columns = new()
+                        {
+                            new TableCol { Name = "Id", DataType = "INTEGER", IsPk = true, Constraint = "AUTOINCREMENT" },
+                            new TableCol { Name = "InvoiceNumber", DataType = "TEXT(32)", Constraint = "UNIQUE NOT NULL" },
+                            new TableCol { Name = "ClientId", DataType = "INTEGER", IsFk = true, Constraint = "NOT NULL" },
+                            new TableCol { Name = "GrossAmount", DataType = "DECIMAL(18,2)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "CurrencyCode", DataType = "TEXT(3)", Constraint = "DEFAULT 'USD'" },
+                            new TableCol { Name = "Status", DataType = "INTEGER", Constraint = "Draft | Sent | Paid" },
+                            new TableCol { Name = "DueDate", DataType = "TEXT", Constraint = "ISO-8601" }
+                        },
+                        Indexes = new[] { "IX_Invoices_InvoiceNumber (UNIQUE)", "IX_Invoices_ClientId_Status" }
+                    },
+                    new TableInfo
+                    {
+                        Name = "Clients",
+                        Category = "Master Data",
+                        Columns = new()
+                        {
+                            new TableCol { Name = "Id", DataType = "INTEGER", IsPk = true },
+                            new TableCol { Name = "CompanyName", DataType = "TEXT(128)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "ContactEmail", DataType = "TEXT(128)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "TaxIdOrVat", DataType = "TEXT(64)" },
+                            new TableCol { Name = "CountryCode", DataType = "TEXT(2)" }
+                        },
+                        Indexes = new[] { "IX_Clients_CompanyName" }
+                    },
+                    new TableInfo
+                    {
+                        Name = "DeliverableMilestones",
+                        Category = "Transactional",
+                        Columns = new()
+                        {
+                            new TableCol { Name = "Id", DataType = "INTEGER", IsPk = true },
+                            new TableCol { Name = "ClientId", DataType = "INTEGER", IsFk = true },
+                            new TableCol { Name = "Title", DataType = "TEXT(256)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "AllocatedFee", DataType = "DECIMAL(18,2)" },
+                            new TableCol { Name = "LifecycleStatus", DataType = "INTEGER", Constraint = "Pending | Active | Done | Billed" }
+                        },
+                        Indexes = new[] { "IX_Deliverables_ClientId", "IX_Deliverables_Lifecycle" }
+                    },
+                    new TableInfo
+                    {
+                        Name = "LedgerEntries",
+                        Category = "Financial Audit",
+                        Columns = new()
+                        {
+                            new TableCol { Name = "Id", DataType = "INTEGER", IsPk = true },
+                            new TableCol { Name = "Timestamp", DataType = "TEXT", Constraint = "NOT NULL" },
+                            new TableCol { Name = "EntryType", DataType = "INTEGER", Constraint = "Inflow | Outflow" },
+                            new TableCol { Name = "Amount", DataType = "DECIMAL(18,2)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "CategoryTag", DataType = "TEXT(64)" }
+                        },
+                        Indexes = new[] { "IX_Ledger_Timestamp_Type" }
+                    }
+                },
+                Decisions = new List<DecisionRecord>
+                {
+                    new DecisionRecord
+                    {
+                        Id = "001",
+                        Title = "Adopt SQLite Write-Ahead Logging (WAL) Mode over Traditional Rollback Journal",
+                        Date = "2026-08-14",
+                        Context = "Default SQLite file locking blocked read queries on the dashboard whenever a background batch transaction or invoice creation took place, resulting in UI lockups.",
+                        Decision = "Enforce PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL; on SQLite connection opening.",
+                        Impacts = new()
+                        {
+                            "Enables concurrent background reading while writes are in flight.",
+                            "4x increase in write operations per second with zero disk locking delays.",
+                            "Completely eliminates UI dispatcher freezing during database mutations."
+                        }
+                    },
+                    new DecisionRecord
+                    {
+                        Id = "002",
+                        Title = "Use QuestPDF Vector Engine instead of WebBrowser HTML-to-PDF Printing",
+                        Date = "2026-08-20",
+                        Context = "Initial prototype evaluated headless Chromium (Puppeteer-Sharp) to render HTML invoices to PDF, adding 150MB of binary bloat and 2.5s rendering latency.",
+                        Decision = "Switched to QuestPDF fluent vector generation with zero external browser dependencies.",
+                        Impacts = new()
+                        {
+                            "Reduced application binary footprint by 150 MB.",
+                            "Generated multi-page crisp vector invoices in under 38 milliseconds.",
+                            "Direct embedding of QRCoder SVG verification coordinates."
+                        }
+                    }
+                }
+            },
+            new ArchProject
+            {
+                Id = "techxpress",
+                Name = "Tech Xpress (ASP.NET Core & Stripe)",
+                Icon = "🛒",
+                DatabaseEngine = "SQL Server 2022 (EF Core 8)",
+                DatabaseDescription = "Enterprise relational schema with ASP.NET Identity, ACID transaction boundaries, and foreign key cascades.",
+                Layers = new List<LayerInfo>
+                {
+                    new LayerInfo
+                    {
+                        TierNumber = "01",
+                        Name = "Presentation Tier",
+                        KeyPattern = "ASP.NET Core MVC & TagHelpers",
+                        Description = "Responsive storefront, secure Razor view forms with Anti-Forgery validation, and shopping cart session state.",
+                        AccentColor = "#c7f36b",
+                        Components = new() { "CartController", "CheckoutController", "ProductCatalogView", "CartTagHelper" },
+                        DependencyRule = "Depends on Application Services via dependency injection."
+                    },
+                    new LayerInfo
+                    {
+                        TierNumber = "02",
+                        Name = "Business & Payment Logic",
+                        KeyPattern = "Repository & Unit of Work",
+                        Description = "Order calculation pipeline, inventory stock reservation, Stripe Checkout Session creation, and Webhook listener.",
+                        AccentColor = "#a89cf9",
+                        Components = new() { "OrderService", "StripePaymentGateway", "StockInventoryManager", "UnitOfWork" },
+                        DependencyRule = "Maintains transaction consistency across multiple entity repositories."
+                    },
+                    new LayerInfo
+                    {
+                        TierNumber = "03",
+                        Name = "Identity & Security",
+                        KeyPattern = "ASP.NET Core Identity & JWT",
+                        Description = "Role-based access control (Admin, Customer), PBKDF2 password hashing, and cookie session security.",
+                        AccentColor = "#80f2e2",
+                        Components = new() { "ApplicationUser", "UserManager", "RoleManager", "IdentityCookiePolicy" },
+                        DependencyRule = "Isolated security domain with two-factor extensibility."
+                    },
+                    new LayerInfo
+                    {
+                        TierNumber = "04",
+                        Name = "Data Layer (SQL Server)",
+                        KeyPattern = "Entity Framework Core 8",
+                        Description = "Code-First database migrations, shadow properties, and SQL execution tuning.",
+                        AccentColor = "#f5c389",
+                        Components = new() { "ApplicationDbContext", "ProductConfiguration", "OrderConfiguration", "DbSeeder" },
+                        DependencyRule = "Executes compiled SQL commands via EF Core."
+                    }
+                },
+                Tables = new List<TableInfo>
+                {
+                    new TableInfo
+                    {
+                        Name = "Products",
+                        Category = "Catalog",
+                        Columns = new()
+                        {
+                            new TableCol { Name = "Id", DataType = "INT", IsPk = true, Constraint = "IDENTITY(1,1)" },
+                            new TableCol { Name = "Name", DataType = "NVARCHAR(200)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "Price", DataType = "DECIMAL(18,2)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "StockQuantity", DataType = "INT", Constraint = "CHECK (StockQuantity >= 0)" },
+                            new TableCol { Name = "CategoryId", DataType = "INT", IsFk = true }
+                        },
+                        Indexes = new[] { "IX_Products_CategoryId", "IX_Products_Price" }
+                    },
+                    new TableInfo
+                    {
+                        Name = "Orders",
+                        Category = "Order Management",
+                        Columns = new()
+                        {
+                            new TableCol { Name = "Id", DataType = "INT", IsPk = true },
+                            new TableCol { Name = "UserId", DataType = "NVARCHAR(450)", IsFk = true },
+                            new TableCol { Name = "TotalAmount", DataType = "DECIMAL(18,2)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "OrderStatus", DataType = "NVARCHAR(50)", Constraint = "Pending | Paid | Shipped" },
+                            new TableCol { Name = "StripePaymentIntentId", DataType = "NVARCHAR(100)", Constraint = "INDEXED" }
+                        },
+                        Indexes = new[] { "IX_Orders_UserId_Status", "IX_Orders_StripeIntent (UNIQUE)" }
+                    },
+                    new TableInfo
+                    {
+                        Name = "OrderItems",
+                        Category = "Order Detail",
+                        Columns = new()
+                        {
+                            new TableCol { Name = "Id", DataType = "INT", IsPk = true },
+                            new TableCol { Name = "OrderId", DataType = "INT", IsFk = true },
+                            new TableCol { Name = "ProductId", DataType = "INT", IsFk = true },
+                            new TableCol { Name = "UnitPrice", DataType = "DECIMAL(18,2)" },
+                            new TableCol { Name = "Quantity", DataType = "INT", Constraint = "NOT NULL" }
+                        },
+                        Indexes = new[] { "IX_OrderItems_OrderId_ProductId" }
+                    }
+                },
+                Decisions = new List<DecisionRecord>
+                {
+                    new DecisionRecord
+                    {
+                        Id = "003",
+                        Title = "Verify Orders via Stripe Webhook Cryptographic Signatures (HMAC-SHA256)",
+                        Date = "2026-07-10",
+                        Context = "Relying on client-side redirect URLs (success_url) created risk if a customer closed their browser before redirection, leaving paid orders marked as unpaid.",
+                        Decision = "Implemented a dedicated Stripe Webhook endpoint that listens for checkout.session.completed and verifies Stripe-Signature header.",
+                        Impacts = new()
+                        {
+                            "100% reliability in order status fulfillment even on dropped client connections.",
+                            "Prevents spoofed payment confirmation attacks.",
+                            "Idempotent processing using Stripe Event ID ensures no duplicate orders."
+                        }
+                    }
+                }
+            },
+            new ArchProject
+            {
+                Id = "rawafid",
+                Name = "Rawafid (Multilingual CMS)",
+                Icon = "🌐",
+                DatabaseEngine = "MySQL 8.0 InnoDB",
+                DatabaseDescription = "Multilingual content indexing with UTF8MB4 charset, full-text search, and relational category mapping.",
+                Layers = new List<LayerInfo>
+                {
+                    new LayerInfo
+                    {
+                        TierNumber = "01",
+                        Name = "Client Experience Tier",
+                        KeyPattern = "HTML5, CSS3 & Responsive Layout",
+                        Description = "Multi-language frontend supporting Arabic and English typography, dynamic category navigation, and fluid event previews.",
+                        AccentColor = "#80f2e2",
+                        Components = new() { "RTL Stylesheet", "ArticleReader", "EventCalendar", "LanguageSwitcher" },
+                        DependencyRule = "Clean separation between layout and backend data."
+                    },
+                    new LayerInfo
+                    {
+                        TierNumber = "02",
+                        Name = "Application & Business Engine",
+                        KeyPattern = "PHP 8 & Object-Oriented Services",
+                        Description = "Content publication workflows, user permission tiers, file upload validations, and dynamic category filtering.",
+                        AccentColor = "#c7f36b",
+                        Components = new() { "ArticleManager", "EventScheduler", "SessionAuth", "MediaStorage" },
+                        DependencyRule = "Validates all incoming requests and manages business rules."
+                    },
+                    new LayerInfo
+                    {
+                        TierNumber = "03",
+                        Name = "Data Layer (MySQL InnoDB)",
+                        KeyPattern = "Prepared Statements & Foreign Key Constraints",
+                        Description = "Normalized database tables with relational integrity, prepared PDO queries, and indexing on article slugs.",
+                        AccentColor = "#a89cf9",
+                        Components = new() { "PdoConnectionPool", "ArticleRepository", "CategoryRepository" },
+                        DependencyRule = "Parameterized queries protecting against SQL injection."
+                    }
+                },
+                Tables = new List<TableInfo>
+                {
+                    new TableInfo
+                    {
+                        Name = "Articles",
+                        Category = "Content",
+                        Columns = new()
+                        {
+                            new TableCol { Name = "id", DataType = "INT UNSIGNED", IsPk = true, Constraint = "AUTO_INCREMENT" },
+                            new TableCol { Name = "slug", DataType = "VARCHAR(191)", Constraint = "UNIQUE NOT NULL" },
+                            new TableCol { Name = "title", DataType = "VARCHAR(255)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "content", DataType = "LONGTEXT", Constraint = "NOT NULL" },
+                            new TableCol { Name = "locale", DataType = "VARCHAR(5)", Constraint = "DEFAULT 'ar'" },
+                            new TableCol { Name = "is_published", DataType = "TINYINT(1)", Constraint = "DEFAULT 0" }
+                        },
+                        Indexes = new[] { "PRIMARY KEY (id)", "UNIQUE KEY uq_articles_slug (slug)", "KEY idx_articles_published (is_published)" }
+                    },
+                    new TableInfo
+                    {
+                        Name = "Categories",
+                        Category = "Taxonomy",
+                        Columns = new()
+                        {
+                            new TableCol { Name = "id", DataType = "INT UNSIGNED", IsPk = true },
+                            new TableCol { Name = "name_en", DataType = "VARCHAR(100)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "name_ar", DataType = "VARCHAR(100)", Constraint = "NOT NULL" },
+                            new TableCol { Name = "slug", DataType = "VARCHAR(100)", Constraint = "UNIQUE" }
+                        },
+                        Indexes = new[] { "PRIMARY KEY (id)", "UNIQUE KEY uq_cat_slug (slug)" }
+                    }
+                },
+                Decisions = new List<DecisionRecord>
+                {
+                    new DecisionRecord
+                    {
+                        Id = "004",
+                        Title = "UTF8MB4 Character Set with Normalized Locale Keys",
+                        Date = "2026-09-02",
+                        Context = "Required simultaneous support for Arabic diacritics, English text, and modern emojis without data truncation.",
+                        Decision = "Enforced utf8mb4_unicode_ci across all text columns and implemented normalized locale mapping in PHP router.",
+                        Impacts = new()
+                        {
+                            "100% fidelity for Arabic typography and multilingual search.",
+                            "Zero character encoding corruption in community articles."
+                        }
+                    }
+                }
+            }
+        };
+
+        selectedProject = Projects[0];
+    }
+
+    private void SelectProject(ArchProject proj)
+    {
+        selectedProject = proj;
+    }
+}

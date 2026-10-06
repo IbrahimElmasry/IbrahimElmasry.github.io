@@ -1,35 +1,43 @@
 @inherits LayoutComponentBase
 @inject NavigationManager Nav
 @inject ContentService Content
-<div class="site-shell">
+@inject LanguageService Lang
+@implements IDisposable
+
+<div class="site-shell @(Lang.IsArabic ? "is-rtl" : "")" dir="@(Lang.IsArabic ? "rtl" : "ltr")">
     <header class="topbar">
         <a href="@Nav.BaseUri" class="brand" @onclick="CloseMobileMenu">
             <span class="brand-mark brand-mark-3d">
                 <img src="images/logo/it-architect-3d.png" alt="Ibrahim Tarek Logo" class="brand-logo-img" />
             </span>
             <span class="brand-name-wrap">
-                <span class="brand-name">Ibrahim Tarek<span class="brand-dot">.</span></span>
-                <span class="brand-sub">.NET ARCHITECT</span>
+                <span class="brand-name">@(Lang.IsArabic ? "إبراهيم طارق" : "Ibrahim Tarek")<span class="brand-dot">.</span></span>
+                <span class="brand-sub">@(Lang.IsArabic ? "مهندس برمجيات و .NET ARCHITECT" : ".NET ARCHITECT")</span>
             </span>
         </a>
         <nav class="desktop-nav" aria-label="Main navigation">
-            <a href="@($"{Nav.BaseUri}#work")">Work</a>
-            <a href="@($"{Nav.BaseUri}#services")">Services</a>
-            <a href="@($"{Nav.BaseUri}#process")">Process</a>
-            <a href="@($"{Nav.BaseUri}#about")">About</a>
-            <a href="@($"{Nav.BaseUri}#experience")">Journey</a>
-            <a href="@($"{Nav.BaseUri}#testimonials")">Testimonials</a>
-            <a href="@($"{Nav.BaseUri}#certifications")">Certifications</a>
-            <a href="@($"{Nav.BaseUri}#faq")">FAQs</a>
-            <a href="@($"{Nav.BaseUri}#contact")">Contact</a>
+            <a href="@($"{Nav.BaseUri}#work")">@(Lang.IsArabic ? "الأعمال" : "Work")</a>
+            <a href="@($"{Nav.BaseUri}#api-explorer")">@(Lang.IsArabic ? "واجهة الـ API" : "Live API")</a>
+            <a href="@($"{Nav.BaseUri}#architecture-viewer")">@(Lang.IsArabic ? "المعمارية" : "Architecture")</a>
+            <a href="@($"{Nav.BaseUri}#benchmarks")">@(Lang.IsArabic ? "الأداء" : "Benchmarks")</a>
+            <a href="@($"{Nav.BaseUri}#services")">@(Lang.IsArabic ? "الخدمات" : "Services")</a>
+            <a href="@($"{Nav.BaseUri}#problem-solving")">@(Lang.IsArabic ? "الخوارزميات" : "Algorithms")</a>
+            <a href="@($"{Nav.BaseUri}#articles")">@(Lang.IsArabic ? "المقالات" : "Articles")</a>
+            <a href="@($"{Nav.BaseUri}#about")">@(Lang.IsArabic ? "عني" : "About")</a>
+            <a href="@($"{Nav.BaseUri}#experience")">@(Lang.IsArabic ? "المسيرة" : "Journey")</a>
+            <a href="@($"{Nav.BaseUri}#contact")">@(Lang.IsArabic ? "تواصل" : "Contact")</a>
         </nav>
         <div class="topbar-right-actions">
+            <button type="button" class="topbar-lang-btn" @onclick="() => Lang.ToggleLanguage()" title="Toggle Language (English / العربية)">
+                <span class="lang-icon">🌐</span>
+                <span class="lang-text">@(Lang.IsArabic ? "English" : "عربي")</span>
+            </button>
             <button type="button" class="topbar-cmd-btn" @onclick="() => commandPaletteRef?.Open()" title="Command Palette (Ctrl+K)">
                 <span class="cmd-icon">⌘</span>
                 <span class="cmd-label">Search</span>
                 <kbd>⌘K</kbd>
             </button>
-            <a class="nav-cta nav-cta-booking" href="book-a-call">Book a call <span>↗</span></a>
+            <a class="nav-cta nav-cta-booking" href="book-a-call">@(Lang.IsArabic ? "احجز مكالمة" : "Book a call") <span>↗</span></a>
             <button type="button" 
                     class="mobile-menu-toggle @(isMobileMenuOpen ? "is-active" : "")" 
                     @onclick="ToggleMobileMenu" 
@@ -264,7 +272,18 @@
     private ChatWidget? chatWidgetRef;
     private bool isMobileMenuOpen;
 
-    protected override async Task OnInitializedAsync() => profile = await Content.GetProfileAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        Lang.OnLanguageChanged += HandleLanguageChanged;
+        profile = await Content.GetProfileAsync();
+    }
+
+    private void HandleLanguageChanged() => StateHasChanged();
+
+    public void Dispose()
+    {
+        Lang.OnLanguageChanged -= HandleLanguageChanged;
+    }
 
     private void ToggleMobileMenu()
     {
