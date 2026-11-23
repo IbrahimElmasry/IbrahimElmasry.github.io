@@ -46,7 +46,7 @@
   },
   {
     "Id": "depi-aspnet",
-    "Title": "ASP.NET Core Development Track (6-Month Specialization)",
+    "Title": "ASP.NET Core Development Track (9-Month Specialization)",
     "Issuer": "Digital Egypt Pioneers Initiative (DEPI) · MCIT",
     "IssuerCode": "depi",
     "Category": ".NET & Architecture",
@@ -55,11 +55,11 @@
     "VerificationUrl": "",
     "SecondaryVerificationUrl": "",
     "PdfUrl": "",
-    "Description": "Government-sponsored 6-month intensive training program by the Ministry of Communications and Information Technology (MCIT), focusing on enterprise ASP.NET Core, Clean Architecture, and SQL Server.",
+    "Description": "Government-sponsored 9-Month intensive training program by the Ministry of Communications and Information Technology (MCIT), focusing on enterprise ASP.NET Core, Clean Architecture, and SQL Server.",
     "Skills": [
       "ASP.NET Core Web API",
       "Clean Architecture",
-      "CQRS & MediatR",
+      "RESTful APIs",
       "SQL Optimization",
       "C#"
     ],
