@@ -1,7 +1,7 @@
 {
   "name":"Ibrahim Tarek",
-  "title":".NET & ASP.NET Core Developer",
-  "summary":"I build practical web applications with ASP.NET Core, C#, and SQL Server, with a focus on clean architecture, useful features, and reliable user experiences.",
+  "title":"Junior Backend Developer | ASP.NET Core | C#",
+  "summary":"I build practical web applications with ASP.NET Core, C#, and SQL Server, with a focus on clean architecture, useful features, and dependable delivery.",
   "location":"Alexandria, Egypt",
   "available":true,
   "githubUrl":"https://github.com/ibrahimelmasry",
@@ -9,7 +9,6 @@
   "whatsAppUrl":"https://wa.me/201019804919",
   "email":"ibrahimtarek1965@outlook.com",
   "phone":"+201019804919",
-  "secondaryPhone":"+201220251166",
   "resumeUrl":"resume.pdf",
   "formspreeEndpoint":"https://formspree.io/f/mjykrzpq",
   "bookingUrl":"https://calendar.app.google/Rfi2iSDSt9Fq3xef6",
