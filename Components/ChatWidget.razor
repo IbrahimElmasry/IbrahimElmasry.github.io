@@ -230,7 +230,7 @@
                                                 🔐 Stripe Checkout & ASP.NET Identity
                                             </button>
                                             <button type="button" class="estimator-opt-btn" @onclick='() => HandleEstimatorStep(3, "High-Concurrency CQRS with Redis Caching")'>
-                                                🚀 CQRS + Redis Cache + Micro-benchmarks
+                                                🚀 High-Concurrency APIs & SQL Optimization
                                             </button>
                                             <button type="button" class="estimator-opt-btn" @onclick='() => HandleEstimatorStep(3, "AI LLM Integration & Document Assistant")'>
                                                 🤖 Intelligent AI Integration & Retrieval
@@ -470,7 +470,7 @@
             ],
             "architect" =>
             [
-                "Show CQRS & MediatR C# code 💻",
+                "Show EF Core code snippet 💻",
                 "Explain the 4-layer architecture",
                 "EF Core performance & indexing rules",
                 "Show Global Exception Handler code 💻",
@@ -489,7 +489,7 @@
                 "What are Ibrahim's core skills?",
                 "What certificates does he hold?",
                 "Who gave testimonials & feedback?",
-                "Show CQRS code snippet 💻",
+                "Show EF Core code snippet 💻",
                 "Estimate My Project 🧮",
                 "ما هي مهارات إبراهيم؟"
             ]
@@ -711,7 +711,7 @@
         var blueprint =
             $"### 🏗️ Recommended System Blueprint\n\n" +
             $"• **Project Type**: {estimatorProjectType}\n" +
-            $"• **Core Architecture**: Clean Architecture & CQRS with MediatR, FluentValidation\n" +
+            $"• **Core Architecture**: Clean Architecture with ASP.NET Core and Entity Framework Core\n" +
             $"• **Persistence**: SQL Server with Entity Framework Core & Redis Distributed Cache\n" +
             $"• **Key Features**: {estimatorRequirements}\n" +
             $"• **Estimated Turnaround**: {timeline}\n\n" +
@@ -951,7 +951,7 @@ public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher)
                 "  8-course specialization on Linux CLI, SQL, Python automation, SIEM/IDS, and threat mitigation. *Verified on Credly and Coursera*.\n\n" +
                 "• **Build a Shopping Cart Using .NET Core from Scratch** (Udemy · Eng. Mohamed Assem, 2024)\n" +
                 "  12-hour intensive architecture course implementing end-to-end shopping cart flows with .NET Core, EF Core, and SQL Server.\n\n" +
-                "• **ASP.NET Core Development Track (6 Months)** (DEPI · Ministry of Communications, 2024)\n" +
+                "• **ASP.NET Core Development Track (9 Months)** (DEPI · Ministry of Communications, 2024)\n" +
                 "  Intensive government scholarship in enterprise backend architecture, Clean Architecture, and CQRS.\n\n" +
                 "• **HP LIFE Foundation Certifications** (2022)\n" +
                 "  Credentials in *Starting a Small Business* and *Selling Online (البيع عبر الإنترنت)*.",
@@ -977,7 +977,7 @@ public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher)
                 "  *“Ibrahim masters backend engineering beyond tutorials—crafting resilient Web APIs, applying Clean Architecture and CQRS, and designing optimized SQL queries.”*\n\n" +
                 "• **Mr. Abdullah El-Wakeel** (*Founder & Managing Partner · El-Wakeel Legal Firm*):\n" +
                 "  *“Collaborating with Ibrahim was seamless. He translated our prestige into a fast, highly secure digital presence well ahead of deadlines.”*\n\n" +
-                "• **Mrs. Rania Elsayed** (*Product Lead · Rawafid Technology Hub*):\n" +
+                "• **Mrs. Rania Elsayed** (*Product Lead · Rawafid Collective*):\n" +
                 "  *“Exceptional energy and technical precision from structural database modeling to high-performance page rendering.”*",
                 actions,
                 null
@@ -989,7 +989,7 @@ public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher)
         {
             actions.Add(new("Tech Xpress Case Study ↗", "projects/tech-xpress-mvc"));
             actions.Add(new("Live Demo ↗", "https://techxpress-demo.somee.com"));
-            actions.Add(new("GitHub Repository ↗", "https://github.com/ibrahimelmasry/TechXpress-Ecommerce"));
+            actions.Add(new("GitHub Repository ↗", "https://github.com/IbrahimElmasry/TechXpress"));
 
             return (
                 "**Tech Xpress** is an enterprise ASP.NET Core MVC e-commerce platform architected by Ibrahim:\n\n" +
@@ -1030,7 +1030,7 @@ public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher)
                 "**El Wakeel Law Firm** ([elwakeellegal.com](https://elwakeellegal.com/index.html)) is a live corporate web platform architected and built by Ibrahim for a premier legal consultancy in Egypt & GCC:\n\n" +
                 "• **Client**: Mr. Abdullah El-Wakeel (Founder & Managing Partner).\n" +
                 "• **Turnaround**: Delivered in a rapid **3-week cycle** from initial requirements to live production deployment.\n" +
-                "• **Key Features**: High-converting landing page with instant WhatsApp consultation routing, 12+ practice domain showcases, firm milestones (20+ years, 1,500+ cases), and responsive lead capture.\n" +
+                "• **Key Features**: High-converting landing page with contact forms via Formspree, 12+ practice domain showcases, firm milestones (20+ years, 1,500+ cases), and responsive lead capture.\n" +
                 "• **Client Recommendation**: *“Collaborating with Ibrahim was a seamless experience. He understood our firm's prestige and translated it into a fast, highly secure, and elegant digital presence well ahead of deadlines.”*",
                 actions,
                 null
@@ -1119,10 +1119,10 @@ public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher)
 
             return (
                 "Ibrahim's technical toolkit centers on the high-performance **.NET ecosystem**:\n\n" +
-                "• **Backend & Frameworks**: C# 12, .NET 8, ASP.NET Core (Web API, MVC), Blazor WebAssembly, MediatR, FluentValidation.\n" +
-                "• **Data & Persistence**: Microsoft SQL Server, Entity Framework Core, LINQ, Dapper, Redis caching, Database Index Tuning.\n" +
-                "• **Architecture & Security**: Clean Architecture, CQRS, DDD, RESTful API design, JWT Bearer Auth, Rate Limiting, OWASP best practices.\n" +
-                "• **DevOps & Tooling**: Git, GitHub, Postman, Visual Studio, Swagger/OpenAPI.",
+                "• **Backend & Frameworks**: C#, ASP.NET Core (Web API, MVC), RESTful APIs, FluentValidation.\n" +
+                "• **Data & Persistence**: Microsoft SQL Server, Entity Framework Core, Transact-SQL, SQL Server Management Studio, Database Index Tuning.\n" +
+                "• **Architecture & Security**: Clean Architecture, SOLID Principles, Design Patterns, RESTful API design, JWT Bearer Auth, Rate Limiting, OWASP best practices.\n" +
+                "• **DevOps & Tooling**: Git, GitHub, Visual Studio, VS Code, Azure.",
                 actions,
                 null
             );
@@ -1161,7 +1161,7 @@ public class CreateOrderHandler(IApplicationDbContext db, IPublisher publisher)
             return (
                 "أهلاً بك! **إبراهيم طارق** هو مهندس برمجيات متخصص في تطوير الويب والـ Backend باستخدام **ASP.NET Core** و **C#** و **SQL Server**، مقيم في الإسكندرية، مصر.\n\n" +
                 "• **التعليم**: بكالوريوس في تكنولوجيا ونظم المعلومات (مشروع التخرج: منصة تعلم ذكية مدعومة بالذكاء الاصطناعي — تقدير ممتاز).\n" +
-                "• **التدريب المتخصص**: خريج منحة مبادرة مصر الرقمية (DEPI) المكثفة لمدة 6 أشهر في مسار ASP.NET.\n" +
+                "• **التدريب المتخصص**: خريج منحة مبادرة مصر الرقمية (DEPI) المكثفة لمدة 9 أشهر في مسار ASP.NET.\n" +
                 "• **الشهادات**: حاصل على الشهادة الاحترافية في الأمن السيبراني من Google، وشهادة Udemy لبناء متجر إلكتروني بـ .NET Core.\n" +
                 "• **الخبرة**: أكثر من 3 سنوات خبرة عملية سابقة كمهندس دعم فني وتقني.\n\n" +
                 "كيف يمكنني مساعدتك اليوم؟",
