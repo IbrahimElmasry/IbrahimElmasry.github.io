@@ -6,12 +6,12 @@
   },
   {
     "question": "What is your primary technology stack?",
-    "answer": "My primary stack centers on C#, .NET 8, ASP.NET Core (MVC & Web API), Entity Framework Core, and Microsoft SQL Server. On the frontend, I build responsive user interfaces with HTML5, CSS3, JavaScript, Bootstrap, jQuery, and Blazor WebAssembly.",
+    "answer": "My primary stack centers on C#, .NET 8, ASP.NET Core (MVC & Web API), Entity Framework Core, and Microsoft SQL Server. On the frontend, I build responsive user interfaces with HTML5, CSS3, JavaScript, Bootstrap, jQuery..",
     "category": "Tech Stack"
   },
   {
     "question": "What kinds of roles or collaborations are you open to?",
-    "answer": "I am open to full-time junior to mid-level ASP.NET Core developer roles, contract engagements, and selective freelance projects. I am based in Alexandria, Egypt and available for remote positions, local opportunities, or relocation.",
+    "answer": "I am open to full-time junior ASP.NET Core developer roles, contract engagements, and selective freelance projects. I am based in Alexandria, Egypt and available for remote positions, local opportunities, or relocation.",
     "category": "Availability"
   },
   {
