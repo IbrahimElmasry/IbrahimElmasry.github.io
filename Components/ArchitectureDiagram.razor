@@ -891,7 +891,7 @@
             if (IsSlug("tech-xpress")) return "CartController.cs (Stripe Checkout Session)";
             if (IsSlug("elearning")) return "ChatbotService.cs (Conversation Flow)";
             if (IsSlug("rawafid")) return "ArticleController.php (Multilingual Routing)";
-            if (IsSlug("el-wakeel")) return "script.js (WhatsApp & Form Integration)";
+            if (IsSlug("el-wakeel")) return "script.js (Formspree Contact Integration)";
             if (IsSlug("deverp")) return "invoiceGenerator.ts (jsPDF & Multi-Currency Engine)";
             if (IsSlug("alkian-alsaamy")) return "main.js (Owl Carousel & Lead Dispatch)";
             return "Code.cs";
@@ -1013,22 +1013,8 @@ class ArticleController
 }";
 
             if (IsSlug("el-wakeel"))
-                return @"// WhatsApp Click-to-Chat & Formspree Contact Integration
+                return @"// Formspree Contact Integration
 document.addEventListener('DOMContentLoaded', function () {
-
-  // WhatsApp consultation booking
-  const whatsappBtns = document.querySelectorAll('.whatsapp-btn');
-  const phoneNumber = '201XXXXXXXXX'; // Mr. Abdullah El Wakeel
-
-  whatsappBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const service = btn.dataset.service || 'General Consultation';
-      const message = encodeURIComponent(
-        `Hello, I'd like to book a consultation regarding: ${service}`
-      );
-      window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-    });
-  });
 
   // Formspree contact form with validation
   const contactForm = document.getElementById('contact-form');
