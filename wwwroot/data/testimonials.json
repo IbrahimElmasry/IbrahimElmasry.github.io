@@ -14,9 +14,9 @@
     "Role": "Lead ASP.NET Track Instructor & Senior Software Engineer",
     "Company": "Digital Egypt Pioneers Initiative (DEPI)",
     "Relationship": "DEPI Track Instructor",
-    "Project": "DEPI 6-Month Intensive .NET Track",
-    "SkillHighlight": "Clean Architecture · CQRS · SQL Optimization · RESTful APIs",
-    "Quote": "Throughout the intensive 6-month DEPI ASP.NET Core track, Ibrahim consistently stood out for his analytical mindset and architectural rigor. He masters backend engineering beyond tutorials—crafting resilient Web APIs, applying Clean Architecture and CQRS, and designing optimized SQL queries. He is a standout backend engineer ready for high-scale enterprise work.",
+    "Project": "DEPI 9-Month Intensive .NET Track",
+    "SkillHighlight": "Clean Architecture · SQL Optimization · RESTful APIs",
+    "Quote": "Throughout the intensive 9-Month DEPI ASP.NET Core track, Ibrahim consistently stood out for his analytical mindset and architectural rigor. He masters backend engineering beyond tutorials—crafting resilient Web APIs, applying Clean Architecture and designing optimized SQL queries. He is a standout backend engineer ready for high-scale enterprise work.",
     "Date": "2024"
   },
   {
@@ -32,11 +32,11 @@
   {
     "Author": "Mrs. Rania Elsayed",
     "Role": "Product & Operations Lead",
-    "Company": "Rawafid Technology Hub",
+    "Company": "Rawafid Collective",
     "Relationship": "Client & Project Lead",
-    "Project": "Rawafid Technology Hub Platform",
-    "SkillHighlight": "Full-Stack ASP.NET · High Performance · Domain Modeling",
-    "Quote": "Ibrahim brought exceptional energy and technical precision to Rawafid Technology Hub. From structural database modeling to high-performance page rendering, he delivered an intuitive, robust platform that our users and stakeholders love. Highly dependable and proactive engineer.",
+    "Project": "Rawafid Collective Platform",
+    "SkillHighlight": "PHP · MySQL · Custom CMS",
+    "Quote": "Ibrahim brought exceptional energy and technical precision to Rawafid Collective. From structural database modeling to high-performance page rendering, he delivered an intuitive, robust platform that our users and stakeholders love. Highly dependable and proactive engineer.",
     "Date": "2024"
   }
 ]
